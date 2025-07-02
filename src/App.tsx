@@ -39,7 +39,10 @@ function App() {
   const [connectionChecked, setConnectionChecked] = useState(false);
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<{ name: string; words: VocabularyWord[]; grammar: GrammarRule[] } | null>(null);
-  const { progress, achievements, addScore, updateStreak, completeUnit, getSubjectProgress, getUnitProgress } = useProgress(gradeAccess?.code);
+  
+  // Only pass student ID if the user is actually a student with a valid UUID
+  const studentId = gradeAccess?.isStudent && gradeAccess?.studentId ? gradeAccess.studentId : undefined;
+  const { progress, achievements, addScore, updateStreak, completeUnit, getSubjectProgress, getUnitProgress } = useProgress(studentId);
 
   useEffect(() => {
     // التحقق من الاتصال بـ Supabase بشكل غير متزامن
