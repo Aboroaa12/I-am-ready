@@ -97,6 +97,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Only check for new achievements when achievements array changes
     const newAchievement = achievements.find(a => 
       a.achieved && (!a.achievedDate || 
       new Date(a.achievedDate).getTime() > Date.now() - 5000)
@@ -958,6 +959,7 @@ function App() {
         activeTab={activeTab} 
         onTabChange={setActiveTab} 
         gradeAccess={gradeAccess}
+        currentSubject={currentSubject}
         onLogout={handleLogout}
       />
       

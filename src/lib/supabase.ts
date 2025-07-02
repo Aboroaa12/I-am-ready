@@ -42,7 +42,13 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     // استخدام استعلام بسيط للتحقق من الاتصال
     const connectionPromise = supabase.from('health_check').select('*').limit(1);
     
-    const { data, error } = await Promise.race([connectionPromise, timeoutPromise]);
+    // Use Promise.race to implement timeout
+    const { data, error } = await Promise.race([
+      connectionPromise,
+      timeoutPromise.then(() => {
+        throw new Error('Connection timeout');
+      })
+    ]);
     
     if (error) {
       // تسجيل تفاصيل الخطأ للمساعدة في التشخيص
