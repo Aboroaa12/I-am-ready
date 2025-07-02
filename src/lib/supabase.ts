@@ -25,7 +25,7 @@ if (!hasValidCredentials) {
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
-// دالة مساعدة للتحقق من حالة الاتصال
+// دالة مساعدة للتحقق من حالة الاتصال مع معالجة أفضل للأخطاء
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   // إذا لم تكن المتغيرات صحيحة، ارجع false مباشرة
   if (!hasValidCredentials) {
@@ -34,15 +34,29 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   }
 
   try {
-    const { data, error } = await supabase.from('health_check').select('*').limit(1);
+    // استخدام timeout للتحقق من الاتصال
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timeout')), 5000);
+    });
+
+    const connectionPromise = supabase.from('health_check').select('*').limit(1);
+    
+    const { data, error } = await Promise.race([connectionPromise, timeoutPromise]);
+    
     if (error) {
-      console.error('Supabase connection error:', error.message);
+      console.warn('Supabase connection warning:', error.message);
       return false;
     }
+    
     console.log('✅ Supabase connection successful');
     return true;
   } catch (error: any) {
-    console.error('Supabase connection check failed:', error.message || error);
+    // لا نعرض خطأ في الكونسول إذا كان مجرد مشكلة في الشبكة
+    if (error.message === 'Connection timeout' || error.message === 'Failed to fetch') {
+      console.warn('⚠️ Supabase connection timeout or network issue - working in offline mode');
+    } else {
+      console.warn('Supabase connection check failed:', error.message || error);
+    }
     return false;
   }
 };

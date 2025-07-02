@@ -36,25 +36,35 @@ function App() {
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   const [showWordReport, setShowWordReport] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionChecked, setConnectionChecked] = useState(false);
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<{ name: string; words: VocabularyWord[]; grammar: GrammarRule[] } | null>(null);
   const { progress, achievements, addScore, updateStreak, completeUnit, getSubjectProgress, getUnitProgress } = useProgress(gradeAccess?.code);
 
   useEffect(() => {
-    // التحقق من الاتصال بـ Supabase
+    // التحقق من الاتصال بـ Supabase بشكل غير متزامن
     const checkConnection = async () => {
       if (!hasValidSupabaseCredentials()) {
         setIsConnected(false);
+        setConnectionChecked(true);
         console.warn('⚠️ Supabase credentials are not configured properly');
         return;
       }
 
-      const connected = await checkSupabaseConnection();
-      setIsConnected(connected);
-      console.log('Supabase connection status:', connected ? 'Connected' : 'Disconnected');
+      try {
+        const connected = await checkSupabaseConnection();
+        setIsConnected(connected);
+        console.log('Supabase connection status:', connected ? 'Connected' : 'Disconnected');
+      } catch (error) {
+        console.warn('Connection check failed, working in offline mode');
+        setIsConnected(false);
+      } finally {
+        setConnectionChecked(true);
+      }
     };
     
-    checkConnection();
+    // تأخير فحص الاتصال قليلاً لتجنب التحميل المفرط
+    const timeoutId = setTimeout(checkConnection, 1000);
     
     // Check for grade parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -67,6 +77,8 @@ function App() {
       // Set the selected grade for the login screen
       setSelectedGrade(selectedGrade);
     }
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const [selectedGrade, setSelectedGrade] = useState<number | undefined>(undefined);
@@ -907,18 +919,20 @@ function App() {
             </div>
           </div>
           
-          {/* Connection Status */}
-          <div className={`${isConnected ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} border rounded-xl p-4 text-center`}>
-            <p className={`${isConnected ? 'text-green-700' : 'text-yellow-700'}`}>
-              <strong>{isConnected ? '✓ متصل بقاعدة البيانات' : '⚠️ وضع غير متصل'}</strong><br />
-              {isConnected 
-                ? 'تقدمك يتم حفظه ومزامنته تلقائياً'
-                : hasValidSupabaseCredentials() 
-                  ? 'سيتم حفظ تقدمك محلياً ومزامنته عند توفر الاتصال'
-                  : 'يرجى تحديث متغيرات البيئة في ملف .env للاتصال بقاعدة البيانات'
-              }
-            </p>
-          </div>
+          {/* Connection Status - only show after connection check is complete */}
+          {connectionChecked && (
+            <div className={`${isConnected ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} border rounded-xl p-4 text-center`}>
+              <p className={`${isConnected ? 'text-green-700' : 'text-yellow-700'}`}>
+                <strong>{isConnected ? '✓ متصل بقاعدة البيانات' : '⚠️ وضع غير متصل'}</strong><br />
+                {isConnected 
+                  ? 'تقدمك يتم حفظه ومزامنته تلقائياً'
+                  : hasValidSupabaseCredentials() 
+                    ? 'سيتم حفظ تقدمك محلياً ومزامنته عند توفر الاتصال'
+                    : 'يرجى تحديث متغيرات البيئة في ملف .env للاتصال بقاعدة البيانات'
+                }
+              </p>
+            </div>
+          )}
         </div>
       );
     }
