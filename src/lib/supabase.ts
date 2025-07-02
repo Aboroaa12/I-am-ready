@@ -34,26 +34,42 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   }
 
   try {
-    // استخدام timeout للتحقق من الاتصال
+    // استخدام timeout أقصر للتحقق من الاتصال
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Connection timeout')), 5000);
+      setTimeout(() => reject(new Error('Connection timeout')), 3000);
     });
 
+    // استخدام استعلام بسيط للتحقق من الاتصال
     const connectionPromise = supabase.from('health_check').select('*').limit(1);
     
     const { data, error } = await Promise.race([connectionPromise, timeoutPromise]);
     
     if (error) {
-      console.warn('Supabase connection warning:', error.message);
+      // تسجيل تفاصيل الخطأ للمساعدة في التشخيص
+      console.warn('Supabase connection error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       return false;
     }
     
     console.log('✅ Supabase connection successful');
     return true;
   } catch (error: any) {
-    // لا نعرض خطأ في الكونسول إذا كان مجرد مشكلة في الشبكة
-    if (error.message === 'Connection timeout' || error.message === 'Failed to fetch') {
-      console.warn('⚠️ Supabase connection timeout or network issue - working in offline mode');
+    // معالجة أنواع مختلفة من الأخطاء
+    if (error.message === 'Connection timeout') {
+      console.warn('⚠️ Supabase connection timeout - working in offline mode');
+    } else if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      console.warn('⚠️ Network error connecting to Supabase - check your internet connection and Supabase project status');
+      console.warn('💡 Possible solutions:');
+      console.warn('1. Check if your Supabase project is active and not paused');
+      console.warn('2. Verify your internet connection');
+      console.warn('3. Check if the Supabase URL is correct');
+      console.warn('4. Try refreshing the page');
+    } else if (error.message?.includes('Invalid API key')) {
+      console.warn('⚠️ Invalid Supabase API key - please check your .env file');
     } else {
       console.warn('Supabase connection check failed:', error.message || error);
     }
