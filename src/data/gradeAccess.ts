@@ -10,7 +10,7 @@ export const gradeAccessCodes: GradeAccess[] = [
   { grade: 5, name: 'الصف الخامس', code: 'GRADE5' },
   { grade: 6, name: 'الصف السادس', code: 'GRADE6' },
   { grade: 7, name: 'الصف السابع', code: 'GRADE7' },
-  { grade: 8, name: 'الصف الثامن', code: 'GRADE8' },
+  { grade: 8, name: 'الصف الثامن', code: 'GRADE8KEY1' },
   { grade: 9, name: 'الصف التاسع', code: 'GRADE9' },
   { grade: 10, name: 'الصف العاشر', code: 'GRADE10' },
   { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11' },
