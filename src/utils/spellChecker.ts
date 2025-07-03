@@ -11,12 +11,21 @@ class SpellChecker {
   private loadPromise: Promise<void> | null = null;
   private customWords: Set<string> = new Set();
   private language: string = 'en';
+  private properNouns: Set<string> = new Set([
+    'oman', 'jabal', 'muscat', 'dubai', 'abu dhabi', 'saudi', 'qatar', 'kuwait', 'bahrain', 
+    'uae', 'emirates', 'middle east', 'asia', 'africa', 'europe', 'america', 'australia',
+    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+    'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'
+  ]);
 
   constructor(options: SpellCheckerOptions = { language: 'en' }) {
     this.language = options.language;
     if (options.customDictionary) {
       options.customDictionary.forEach(word => this.customWords.add(word.toLowerCase()));
     }
+    
+    // Add common place names and proper nouns
+    this.properNouns.forEach(word => this.customWords.add(word.toLowerCase()));
   }
 
   async initialize(): Promise<void> {
@@ -68,12 +77,27 @@ class SpellChecker {
     if (!word || word.length <= 1 || /^\d+$/.test(word)) {
       return true;
     }
+    
+    // Skip checking for proper nouns (capitalized words)
+    if (word.charAt(0) === word.charAt(0).toUpperCase() && word.length > 1) {
+      return true;
+    }
+    
+    // Skip checking for words in our custom proper nouns list
+    if (this.properNouns.has(word.toLowerCase())) {
+      return true;
+    }
 
     // Remove punctuation for checking
     const cleanWord = word.replace(/[.,!?;:'"()[\]{}]/g, '');
     
     // Skip if the word is now empty after cleaning
     if (!cleanWord) return true;
+    
+    // Special case for plural forms
+    if (cleanWord.endsWith('s') && this.checker.correct(cleanWord.slice(0, -1))) {
+      return true;
+    }
 
     return this.checker.correct(cleanWord);
   }
@@ -85,6 +109,16 @@ class SpellChecker {
 
     if (!this.checker) {
       console.warn('Spell checker not initialized yet');
+      return [];
+    }
+    
+    // Skip suggestions for proper nouns
+    if (word.charAt(0) === word.charAt(0).toUpperCase() && word.length > 1) {
+      return [];
+    }
+    
+    // Skip suggestions for words in our custom proper nouns list
+    if (this.properNouns.has(word.toLowerCase())) {
       return [];
     }
 
@@ -120,12 +154,30 @@ class SpellChecker {
         currentIndex += word.length + 1; // +1 for the space
         continue;
       }
+      
+      // Skip checking for proper nouns (capitalized words)
+      if (word.charAt(0) === word.charAt(0).toUpperCase() && word.length > 1) {
+        currentIndex += word.length + 1;
+        continue;
+      }
+      
+      // Skip checking for words in our custom proper nouns list
+      if (this.properNouns.has(word.toLowerCase())) {
+        currentIndex += word.length + 1;
+        continue;
+      }
 
       // Remove punctuation for checking
       const cleanWord = word.replace(/[.,!?;:'"()[\]{}]/g, '');
       
       // Skip if the word is now empty after cleaning
       if (!cleanWord) {
+        currentIndex += word.length + 1;
+        continue;
+      }
+      
+      // Special case for plural forms
+      if (cleanWord.endsWith('s') && this.checker.correct(cleanWord.slice(0, -1))) {
         currentIndex += word.length + 1;
         continue;
       }
@@ -151,6 +203,13 @@ class SpellChecker {
     }
     this.customWords.add(word.toLowerCase());
   }
+  
+  addProperNoun(word: string): void {
+    this.properNouns.add(word.toLowerCase());
+    if (this.checker) {
+      this.checker.add(word.toLowerCase());
+    }
+  }
 }
 
 // Create a singleton instance
@@ -159,6 +218,18 @@ const spellChecker = new SpellChecker();
 // Initialize in the background
 spellChecker.initialize().catch(error => {
   console.warn('Failed to initialize spell checker:', error);
+});
+
+// Add common place names and geographical terms
+const commonPlaceNames = [
+  'oman', 'jabal', 'muscat', 'dubai', 'abu dhabi', 'saudi', 'qatar', 'kuwait', 'bahrain', 
+  'uae', 'emirates', 'middle east', 'asia', 'africa', 'europe', 'america', 'australia',
+  'alakhdar', 'akhdar', 'salalah', 'nizwa', 'sohar', 'sur', 'ibri', 'buraimi',
+  'london', 'paris', 'tokyo', 'new york', 'cairo', 'riyadh', 'jeddah', 'mecca', 'medina'
+];
+
+commonPlaceNames.forEach(place => {
+  spellChecker.addProperNoun(place);
 });
 
 export default spellChecker;

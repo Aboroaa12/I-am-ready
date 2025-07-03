@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, XCircle, Lightbulb, ArrowRight, Trophy, Target, Clock, Zap, Star, Award, BookOpen, Edit, ArrowRight as ArrowRightIcon, Pencil, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Lightbulb, RotateCcw, Trophy, Target, Clock, Zap, Star, Award, BookOpen, Edit, ArrowRight, Pencil, RefreshCw } from 'lucide-react';
 import { VocabularyWord } from '../types';
 import spellChecker from '../utils/spellChecker';
 
@@ -49,6 +49,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const [writingMode, setWritingMode] = useState<'guided' | 'free'>('guided');
   const [freeWritingTopics, setFreeWritingTopics] = useState<FreeWritingTopic[]>([]);
   const [currentTopic, setCurrentTopic] = useState<FreeWritingTopic | null>(null);
+  const [customTopic, setCustomTopic] = useState<string>('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -374,7 +375,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     // Basic grammar checks
     const hasCapital = userSentence.charAt(0) === userSentence.charAt(0).toUpperCase();
     const hasPunctuation = /[.!?]$/.test(userSentence.trim());
-    const hasMinLength = userSentence.trim().split(' ').length >= 4;
+    const hasMinLength = userSentence.trim().split(/\s+/).length >= 4;
     
     // Set capitalization and punctuation errors
     setCapitalizationError(!hasCapital);
@@ -424,19 +425,45 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
             continue;
           }
           
+          // Skip checking proper nouns (capitalized words)
+          if (word.charAt(0) === word.charAt(0).toUpperCase()) {
+            continue;
+          }
+          
+          // Add common place names to the dictionary on-the-fly
+          if (/^[A-Z]/.test(word)) {
+            spellChecker.addProperNoun(word);
+            continue;
+          }
+          
           const isCorrect = await spellChecker.checkWord(word);
           if (!isCorrect) {
             const suggestions = await spellChecker.getSuggestions(word);
             if (suggestions.length > 0) {
+              // Filter out suggestions that would change the word too much
+              // Only accept suggestions that are similar to the original word
+              const bestSuggestion = suggestions.find(s => 
+                s.length >= word.length * 0.7 && 
+                s.length <= word.length * 1.3
+              ) || suggestions[0];
+              
               spellingErrorsFound.push({
                 word: word,
-                correction: suggestions[0]
+                correction: bestSuggestion
               });
             }
           }
         }
         
-        setSpellingErrors(spellingErrorsFound);
+        // Filter out any errors that might be proper nouns or place names
+        const filteredErrors = spellingErrorsFound.filter(error => {
+          const word = error.word.toLowerCase();
+          // Skip common place names and geographical terms
+          const commonPlaceTerms = ['jabal', 'oman', 'dubai', 'muscat', 'salalah', 'nizwa'];
+          return !commonPlaceTerms.includes(word);
+        });
+        
+        setSpellingErrors(filteredErrors);
       } catch (error) {
         console.error('Error checking spelling:', error);
       }
@@ -758,6 +785,24 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const generateNewTopic = () => {
     if (writingMode === 'free') {
       selectRandomTopic();
+      setCustomTopic('');
+    }
+  };
+
+  const handleCustomTopicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomTopic(e.target.value);
+  };
+
+  const setCustomTopicAsActive = () => {
+    if (customTopic.trim()) {
+      const newTopic: FreeWritingTopic = {
+        id: 'custom-topic',
+        title: customTopic,
+        description: 'Write about this custom topic.',
+        minWords: 30,
+        difficulty: 'medium'
+      };
+      setCurrentTopic(newTopic);
     }
   };
 
@@ -943,6 +988,27 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                   </div>
                 </>
               )}
+              
+              {/* Custom topic input */}
+              <div className="mt-4 flex gap-2">
+                <input
+                  type="text"
+                  value={customTopic}
+                  onChange={handleCustomTopicChange}
+                  placeholder="أو أدخل موضوعاً مخصصاً..."
+                  className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={setCustomTopicAsActive}
+                  disabled={!customTopic.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-3 py-2 rounded-lg"
+                >
+                  استخدام
+                </button>
+              </div>
+              <div className="mt-2 text-xs text-blue-600">
+                هو موضوع مقترح وليس إلزاميا
+              </div>
             </div>
           )}
         </div>
