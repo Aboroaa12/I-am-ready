@@ -321,6 +321,24 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           message: "Use 'don't' with I/you/we/they", 
           messageAr: "استخدم 'don't' مع I/you/we/they",
           replacement: "$1 don't" 
+        },
+        {
+          pattern: /\bher he\b/gi,
+          message: "Use 'he' or 'she' but not both together",
+          messageAr: "استخدم 'he' أو 'she' وليس كلاهما معًا",
+          replacement: "he"
+        },
+        {
+          pattern: /\bher she\b/gi,
+          message: "Use 'he' or 'she' but not both together",
+          messageAr: "استخدم 'he' أو 'she' وليس كلاهما معًا",
+          replacement: "she"
+        },
+        {
+          pattern: /\bhim he\b/gi,
+          message: "Use 'he' or 'him' but not both together",
+          messageAr: "استخدم 'he' أو 'him' وليس كلاهما معًا",
+          replacement: "he"
         }
       ];
       

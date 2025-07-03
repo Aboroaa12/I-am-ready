@@ -20,6 +20,7 @@ import AdminPanel from './components/AdminPanel';
 import TeacherDashboard from './components/TeacherDashboard';
 import SubjectSelector from './components/SubjectSelector';
 import SubjectUnits from './components/SubjectUnits';
+import SupportInfo from './components/SupportInfo';
 import { getVocabularyByGrade, getUnitsByGrade } from './data/vocabulary';
 import { getGrammarByGrade, getQuestionsByGrade } from './data/grammar';
 import { getTeacherByCode } from './data/gradeAccess';
@@ -40,6 +41,7 @@ function App() {
   const [connectionChecked, setConnectionChecked] = useState(false);
   const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<{ name: string; words: VocabularyWord[]; grammar: GrammarRule[] } | null>(null);
+  const [showSupport, setShowSupport] = useState(false);
   
   // Only pass student ID if the user is actually a student with a valid UUID
   const studentId = gradeAccess?.isStudent && gradeAccess?.studentKeyId ? gradeAccess.studentKeyId : undefined;
@@ -949,6 +951,22 @@ function App() {
               </p>
             </div>
           )}
+          
+          {/* Support Section */}
+          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl p-6 border border-blue-200">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-bold text-blue-800 mb-2">🤝 هل تحتاج إلى مساعدة؟</h3>
+                <p className="text-blue-600">فريق الدعم الفني متاح للمساعدة في أي وقت</p>
+              </div>
+              <button
+                onClick={() => setShowSupport(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
+              >
+                تواصل معنا
+              </button>
+            </div>
+          </div>
         </div>
       );
     }
@@ -996,6 +1014,24 @@ function App() {
           words={currentWords}
           onClose={() => setShowWordReport(false)}
         />
+      )}
+      
+      {showSupport && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-4 flex justify-end">
+              <button 
+                onClick={() => setShowSupport(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="px-6 pb-6">
+              <SupportInfo whatsappNumber="+96895466785" />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
