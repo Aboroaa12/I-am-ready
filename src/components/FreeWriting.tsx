@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, Trash2, Clock, FileText, Download, Upload, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Save, Trash2, Clock, FileText, Download, Upload, CheckCircle, XCircle, AlertTriangle, Lightbulb } from 'lucide-react';
 import spellChecker from '../utils/spellChecker';
 
 interface FreeWritingProps {
@@ -14,8 +14,8 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   const [savedText, setSavedText] = useState<string | null>(null);
   const [timer, setTimer] = useState<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
-  const [spellCheckEnabled, setSpellCheckEnabled] = useState<boolean>(false);
-  const [spellingErrors, setSpellingErrors] = useState<{word: string, suggestions: string[]}[]>([]);
+  const [spellCheckEnabled, setSpellCheckEnabled] = useState<boolean>(true);
+  const [spellingErrors, setSpellingErrors] = useState<{word: string, suggestions: string[], index: number}[]>([]);
   const [isSpellChecking, setIsSpellChecking] = useState<boolean>(false);
   const [spellCheckerReady, setSpellCheckerReady] = useState<boolean>(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(true);
@@ -23,6 +23,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize spell checker
   useEffect(() => {
@@ -44,6 +45,11 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
       setText(saved);
       setSavedText(saved);
       setLastSaved(new Date());
+      
+      // Update word and character count for loaded text
+      const words = saved.trim() ? saved.trim().split(/\s+/) : [];
+      setWordCount(words.length);
+      setCharCount(saved.length);
     }
     
     return () => {
@@ -68,6 +74,19 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
       return () => clearTimeout(autoSaveTimeout);
     }
   }, [text, autoSaveEnabled, savedText]);
+
+  // Check spelling when text changes or spell check is toggled
+  useEffect(() => {
+    if (spellCheckEnabled && spellCheckerReady && text.trim()) {
+      const debounceTimeout = setTimeout(() => {
+        checkSpelling(text);
+      }, 1000);
+      
+      return () => clearTimeout(debounceTimeout);
+    } else if (!spellCheckEnabled) {
+      setSpellingErrors([]);
+    }
+  }, [text, spellCheckEnabled, spellCheckerReady]);
 
   // Start/stop timer
   const toggleTimer = () => {
@@ -111,16 +130,6 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   // Handle text change
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
-    
-    // If spell check is enabled, check spelling after a short delay
-    if (spellCheckEnabled) {
-      // Debounce spell checking to avoid performance issues
-      const debounceTimeout = setTimeout(() => {
-        checkSpelling(e.target.value);
-      }, 1000);
-      
-      return () => clearTimeout(debounceTimeout);
-    }
   };
 
   // Check spelling
@@ -134,10 +143,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     
     try {
       const { misspelledWords } = await spellChecker.checkText(textToCheck);
-      setSpellingErrors(misspelledWords.map(item => ({
-        word: item.word,
-        suggestions: item.suggestions
-      })));
+      setSpellingErrors(misspelledWords);
     } catch (error) {
       console.error('Error checking spelling:', error);
     } finally {
@@ -216,6 +222,24 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     
     // Reset file input
     e.target.value = '';
+  };
+
+  // Trigger file input click
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Apply spelling correction
+  const applySpellingCorrection = (originalWord: string, correction: string) => {
+    const newText = text.replace(new RegExp(`\\b${originalWord}\\b`, 'g'), correction);
+    setText(newText);
+    
+    // Remove the corrected error from the list
+    setSpellingErrors(prev => prev.filter(error => error.word !== originalWord));
+    
+    showNotification(`تم تصحيح "${originalWord}" إلى "${correction}"`, 'success');
   };
 
   // Show notification
@@ -301,16 +325,20 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             تصدير
           </button>
           
-          <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+          <button
+            onClick={triggerFileInput}
+            className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer"
+          >
             <Upload className="w-4 h-4" />
             <span>استيراد</span>
             <input 
+              ref={fileInputRef}
               type="file" 
               accept=".txt" 
               className="hidden" 
               onChange={handleImport}
             />
-          </label>
+          </button>
         </div>
 
         {/* Spell Check Toggle */}
@@ -386,20 +414,17 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
                     <XCircle className="w-4 h-4 text-red-500 mt-1" />
                     <div>
                       <span className="font-mono font-bold">{error.word}</span>
-                      {error.suggestions.length > 0 && (
+                      {error.suggestions && error.suggestions.length > 0 && (
                         <div className="text-sm mt-1">
                           <span className="text-gray-600">اقتراحات: </span>
                           {error.suggestions.slice(0, 3).map((suggestion, i) => (
-                            <span 
+                            <button 
                               key={i} 
                               className="bg-white px-2 py-1 rounded border border-gray-300 text-blue-600 cursor-pointer hover:bg-blue-50 mr-1"
-                              onClick={() => {
-                                const newText = text.replace(new RegExp(`\\b${error.word}\\b`, 'g'), suggestion);
-                                setText(newText);
-                              }}
+                              onClick={() => applySpellingCorrection(error.word, suggestion)}
                             >
                               {suggestion}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       )}
@@ -414,7 +439,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
         {/* Writing Tips */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
           <h4 className="font-bold text-blue-800 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5" />
+            <Lightbulb className="w-5 h-5" />
             نصائح للكتابة الإبداعية:
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700">
