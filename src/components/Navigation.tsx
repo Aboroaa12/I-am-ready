@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, Users, Clock, Telescope, ShoppingBag, GamepadIcon, LogOut, Shield, Zap, Monitor, MapPin, Globe, Laptop, Heart, Briefcase, Languages, Star, FlaskRound as Flask, Newspaper, AlertTriangle, Palette, GraduationCap, Building, Leaf, Lightbulb, BookOpen as Book } from 'lucide-react';
+import { Home, BookOpen, Users, Clock, Telescope, ShoppingBag, GamepadIcon, LogOut, Shield, Zap, Monitor, MapPin, Globe, Laptop, Heart, Briefcase, Languages, Star, FlaskRound as Flask, Newspaper, AlertTriangle, Palette, GraduationCap, Building, Leaf, Lightbulb, BookOpen as Book, Edit } from 'lucide-react';
 import { GradeAccess, Subject } from '../types';
 import { getGradeGradientColor, getGradeLightColor } from '../utils/gradeColors';
 
@@ -19,7 +19,8 @@ const getTabsByGrade = (grade: number, isAdmin: boolean = false, currentSubject?
 
   const baseTabs = [
     { id: 'subjects', label: 'المواد الدراسية', englishLabel: 'Subjects', icon: BookOpen },
-    { id: 'practice', label: 'التدريب التفاعلي', englishLabel: 'Interactive Practice', icon: GamepadIcon }
+    { id: 'practice', label: 'التدريب التفاعلي', englishLabel: 'Interactive Practice', icon: GamepadIcon },
+    { id: 'free-writing', label: 'الكتابة الحرة', englishLabel: 'Free Writing', icon: Edit }
   ];
 
   // Add units tab only for English subject

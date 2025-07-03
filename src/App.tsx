@@ -13,6 +13,7 @@ import SentenceWriting from './components/SentenceWriting';
 import SentenceCompletion from './components/SentenceCompletion';
 import SpellingExercise from './components/SpellingExercise';
 import TestExercises from './components/TestExercises';
+import FreeWriting from './components/FreeWriting';
 import ProgressBar from './components/ProgressBar';
 import AchievementNotification from './components/AchievementNotification';
 import AdminPanel from './components/AdminPanel';
@@ -501,6 +502,17 @@ function App() {
               ))}
             </div>
           </div>
+        </div>
+      );
+    }
+
+    // Free Writing page
+    if (activeTab === 'free-writing') {
+      return (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <FreeWriting 
+            onScore={(points) => addScore(points, currentSubject?.id)}
+          />
         </div>
       );
     }
