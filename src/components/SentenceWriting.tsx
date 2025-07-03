@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, XCircle, Lightbulb, RotateCcw, Trophy, Target, Clock, Zap, Star, Award, BookOpen, Edit, ArrowRight } from 'lucide-react';
 import { VocabularyWord } from '../types';
+import spellChecker from '../utils/spellChecker';
 
 interface SentenceWritingProps {
   words: VocabularyWord[];
@@ -36,6 +37,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const [capitalizationError, setCapitalizationError] = useState(false);
   const [punctuationError, setPunctuationError] = useState(false);
   const [spellingErrors, setSpellingErrors] = useState<{word: string, correction: string}[]>([]);
+  const [spellCheckerReady, setSpellCheckerReady] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -43,21 +45,35 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
 
   useEffect(() => {
     generatePrompts();
+    
+    // Initialize spell checker
+    const initSpellChecker = async () => {
+      try {
+        await spellChecker.initialize();
+        setSpellCheckerReady(true);
+        console.log('Spell checker initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize spell checker:', error);
+      }
+    };
+    
+    initSpellChecker();
   }, [words, difficulty]);
 
   useEffect(() => {
-    if (timeLeft > 0 && !sessionComplete && prompts.length > 0 && !feedbackVisible) {
+    if (timeLeft > 0 && !sessionComplete && !feedbackVisible && prompts.length > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && prompts.length > 0 && !feedbackVisible) {
+    } else if (timeLeft === 0 && !feedbackVisible && prompts.length > 0) {
       handleTimeout();
     }
-  }, [timeLeft, sessionComplete, prompts.length, feedbackVisible]);
+  }, [timeLeft, sessionComplete, feedbackVisible, prompts.length]);
 
   const generatePrompts = () => {
     if (words.length === 0) return;
 
     const selectedWords = words
+      .filter(word => word.exampleSentence)
       .sort(() => Math.random() - 0.5)
       .slice(0, totalPrompts);
 
@@ -231,7 +247,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     return false;
   };
 
-  const checkSentence = () => {
+  const checkSentence = async () => {
     if (!userSentence.trim()) {
       setFeedback('❌ يرجى كتابة جملة قبل التحقق!');
       setFeedbackVisible(true);
@@ -287,36 +303,35 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       setGrammarFeedback(grammarErrors.join(' '));
     }
 
-    // Check for spelling errors (excluding the target word variations)
-    const words = sentence.split(/\s+/).map(w => w.replace(/[.,!?;:]/g, ''));
-    const spellingErrorsFound: {word: string, correction: string}[] = [];
-    
-    // This is a simplified example - in a real app, you'd use a dictionary or API
-    const commonMisspellings: {[key: string]: string} = {
-      'recieve': 'receive',
-      'freind': 'friend',
-      'beleive': 'believe',
-      'wierd': 'weird',
-      'accomodate': 'accommodate',
-      'occured': 'occurred',
-      'definately': 'definitely',
-      'seperate': 'separate',
-      'untill': 'until',
-      'begining': 'beginning',
-      'comming': 'coming',
-      'fotabl': 'football'
-    };
-    
-    words.forEach(word => {
-      if (commonMisspellings[word] && !checkSpellingVariations(word, targetWord)) {
-        spellingErrorsFound.push({
-          word: word,
-          correction: commonMisspellings[word]
-        });
+    // Check for spelling errors using nspell
+    if (spellCheckerReady) {
+      try {
+        const words = sentence.split(/\s+/).map(w => w.replace(/[.,!?;:]/g, ''));
+        const spellingErrorsFound: {word: string, correction: string}[] = [];
+        
+        for (const word of words) {
+          // Skip checking the target word or its variations
+          if (word.length <= 2 || checkSpellingVariations(word, targetWord)) {
+            continue;
+          }
+          
+          const isCorrect = await spellChecker.checkWord(word);
+          if (!isCorrect) {
+            const suggestions = await spellChecker.getSuggestions(word);
+            if (suggestions.length > 0) {
+              spellingErrorsFound.push({
+                word: word,
+                correction: suggestions[0]
+              });
+            }
+          }
+        }
+        
+        setSpellingErrors(spellingErrorsFound);
+      } catch (error) {
+        console.error('Error checking spelling:', error);
       }
-    });
-    
-    setSpellingErrors(spellingErrorsFound);
+    }
 
     let points = 0;
     let feedbackMessage = '';
@@ -361,9 +376,9 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       }
       
       // Spelling errors penalty
-      if (spellingErrorsFound.length > 0) {
-        points -= spellingErrorsFound.length * 2;
-        feedbackMessage += `⚠️ يوجد ${spellingErrorsFound.length} أخطاء إملائية. `;
+      if (spellingErrors.length > 0) {
+        points -= spellingErrors.length * 2;
+        feedbackMessage += `⚠️ يوجد ${spellingErrors.length} أخطاء إملائية. `;
       }
 
       // Streak bonus
@@ -804,36 +819,36 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
             {(capitalizationError || punctuationError || spellingErrors.length > 0 || grammarFeedback) && userSentence && (
               <div className="space-y-4 mb-6">
                 
-                                 {/* Original sentence with highlighted errors */}
-                 <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
-                   <h5 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
-                     <span className="text-red-500">❌</span>
-                     جملتك (مع تحديد الأخطاء):
-                   </h5>
-                   
-                   {/* Color legend */}
-                   <div className="flex flex-wrap gap-2 mb-3 text-xs">
-                     {capitalizationError && (
-                       <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded border">
-                         🟡 حرف كبير
-                       </span>
-                     )}
-                     {punctuationError && (
-                       <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded border">
-                         🟠 علامة ترقيم
-                       </span>
-                     )}
-                     {spellingErrors.length > 0 && (
-                       <span className="bg-red-200 text-red-800 px-2 py-1 rounded border">
-                         🔴 خطأ إملائي
-                       </span>
-                     )}
-                   </div>
-                   
-                   <div className="text-lg font-mono p-3 bg-gray-50 rounded border" dir="ltr">
-                     {highlightErrors(userSentence)}
-                   </div>
-                 </div>
+                {/* Original sentence with highlighted errors */}
+                <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
+                  <h5 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                    <span className="text-red-500">❌</span>
+                    جملتك (مع تحديد الأخطاء):
+                  </h5>
+                  
+                  {/* Color legend */}
+                  <div className="flex flex-wrap gap-2 mb-3 text-xs">
+                    {capitalizationError && (
+                      <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded border">
+                        🟡 حرف كبير
+                      </span>
+                    )}
+                    {punctuationError && (
+                      <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded border">
+                        🟠 علامة ترقيم
+                      </span>
+                    )}
+                    {spellingErrors.length > 0 && (
+                      <span className="bg-red-200 text-red-800 px-2 py-1 rounded border">
+                        🔴 خطأ إملائي
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="text-lg font-mono p-3 bg-gray-50 rounded border" dir="ltr">
+                    {highlightErrors(userSentence)}
+                  </div>
+                </div>
 
                 {/* Corrected sentence */}
                 <div className="bg-white rounded-lg p-4 border-2 border-green-200">
@@ -856,8 +871,8 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                   </h5>
                   <div className="space-y-3 text-sm">
             
-            {/* Capitalization Error */}
-            {capitalizationError && (
+                    {/* Capitalization Error */}
+                    {capitalizationError && (
                       <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded border border-yellow-200">
                         <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs font-bold">
                           حرف كبير
@@ -868,13 +883,13 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                             <span className="line-through">{userSentence.charAt(0)}</span>
                             <span className="mx-2">→</span>
                             <span className="font-bold">{userSentence.charAt(0).toUpperCase()}</span>
-                </p>
+                          </p>
                         </div>
-              </div>
-            )}
+                      </div>
+                    )}
             
-            {/* Punctuation Error */}
-            {punctuationError && (
+                    {/* Punctuation Error */}
+                    {punctuationError && (
                       <div className="flex items-start gap-3 p-3 bg-orange-50 rounded border border-orange-200">
                         <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-xs font-bold">
                           ترقيم
@@ -883,13 +898,13 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                           <p className="font-semibold text-orange-800">يجب إنهاء الجملة بعلامة ترقيم</p>
                           <p className="text-orange-700">
                             أضف <span className="font-bold">نقطة (.)</span> أو <span className="font-bold">علامة تعجب (!)</span> أو <span className="font-bold">علامة استفهام (?)</span>
-                </p>
+                          </p>
                         </div>
-              </div>
-            )}
+                      </div>
+                    )}
             
-            {/* Spelling Errors */}
-            {spellingErrors.length > 0 && (
+                    {/* Spelling Errors */}
+                    {spellingErrors.length > 0 && (
                       <div className="flex items-start gap-3 p-3 bg-red-50 rounded border border-red-200">
                         <span className="bg-red-200 text-red-800 px-2 py-1 rounded text-xs font-bold">
                           إملاء
@@ -897,20 +912,20 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                         <div>
                           <p className="font-semibold text-red-800 mb-2">أخطاء إملائية:</p>
                           <div className="space-y-1">
-                  {spellingErrors.map((error, index) => (
+                            {spellingErrors.map((error, index) => (
                               <p key={index} className="text-red-700">
                                 <span className="line-through font-mono">{error.word}</span>
                                 <span className="mx-2">→</span>
                                 <span className="font-bold font-mono">{error.correction}</span>
                               </p>
-                  ))}
+                            ))}
                           </div>
                         </div>
-              </div>
-            )}
+                      </div>
+                    )}
             
-            {/* Grammar Feedback */}
-            {grammarFeedback && (
+                    {/* Grammar Feedback */}
+                    {grammarFeedback && (
                       <div className="flex items-start gap-3 p-3 bg-purple-50 rounded border border-purple-200">
                         <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs font-bold">
                           نحو

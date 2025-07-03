@@ -1,0 +1,200 @@
+SET UTF-8
+TRY esianrtolcdugmphbyfvkwzESIANRTOLCDUGMPHBYFVKWZ'
+
+PFX A Y 1
+PFX A 0 re .
+
+PFX I Y 1
+PFX I 0 in .
+
+PFX U Y 1
+PFX U 0 un .
+
+PFX C Y 1
+PFX C 0 de .
+
+PFX E Y 1
+PFX E 0 dis .
+
+PFX F Y 1
+PFX F 0 con .
+
+PFX K Y 1
+PFX K 0 pro .
+
+SFX V N 2
+SFX V e ing e
+SFX V 0 ing [^e]
+
+SFX N Y 3
+SFX N e en e
+SFX N y ien y
+SFX N 0 en [^ey]
+
+SFX X Y 3
+SFX X e er e
+SFX X y ier y
+SFX X 0 er [^ey]
+
+SFX H N 2
+SFX H y ieth y
+SFX H 0 th [^y]
+
+SFX Y Y 1
+SFX Y 0 ly .
+
+SFX G Y 2
+SFX G e ing e
+SFX G 0 ing [^e]
+
+SFX J Y 2
+SFX J e ings e
+SFX J 0 ings [^e]
+
+SFX D Y 4
+SFX D 0 d [^(ey)]
+SFX D y ied y
+SFX D e d e
+SFX D 0 ed [^(ey)]
+
+SFX T N 4
+SFX T 0 st [^(ey)]
+SFX T y iest y
+SFX T e st e
+SFX T 0 est [^(ey)]
+
+SFX R Y 4
+SFX R 0 r [^(ey)]
+SFX R y ier y
+SFX R e r e
+SFX R 0 er [^(ey)]
+
+SFX Z Y 4
+SFX Z 0 s [^(shxyzaeiou)]
+SFX Z y ies y
+SFX Z [shxz] es shxz
+SFX Z [^(shxzy)] s [^(shxzy)]
+
+SFX S Y 4
+SFX S 0 s [^(shxyzaeiou)]
+SFX S y ies y
+SFX S [shxz] es shxz
+SFX S [^(shxzy)] s [^(shxzy)]
+
+SFX P Y 3
+SFX P y iness y
+SFX P 0 ness [^y]
+SFX P 0 ness [^y]
+
+SFX M Y 1
+SFX M 0 's .
+
+SFX B Y 3
+SFX B y ily y
+SFX B 0 ly [^y]
+SFX B 0 ly [^y]
+
+SFX L Y 1
+SFX L 0 ment .
+
+REP 90
+REP a ei
+REP ei a
+REP a ey
+REP ey a
+REP ai ie
+REP ie ai
+REP are air
+REP are ear
+REP are eir
+REP air are
+REP air ere
+REP ere air
+REP ere ear
+REP ere eir
+REP ear are
+REP ear air
+REP ear ere
+REP eir are
+REP eir ere
+REP ch te
+REP te ch
+REP ch ti
+REP ti ch
+REP ch tu
+REP tu ch
+REP ch s
+REP s ch
+REP ch k
+REP k ch
+REP f ph
+REP ph f
+REP gh f
+REP f gh
+REP i igh
+REP igh i
+REP i uy
+REP uy i
+REP i ee
+REP ee i
+REP j di
+REP di j
+REP j gg
+REP gg j
+REP j ge
+REP ge j
+REP s ti
+REP ti s
+REP s ci
+REP ci s
+REP k cc
+REP cc k
+REP k qu
+REP qu k
+REP kw qu
+REP o eau
+REP eau o
+REP o ew
+REP ew o
+REP oo ew
+REP ew oo
+REP ew ui
+REP ui ew
+REP oo ui
+REP ui oo
+REP ew u
+REP u ew
+REP oo u
+REP u oo
+REP u oe
+REP oe u
+REP u ieu
+REP ieu u
+REP u oo
+REP oo u
+REP u ew
+REP ew u
+REP ue ew
+REP ew ue
+REP uff ough
+REP ough uff
+REP uff ow
+REP ow uff
+REP u you
+REP you u
+REP xc ec
+REP ec xc
+REP x ec
+REP ec x
+REP x egg
+REP egg x
+REP y ie
+REP ie y
+REP y igh
+REP igh y
+REP y uy
+REP uy y
+REP z ss
+REP ss z
+REP z s
+REP s z
