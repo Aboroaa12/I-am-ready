@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, XCircle, Lightbulb, RotateCcw, Trophy, Target, Clock, Zap, Star, Award, BookOpen, Edit, ArrowRight, Pencil, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Lightbulb, RotateCcw, Trophy, Target, Clock, Zap, Star, Award, BookOpen, Edit, ArrowRight } from 'lucide-react';
 import { VocabularyWord } from '../types';
 import spellChecker from '../utils/spellChecker';
 
@@ -17,14 +17,6 @@ interface WritingPrompt {
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
-interface FreeWritingTopic {
-  id: string;
-  title: string;
-  description: string;
-  minWords: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-}
-
 const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStreak }) => {
   const [prompts, setPrompts] = useState<WritingPrompt[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState(0);
@@ -37,7 +29,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const [showHints, setShowHints] = useState(false);
   const [showSamples, setShowSamples] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes per sentence for guided mode
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes per sentence
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [hintsUsed, setHintsUsed] = useState(0);
   const [samplesUsed, setSamplesUsed] = useState(0);
@@ -46,22 +38,13 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const [punctuationError, setPunctuationError] = useState(false);
   const [spellingErrors, setSpellingErrors] = useState<{word: string, correction: string}[]>([]);
   const [spellCheckerReady, setSpellCheckerReady] = useState(false);
-  const [writingMode, setWritingMode] = useState<'guided' | 'free'>('guided');
-  const [freeWritingTopics, setFreeWritingTopics] = useState<FreeWritingTopic[]>([]);
-  const [currentTopic, setCurrentTopic] = useState<FreeWritingTopic | null>(null);
-  const [customTopic, setCustomTopic] = useState<string>('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const totalPrompts = Math.min(8, words.length);
 
   useEffect(() => {
-    if (writingMode === 'guided') {
-      generatePrompts();
-    } else {
-      generateFreeWritingTopics();
-      selectRandomTopic();
-    }
+    generatePrompts();
     
     // Initialize spell checker
     const initSpellChecker = async () => {
@@ -75,17 +58,16 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     };
     
     initSpellChecker();
-  }, [words, difficulty, writingMode]);
+  }, [words, difficulty]);
 
   useEffect(() => {
-    // Only run timer for guided mode
-    if (writingMode === 'guided' && timeLeft > 0 && !sessionComplete && !feedbackVisible && prompts.length > 0) {
+    if (timeLeft > 0 && !sessionComplete && !feedbackVisible && prompts.length > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (writingMode === 'guided' && timeLeft === 0 && !feedbackVisible && prompts.length > 0) {
+    } else if (timeLeft === 0 && !feedbackVisible && prompts.length > 0) {
       handleTimeout();
     }
-  }, [timeLeft, sessionComplete, feedbackVisible, prompts.length, writingMode]);
+  }, [timeLeft, sessionComplete, feedbackVisible, prompts.length]);
 
   const generatePrompts = () => {
     if (words.length === 0) return;
@@ -110,95 +92,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     });
 
     setPrompts(generatedPrompts);
-  };
-
-  const generateFreeWritingTopics = () => {
-    // Generate topics based on units, general topics, and personal topics
-    const generalTopics: FreeWritingTopic[] = [
-      {
-        id: 'my-day',
-        title: 'My Day',
-        description: 'Write about your typical day or a special day you remember.',
-        minWords: 20,
-        difficulty: 'easy'
-      },
-      {
-        id: 'my-family',
-        title: 'My Family',
-        description: 'Describe your family members and what makes them special to you.',
-        minWords: 25,
-        difficulty: 'easy'
-      },
-      {
-        id: 'my-hobby',
-        title: 'My Favorite Hobby',
-        description: 'Write about your favorite hobby and why you enjoy it.',
-        minWords: 30,
-        difficulty: 'medium'
-      },
-      {
-        id: 'my-school',
-        title: 'My School',
-        description: 'Describe your school, your favorite subjects, and your teachers.',
-        minWords: 30,
-        difficulty: 'medium'
-      },
-      {
-        id: 'my-friend',
-        title: 'My Best Friend',
-        description: 'Write about your best friend and why they are important to you.',
-        minWords: 35,
-        difficulty: 'medium'
-      },
-      {
-        id: 'my-dream',
-        title: 'My Dream Job',
-        description: 'What job would you like to have when you grow up and why?',
-        minWords: 40,
-        difficulty: 'hard'
-      },
-      {
-        id: 'my-vacation',
-        title: 'My Dream Vacation',
-        description: 'Describe a place you would like to visit and what you would do there.',
-        minWords: 45,
-        difficulty: 'hard'
-      },
-      {
-        id: 'my-hero',
-        title: 'My Hero',
-        description: 'Write about someone you admire and explain why they inspire you.',
-        minWords: 50,
-        difficulty: 'hard'
-      }
-    ];
-    
-    // Add topics based on units from the words array
-    const unitTopics: FreeWritingTopic[] = Array.from(new Set(words.map(word => word.unit)))
-      .map(unit => ({
-        id: `unit-${unit.toLowerCase().replace(/\s+/g, '-')}`,
-        title: unit,
-        description: `Write a paragraph about something related to "${unit}".`,
-        minWords: 30,
-        difficulty: 'medium' as 'easy' | 'medium' | 'hard'
-      }));
-    
-    setFreeWritingTopics([...generalTopics, ...unitTopics]);
-  };
-
-  const selectRandomTopic = () => {
-    if (freeWritingTopics.length === 0) return;
-    
-    // Filter topics by difficulty if needed
-    let filteredTopics = freeWritingTopics;
-    if (difficulty !== 'medium') {
-      filteredTopics = freeWritingTopics.filter(topic => topic.difficulty === difficulty);
-      // If no topics match the difficulty, fall back to all topics
-      if (filteredTopics.length === 0) filteredTopics = freeWritingTopics;
-    }
-    
-    const randomTopic = filteredTopics[Math.floor(Math.random() * filteredTopics.length)];
-    setCurrentTopic(randomTopic);
   };
 
   const generatePromptsForWord = (word: VocabularyWord): string[] => {
@@ -295,70 +188,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   };
 
-  // Helper function to check for common spelling variations (American vs British)
-  const checkSpellingVariations = (word: string, targetWord: string): boolean => {
-    // Convert both to lowercase for comparison
-    const wordLower = word.toLowerCase();
-    const targetLower = targetWord.toLowerCase();
-    
-    // Direct match
-    if (wordLower === targetLower) return true;
-    
-    // Common American/British spelling variations
-    const commonVariations: {[key: string]: string[]} = {
-      'favorite': ['favourite'],
-      'favourite': ['favorite'],
-      'color': ['colour'],
-      'colour': ['color'],
-      'center': ['centre'],
-      'centre': ['center'],
-      'theater': ['theatre'],
-      'theatre': ['theater'],
-      'analyze': ['analyse'],
-      'analyse': ['analyze'],
-      'organize': ['organise'],
-      'organise': ['organize'],
-      'realize': ['realise'],
-      'realise': ['realize'],
-      'dialog': ['dialogue'],
-      'dialogue': ['dialog'],
-      'catalog': ['catalogue'],
-      'catalogue': ['catalog'],
-      'program': ['programme'],
-      'programme': ['program'],
-      'traveling': ['travelling'],
-      'travelling': ['traveling'],
-      'defense': ['defence'],
-      'defence': ['defense'],
-      'license': ['licence'],
-      'licence': ['license'],
-      'practice': ['practise'],
-      'practise': ['practice'],
-      'gray': ['grey'],
-      'grey': ['gray'],
-      'humor': ['humour'],
-      'humour': ['humor'],
-      'labor': ['labour'],
-      'labour': ['labor'],
-      'neighbor': ['neighbour'],
-      'neighbour': ['neighbor'],
-      'soccer': ['football'],
-      'football': ['soccer']
-    };
-    
-    // Check if the word has variations and if the target matches any of them
-    if (commonVariations[wordLower] && commonVariations[wordLower].includes(targetLower)) {
-      return true;
-    }
-    
-    // Check the reverse as well
-    if (commonVariations[targetLower] && commonVariations[targetLower].includes(wordLower)) {
-      return true;
-    }
-    
-    return false;
-  };
-
   const checkSentence = async () => {
     if (!userSentence.trim()) {
       setFeedback('❌ يرجى كتابة جملة قبل التحقق!');
@@ -366,16 +195,26 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       return;
     }
 
+    const currentWord = prompts[currentPrompt].word;
+    const sentence = userSentence.toLowerCase().trim();
+    const targetWord = currentWord.english.toLowerCase();
+    
     // Reset errors
     setCapitalizationError(false);
     setPunctuationError(false);
     setGrammarFeedback(null);
     setSpellingErrors([]);
 
+    // Check if the sentence contains the target word or its variations
+    const containsWord = sentence.includes(targetWord) || 
+                         sentence.split(/\s+/).some(word => 
+                           word.replace(/[.,!?;:]/g, '').toLowerCase() === targetWord
+                         );
+    
     // Basic grammar checks
     const hasCapital = userSentence.charAt(0) === userSentence.charAt(0).toUpperCase();
     const hasPunctuation = /[.!?]$/.test(userSentence.trim());
-    const hasMinLength = userSentence.trim().split(/\s+/).length >= 4;
+    const hasMinLength = userSentence.trim().split(' ').length >= 4;
     
     // Set capitalization and punctuation errors
     setCapitalizationError(!hasCapital);
@@ -385,19 +224,18 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     let grammarErrors = [];
     
     // Check for "is having" with non-action nouns
-    if (/is having \w+/.test(userSentence.toLowerCase()) && 
-        !['party', 'meeting', 'conversation', 'discussion', 'argument'].some(word => 
-          userSentence.toLowerCase().includes(word))) {
+    if (/is having \w+/.test(sentence) && currentWord.partOfSpeech === 'noun' && 
+        !['party', 'meeting', 'conversation', 'discussion', 'argument'].includes(targetWord)) {
       grammarErrors.push("استخدام 'is having' غير صحيح مع الأسماء غير الإجرائية. استخدم 'has' بدلاً من ذلك.");
     }
     
     // Check for incorrect plural forms
-    if (/(\d+)\s+floor\b/i.test(userSentence) && !/(\d+)\s+floors\b/i.test(userSentence) && /[2-9]/.test(userSentence)) {
+    if (sentence.includes('floor') && sentence.includes('3') && !sentence.includes('floors')) {
       grammarErrors.push("الأعداد أكبر من 1 تتطلب جمع الاسم: 'floors' وليس 'floor'");
     }
     
     // Check for subject-verb agreement
-    if (/house are/.test(userSentence.toLowerCase())) {
+    if (/house are/.test(sentence)) {
       grammarErrors.push("'house' مفرد ويتطلب فعل مفرد: 'is' وليس 'are'");
     }
     
@@ -406,64 +244,18 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       setGrammarFeedback(grammarErrors.join(' '));
     }
 
-    // Check for spelling errors using nspell
+    // Check for spelling errors using the spell checker
     if (spellCheckerReady) {
       try {
-        const words = userSentence.split(/\s+/).map(w => w.replace(/[.,!?;:]/g, ''));
-        const spellingErrorsFound: {word: string, correction: string}[] = [];
+        const { misspelledWords } = await spellChecker.checkText(userSentence);
         
-        for (const word of words) {
-          // Skip checking the target word or its variations
-          if (word.length <= 2) {
-            continue;
-          }
-          
-          // Skip checking if we're in guided mode and this is the target word
-          if (writingMode === 'guided' && 
-              prompts[currentPrompt] && 
-              checkSpellingVariations(word, prompts[currentPrompt].word.english)) {
-            continue;
-          }
-          
-          // Skip checking proper nouns (capitalized words)
-          if (word.charAt(0) === word.charAt(0).toUpperCase()) {
-            continue;
-          }
-          
-          // Add common place names to the dictionary on-the-fly
-          if (/^[A-Z]/.test(word)) {
-            spellChecker.addProperNoun(word);
-            continue;
-          }
-          
-          const isCorrect = await spellChecker.checkWord(word);
-          if (!isCorrect) {
-            const suggestions = await spellChecker.getSuggestions(word);
-            if (suggestions.length > 0) {
-              // Filter out suggestions that would change the word too much
-              // Only accept suggestions that are similar to the original word
-              const bestSuggestion = suggestions.find(s => 
-                s.length >= word.length * 0.7 && 
-                s.length <= word.length * 1.3
-              ) || suggestions[0];
-              
-              spellingErrorsFound.push({
-                word: word,
-                correction: bestSuggestion
-              });
-            }
-          }
-        }
+        // Convert misspelled words to our format
+        const spellingErrorsFound = misspelledWords.map(item => ({
+          word: item.word,
+          correction: item.suggestions[0] || item.word
+        }));
         
-        // Filter out any errors that might be proper nouns or place names
-        const filteredErrors = spellingErrorsFound.filter(error => {
-          const word = error.word.toLowerCase();
-          // Skip common place names and geographical terms
-          const commonPlaceTerms = ['jabal', 'oman', 'dubai', 'muscat', 'salalah', 'nizwa'];
-          return !commonPlaceTerms.includes(word);
-        });
-        
-        setSpellingErrors(filteredErrors);
+        setSpellingErrors(spellingErrorsFound);
       } catch (error) {
         console.error('Error checking spelling:', error);
       }
@@ -472,114 +264,68 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     let points = 0;
     let feedbackMessage = '';
 
-    if (writingMode === 'guided') {
-      // Guided mode - check for target word
-      const currentWord = prompts[currentPrompt].word;
-      const sentence = userSentence.toLowerCase().trim();
-      const targetWord = currentWord.english.toLowerCase();
+    if (containsWord) {
+      points += 15; // Base points for using the word
+      feedbackMessage = '✅ ممتاز! استخدمت الكلمة بشكل صحيح. ';
       
-      // Check if the sentence contains the target word or its variations
-      const containsWord = sentence.includes(targetWord) || 
-                         sentence.split(/\s+/).some(word => 
-                           checkSpellingVariations(word.replace(/[.,!?;:]/g, ''), targetWord)
-                         );
-      
-      if (containsWord) {
-        points += 15; // Base points for using the word
-        feedbackMessage = '✅ ممتاز! استخدمت الكلمة بشكل صحيح. ';
+      if (hasCapital) {
+        points += 5;
+        feedbackMessage += 'بدأت الجملة بحرف كبير. ';
       } else {
-        feedbackMessage = `❌ لم تستخدم كلمة "${currentWord.english}" في جملتك. حاول مرة أخرى!`;
-        setStreak(0);
-        onStreak(false);
-        setFeedback(feedbackMessage);
-        setFeedbackVisible(true);
-        return;
+        feedbackMessage += '⚠️ تذكر أن تبدأ الجملة بحرف كبير. ';
       }
-    } else {
-      // Free writing mode - check for minimum word count
-      const wordCount = userSentence.trim().split(/\s+/).length;
-      const minWords = currentTopic?.minWords || 20;
       
-      if (wordCount < minWords) {
-        feedbackMessage = `❌ جملتك قصيرة جداً. يجب أن تكتب على الأقل ${minWords} كلمة. (كتبت ${wordCount} كلمة)`;
-        setFeedback(feedbackMessage);
-        setFeedbackVisible(true);
-        return;
+      if (hasPunctuation) {
+        points += 5;
+        feedbackMessage += 'أنهيت الجملة بعلامة ترقيم. ';
       } else {
-        points += 15; // Base points for meeting minimum word count
-        feedbackMessage = '✅ ممتاز! كتبت فقرة جيدة بالطول المطلوب. ';
-        
-        // Bonus points for exceeding minimum
-        if (wordCount >= minWords * 1.5) {
-          points += 10;
-          feedbackMessage += 'حصلت على نقاط إضافية للمحتوى الغني! ';
-        }
+        feedbackMessage += '⚠️ تذكر أن تنهي الجملة بعلامة ترقيم. ';
       }
-    }
+      
+      if (hasMinLength) {
+        points += 5;
+        feedbackMessage += 'الجملة طويلة ومفيدة. ';
+      } else {
+        feedbackMessage += '⚠️ حاول كتابة جمل أطول (4 كلمات على الأقل). ';
+      }
 
-    // Common checks for both modes
-    if (hasCapital) {
-      points += 5;
-      feedbackMessage += 'بدأت الجملة بحرف كبير. ';
-    } else {
-      feedbackMessage += '⚠️ تذكر أن تبدأ الجملة بحرف كبير. ';
-    }
-    
-    if (hasPunctuation) {
-      points += 5;
-      feedbackMessage += 'أنهيت الجملة بعلامة ترقيم. ';
-    } else {
-      feedbackMessage += '⚠️ تذكر أن تنهي الجملة بعلامة ترقيم. ';
-    }
-    
-    if (hasMinLength) {
-      points += 5;
-      feedbackMessage += 'الجملة طويلة ومفيدة. ';
-    } else {
-      feedbackMessage += '⚠️ حاول كتابة جمل أطول (4 كلمات على الأقل). ';
-    }
-
-    // Difficulty bonus
-    if (writingMode === 'guided') {
-      const currentWord = prompts[currentPrompt].word;
+      // Difficulty bonus
       if (currentWord.difficulty === 'hard') points += 5;
       else if (currentWord.difficulty === 'medium') points += 3;
+
+      // Penalty for using hints/samples
+      points -= hintsUsed * 2;
+      points -= samplesUsed * 3;
+      
+      // Grammar errors penalty
+      if (grammarErrors.length > 0) {
+        points -= 5;
+        feedbackMessage += '⚠️ لكن هناك أخطاء نحوية. ';
+      }
+      
+      // Spelling errors penalty
+      if (spellingErrors.length > 0) {
+        points -= spellingErrors.length * 2;
+        feedbackMessage += `⚠️ يوجد ${spellingErrors.length} أخطاء إملائية. `;
+      }
+
+      // Streak bonus
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      setBestStreak(Math.max(bestStreak, newStreak));
+      if (newStreak >= 3) points += newStreak;
+
+      onStreak(true);
     } else {
-      if (currentTopic?.difficulty === 'hard') points += 10;
-      else if (currentTopic?.difficulty === 'medium') points += 5;
+      feedbackMessage = `❌ لم تستخدم كلمة "${currentWord.english}" في جملتك. حاول مرة أخرى!`;
+      setStreak(0);
+      onStreak(false);
     }
-
-    // Penalty for using hints/samples
-    points -= hintsUsed * 2;
-    points -= samplesUsed * 3;
-    
-    // Grammar errors penalty
-    if (grammarErrors.length > 0) {
-      points -= 5;
-      feedbackMessage += '⚠️ لكن هناك أخطاء نحوية. ';
-    }
-    
-    // Spelling errors penalty
-    if (spellingErrors.length > 0) {
-      points -= spellingErrors.length * 2;
-      feedbackMessage += `⚠️ يوجد ${spellingErrors.length} أخطاء إملائية. `;
-    }
-
-    // Streak bonus
-    const newStreak = streak + 1;
-    setStreak(newStreak);
-    setBestStreak(Math.max(bestStreak, newStreak));
-    if (newStreak >= 3) points += newStreak;
-
-    onStreak(true);
 
     points = Math.max(0, points); // Ensure points don't go below 0
     setScore(score + points);
     setFeedback(feedbackMessage + (points > 0 ? ` (+${points} نقطة)` : ''));
     setFeedbackVisible(true);
-    
-    // Send points to parent component
-    onScore(points);
   };
 
   // Helper function to generate corrected sentence
@@ -599,12 +345,20 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       }
     }
     
-    // Fix spelling errors
-    spellingErrors.forEach(error => {
+    // Fix spelling errors - process from end to start to avoid index issues
+    const sortedErrors = [...spellingErrors].sort((a, b) => {
+      // Find the position of each word in the sentence
+      const posA = corrected.toLowerCase().indexOf(a.word.toLowerCase());
+      const posB = corrected.toLowerCase().indexOf(b.word.toLowerCase());
+      // Sort in descending order (from end to start)
+      return posB - posA;
+    });
+    
+    for (const error of sortedErrors) {
       const escapedWord = escapeRegExp(error.word);
       const regex = new RegExp(`\\b${escapedWord}\\b`, 'gi');
       corrected = corrected.replace(regex, error.correction);
-    });
+    }
     
     // Fix common grammar errors
     if (grammarFeedback) {
@@ -689,29 +443,16 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     setPunctuationError(false);
     setSpellingErrors([]);
     
-    if (writingMode === 'guided') {
-      if (currentPrompt + 1 >= prompts.length) {
-        setSessionComplete(true);
-      } else {
-        setCurrentPrompt(prev => prev + 1);
-        setUserSentence('');
-        setShowHints(false);
-        setShowSamples(false);
-        setTimeLeft(120);
-        
-        // Focus on textarea for next prompt
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.focus();
-          }
-        }, 100);
-      }
+    if (currentPrompt + 1 >= prompts.length) {
+      setSessionComplete(true);
     } else {
-      // In free writing mode, generate a new topic
+      setCurrentPrompt(prev => prev + 1);
       setUserSentence('');
-      selectRandomTopic();
+      setShowHints(false);
+      setShowSamples(false);
+      setTimeLeft(120);
       
-      // Focus on textarea for next topic
+      // Focus on textarea for next prompt
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -734,15 +475,10 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     setShowHints(false);
     setShowSamples(false);
     setSessionComplete(false);
-    setTimeLeft(120); // Only for guided mode
+    setTimeLeft(120);
     setHintsUsed(0);
     setSamplesUsed(0);
-    
-    if (writingMode === 'guided') {
-      generatePrompts();
-    } else {
-      selectRandomTopic();
-    }
+    generatePrompts();
   };
 
   const toggleHints = () => {
@@ -765,48 +501,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const toggleWritingMode = () => {
-    const newMode = writingMode === 'guided' ? 'free' : 'guided';
-    setWritingMode(newMode);
-    setUserSentence('');
-    setFeedback(null);
-    setFeedbackVisible(false);
-    setSessionComplete(false);
-    
-    if (newMode === 'guided') {
-      generatePrompts();
-      setTimeLeft(120);
-    } else {
-      generateFreeWritingTopics();
-      selectRandomTopic();
-    }
-  };
-
-  const generateNewTopic = () => {
-    if (writingMode === 'free') {
-      selectRandomTopic();
-      setCustomTopic('');
-    }
-  };
-
-  const handleCustomTopicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomTopic(e.target.value);
-  };
-
-  const setCustomTopicAsActive = () => {
-    if (customTopic.trim()) {
-      const newTopic: FreeWritingTopic = {
-        id: 'custom-topic',
-        title: customTopic,
-        description: 'Write about this custom topic.',
-        minWords: 30,
-        difficulty: 'medium'
-      };
-      setCurrentTopic(newTopic);
-    }
-  };
-
-  if (prompts.length === 0 && writingMode === 'guided') {
+  if (prompts.length === 0) {
     return (
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
@@ -837,8 +532,8 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
               <div className="text-sm opacity-80">أفضل سلسلة</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{writingMode === 'guided' ? totalPrompts : '∞'}</div>
-              <div className="text-sm opacity-80">{writingMode === 'guided' ? 'جمل مكتوبة' : 'وضع الكتابة الحرة'}</div>
+              <div className="text-2xl font-bold">{totalPrompts}</div>
+              <div className="text-sm opacity-80">جمل مكتوبة</div>
             </div>
           </div>
         </div>
@@ -868,15 +563,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
               <option value="medium">متوسط</option>
               <option value="hard">صعب</option>
             </select>
-            
-            <select
-              value={writingMode}
-              onChange={(e) => setWritingMode(e.target.value as any)}
-              className="border border-gray-300 rounded-lg px-4 py-2"
-            >
-              <option value="guided">كتابة موجهة</option>
-              <option value="free">كتابة حرة</option>
-            </select>
           </div>
           
           <button
@@ -891,14 +577,14 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     );
   }
 
+  const currentPromptData = prompts[currentPrompt];
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="bg-gradient-to-r from-pink-600 to-rose-600 text-white rounded-t-xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-2xl font-bold">
-            {writingMode === 'guided' ? '✍️ كتابة الجمل الإبداعية' : '📝 الكتابة الحرة'}
-          </h3>
+          <h3 className="text-2xl font-bold">✍️ كتابة الجمل الإبداعية</h3>
           <div className="flex items-center gap-4">
             <div className="text-center">
               <div className="text-lg font-bold">{score}</div>
@@ -913,188 +599,106 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                 <div className="text-xs opacity-80">سلسلة</div>
               </div>
             )}
-            {/* Only show timer for guided mode */}
-            {writingMode === 'guided' && (
-              <div className="text-center">
-                <div className={`text-lg font-bold flex items-center gap-1 ${timeLeft <= 30 ? 'text-red-300 animate-pulse' : ''}`}>
-                  <Clock className="w-4 h-4" />
-                  {formatTime(timeLeft)}
-                </div>
-                <div className="text-xs opacity-80">وقت</div>
+            <div className="text-center">
+              <div className={`text-lg font-bold flex items-center gap-1 ${timeLeft <= 30 ? 'text-red-300 animate-pulse' : ''}`}>
+                <Clock className="w-4 h-4" />
+                {formatTime(timeLeft)}
               </div>
-            )}
+              <div className="text-xs opacity-80">وقت</div>
+            </div>
           </div>
         </div>
         
         <div className="flex justify-between items-center text-sm opacity-90">
-          {writingMode === 'guided' ? (
-            <span>التمرين {currentPrompt + 1} / {totalPrompts}</span>
-          ) : (
-            <span>الكتابة الحرة</span>
-          )}
-          <button
-            onClick={toggleWritingMode}
-            className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg transition-colors text-sm"
-          >
-            تبديل إلى {writingMode === 'guided' ? 'الكتابة الحرة' : 'الكتابة الموجهة'}
-          </button>
+          <span>التمرين {currentPrompt + 1} / {totalPrompts}</span>
+          <span className={`px-2 py-1 rounded-full text-xs ${
+            currentPromptData.difficulty === 'easy' ? 'bg-green-500' :
+            currentPromptData.difficulty === 'medium' ? 'bg-yellow-500' :
+            'bg-red-500'
+          }`}>
+            {currentPromptData.difficulty === 'easy' ? 'سهل' : currentPromptData.difficulty === 'medium' ? 'متوسط' : 'صعب'}
+          </span>
         </div>
         
-        {/* Progress Bar - only for guided mode */}
-        {writingMode === 'guided' && (
-          <div className="w-full bg-white/20 rounded-full h-2 mt-4">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentPrompt + 1) / totalPrompts) * 100}%` }}
-            ></div>
-          </div>
-        )}
+        {/* Progress Bar */}
+        <div className="w-full bg-white/20 rounded-full h-2 mt-4">
+          <div 
+            className="bg-white h-2 rounded-full transition-all duration-300"
+            style={{ width: `${((currentPrompt + 1) / totalPrompts) * 100}%` }}
+          ></div>
+        </div>
       </div>
 
       {/* Content */}
       <div className="bg-white rounded-b-xl p-8">
-        {/* Word Display for Guided Mode / Topic Display for Free Mode */}
+        {/* Word Display */}
         <div className="text-center mb-8">
-          {writingMode === 'guided' ? (
-            <div className="bg-pink-50 rounded-xl p-6 border-2 border-pink-200">
-              <h4 className="text-xl font-bold text-pink-800 mb-4">الكلمة المطلوبة:</h4>
-              <div className="text-3xl font-bold mb-2" dir="ltr">{prompts[currentPrompt].word.english}</div>
-              <div className="text-lg text-gray-600 mb-2">{prompts[currentPrompt].word.arabic}</div>
-              {prompts[currentPrompt].word.pronunciation && (
-                <div className="text-sm text-gray-500 font-mono">{prompts[currentPrompt].word.pronunciation}</div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="text-xl font-bold text-blue-800">موضوع الكتابة:</h4>
-                <button
-                  onClick={generateNewTopic}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  موضوع جديد
-                </button>
-              </div>
-              {currentTopic && (
-                <>
-                  <div className="text-2xl font-bold mb-2">{currentTopic.title}</div>
-                  <div className="text-lg text-gray-600 mb-2">{currentTopic.description}</div>
-                  <div className="mt-3 bg-blue-100 p-2 rounded-lg text-blue-800 text-sm">
-                    الحد الأدنى للكلمات: {currentTopic.minWords} كلمة • المستوى: {
-                      currentTopic.difficulty === 'easy' ? 'سهل' : 
-                      currentTopic.difficulty === 'medium' ? 'متوسط' : 'صعب'
-                    }
-                  </div>
-                </>
-              )}
-              
-              {/* Custom topic input */}
-              <div className="mt-4 flex gap-2">
-                <input
-                  type="text"
-                  value={customTopic}
-                  onChange={handleCustomTopicChange}
-                  placeholder="أو أدخل موضوعاً مخصصاً..."
-                  className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={setCustomTopicAsActive}
-                  disabled={!customTopic.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-3 py-2 rounded-lg"
-                >
-                  استخدام
-                </button>
-              </div>
-              <div className="mt-2 text-xs text-blue-600">
-                هو موضوع مقترح وليس إلزاميا
-              </div>
-            </div>
-          )}
+          <div className="bg-pink-50 rounded-xl p-6 border-2 border-pink-200">
+            <h4 className="text-xl font-bold text-pink-800 mb-4">الكلمة المطلوبة:</h4>
+            <div className="text-3xl font-bold mb-2" dir="ltr">{currentPromptData.word.english}</div>
+            <div className="text-lg text-gray-600 mb-2">{currentPromptData.word.arabic}</div>
+            {currentPromptData.word.pronunciation && (
+              <div className="text-sm text-gray-500 font-mono">{currentPromptData.word.pronunciation}</div>
+            )}
+          </div>
         </div>
 
         {/* Prompt */}
         <div className="mb-6">
-          <h4 className="text-lg font-semibold text-gray-800 mb-3">
-            {writingMode === 'guided' ? '📝 المطلوب:' : '📝 تعليمات:'}
-          </h4>
+          <h4 className="text-lg font-semibold text-gray-800 mb-3">📝 المطلوب:</h4>
           <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
-            <p className="text-gray-700 text-lg">
-              {writingMode === 'guided' 
-                ? prompts[currentPrompt].prompt 
-                : 'اكتب فقرة عن الموضوع المعطى. حاول استخدام مفردات متنوعة وجمل صحيحة نحوياً.'}
-            </p>
+            <p className="text-gray-700 text-lg">{currentPromptData.prompt}</p>
           </div>
         </div>
 
         {/* Writing Area */}
         <div className="mb-6">
           <label htmlFor="sentence" className="block text-lg font-semibold text-gray-800 mb-3">
-            ✍️ اكتب {writingMode === 'guided' ? 'جملتك' : 'فقرتك'} هنا:
+            ✍️ اكتب جملتك هنا:
           </label>
           <textarea
             id="sentence"
             ref={textareaRef}
             value={userSentence}
             onChange={(e) => setUserSentence(e.target.value)}
-            placeholder={writingMode === 'guided' 
-              ? "اكتب جملة إبداعية تحتوي على الكلمة المطلوبة..." 
-              : "اكتب فقرة عن الموضوع المعطى..."}
+            placeholder="اكتب جملة إبداعية تحتوي على الكلمة المطلوبة..."
             className="w-full h-32 p-4 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none text-lg resize-none"
             dir="ltr"
             disabled={feedbackVisible}
           />
           <div className="flex justify-between items-center mt-2 text-sm text-gray-500">
-            <span>عدد الكلمات: {userSentence.trim().split(/\s+/).filter(word => word.length > 0).length}</span>
-            {writingMode === 'guided' ? (
-              <span>الحد الأدنى: 4 كلمات</span>
-            ) : (
-              <span>الحد الأدنى: {currentTopic?.minWords || 20} كلمة</span>
-            )}
+            <span>عدد الكلمات: {userSentence.trim().split(' ').filter(word => word.length > 0).length}</span>
+            <span>الحد الأدنى: 4 كلمات</span>
           </div>
         </div>
 
         {/* Helper Buttons */}
         <div className="flex justify-center gap-4 mb-6">
-          {writingMode === 'guided' && (
-            <>
-              <button
-                onClick={toggleHints}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Lightbulb className="w-4 h-4" />
-                {showHints ? 'إخفاء التلميحات' : 'إظهار تلميحات'}
-              </button>
-              <button
-                onClick={toggleSamples}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                {showSamples ? 'إخفاء الأمثلة' : 'إظهار أمثلة'}
-              </button>
-            </>
-          )}
-          
-          {writingMode === 'free' && (
-            <button
-              onClick={generateNewTopic}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              موضوع جديد
-            </button>
-          )}
+          <button
+            onClick={toggleHints}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Lightbulb className="w-4 h-4" />
+            {showHints ? 'إخفاء التلميحات' : 'إظهار تلميحات'}
+          </button>
+          <button
+            onClick={toggleSamples}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            {showSamples ? 'إخفاء الأمثلة' : 'إظهار أمثلة'}
+          </button>
         </div>
 
         {/* Hints */}
-        {writingMode === 'guided' && showHints && (
+        {showHints && (
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-6">
             <h5 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
               <Lightbulb className="w-5 h-5" />
               تلميحات مفيدة:
             </h5>
             <ul className="space-y-2">
-              {prompts[currentPrompt].hints.map((hint, index) => (
+              {currentPromptData.hints.map((hint, index) => (
                 <li key={index} className="text-yellow-700 flex items-start gap-2">
                   <span className="text-yellow-500 font-bold">•</span>
                   <span>{hint}</span>
@@ -1105,14 +709,14 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
         )}
 
         {/* Sample Sentences */}
-        {writingMode === 'guided' && showSamples && (
+        {showSamples && (
           <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
             <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
               أمثلة للاستئناس:
             </h5>
             <div className="space-y-2">
-              {prompts[currentPrompt].sampleSentences.map((sentence, index) => (
+              {currentPromptData.sampleSentences.map((sentence, index) => (
                 <div key={index} className="bg-white p-3 rounded-lg border border-blue-200">
                   <p className="text-blue-700 font-mono" dir="ltr">{sentence}</p>
                 </div>
@@ -1130,7 +734,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
               className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-3 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg disabled:cursor-not-allowed"
             >
               <CheckCircle className="w-5 h-5 inline mr-2" />
-              تحقق من {writingMode === 'guided' ? 'الجملة' : 'الفقرة'}
+              تحقق من الجملة
             </button>
           </div>
         )}
@@ -1275,7 +879,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
               <div className="bg-white rounded-lg p-4 border-2 border-green-200 mb-6">
                 <h5 className="font-bold text-green-700 mb-3 flex items-center gap-2">
                   <span className="text-green-500">✅</span>
-                  {writingMode === 'guided' ? 'جملتك الممتازة:' : 'فقرتك الممتازة:'}
+                  جملتك الممتازة:
                 </h5>
                 <div className="text-lg font-mono p-3 bg-green-50 rounded border" dir="ltr">
                   <span className="text-green-800 font-semibold">{userSentence}</span>
@@ -1289,12 +893,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2"
               >
                 <ArrowRight className="w-5 h-5" />
-                {writingMode === 'guided' && currentPrompt + 1 >= prompts.length 
-                  ? 'إنهاء الجلسة' 
-                  : writingMode === 'guided' 
-                    ? 'الانتقال للجملة التالية'
-                    : 'الانتقال للموضوع التالي'
-                }
+                الانتقال للجملة التالية
               </button>
             </div>
           </div>
@@ -1317,7 +916,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
             </div>
             <div className="flex items-center gap-2">
               <span>✅</span>
-              <span>{writingMode === 'guided' ? 'استخدم الكلمة المطلوبة بوضوح' : 'استخدم مفردات متنوعة'}</span>
+              <span>استخدم الكلمة المطلوبة بوضوح</span>
             </div>
             <div className="flex items-center gap-2">
               <span>✅</span>
@@ -1325,7 +924,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
             </div>
             <div className="flex items-center gap-2">
               <span>✅</span>
-              <span>{writingMode === 'guided' ? 'استخدم 4 كلمات على الأقل' : `اكتب ${currentTopic?.minWords || 20} كلمة على الأقل`}</span>
+              <span>استخدم 4 كلمات على الأقل</span>
             </div>
             <div className="flex items-center gap-2">
               <span>✅</span>
