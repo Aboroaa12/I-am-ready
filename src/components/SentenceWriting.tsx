@@ -37,7 +37,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   const [showHints, setShowHints] = useState(false);
   const [showSamples, setShowSamples] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes per sentence
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes per sentence for guided mode
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [hintsUsed, setHintsUsed] = useState(0);
   const [samplesUsed, setSamplesUsed] = useState(0);
@@ -77,13 +77,14 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
   }, [words, difficulty, writingMode]);
 
   useEffect(() => {
-    if (timeLeft > 0 && !sessionComplete && !feedbackVisible && (prompts.length > 0 || currentTopic)) {
+    // Only run timer for guided mode
+    if (writingMode === 'guided' && timeLeft > 0 && !sessionComplete && !feedbackVisible && prompts.length > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !feedbackVisible && (prompts.length > 0 || currentTopic)) {
+    } else if (writingMode === 'guided' && timeLeft === 0 && !feedbackVisible && prompts.length > 0) {
       handleTimeout();
     }
-  }, [timeLeft, sessionComplete, feedbackVisible, prompts.length, currentTopic]);
+  }, [timeLeft, sessionComplete, feedbackVisible, prompts.length, writingMode]);
 
   const generatePrompts = () => {
     if (words.length === 0) return;
@@ -682,7 +683,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
       // In free writing mode, generate a new topic
       setUserSentence('');
       selectRandomTopic();
-      setTimeLeft(180); // Give more time for free writing
       
       // Focus on textarea for next topic
       setTimeout(() => {
@@ -707,7 +707,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     setShowHints(false);
     setShowSamples(false);
     setSessionComplete(false);
-    setTimeLeft(writingMode === 'guided' ? 120 : 180);
+    setTimeLeft(120); // Only for guided mode
     setHintsUsed(0);
     setSamplesUsed(0);
     
@@ -752,7 +752,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     } else {
       generateFreeWritingTopics();
       selectRandomTopic();
-      setTimeLeft(180); // More time for free writing
     }
   };
 
@@ -869,13 +868,16 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
                 <div className="text-xs opacity-80">سلسلة</div>
               </div>
             )}
-            <div className="text-center">
-              <div className={`text-lg font-bold flex items-center gap-1 ${timeLeft <= 30 ? 'text-red-300 animate-pulse' : ''}`}>
-                <Clock className="w-4 h-4" />
-                {formatTime(timeLeft)}
+            {/* Only show timer for guided mode */}
+            {writingMode === 'guided' && (
+              <div className="text-center">
+                <div className={`text-lg font-bold flex items-center gap-1 ${timeLeft <= 30 ? 'text-red-300 animate-pulse' : ''}`}>
+                  <Clock className="w-4 h-4" />
+                  {formatTime(timeLeft)}
+                </div>
+                <div className="text-xs opacity-80">وقت</div>
               </div>
-              <div className="text-xs opacity-80">وقت</div>
-            </div>
+            )}
           </div>
         </div>
         
@@ -893,7 +895,7 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
           </button>
         </div>
         
-        {/* Progress Bar */}
+        {/* Progress Bar - only for guided mode */}
         {writingMode === 'guided' && (
           <div className="w-full bg-white/20 rounded-full h-2 mt-4">
             <div 
