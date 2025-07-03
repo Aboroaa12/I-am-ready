@@ -39,7 +39,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   const [isSpellChecking, setIsSpellChecking] = useState<boolean>(false);
   const [isGrammarChecking, setIsGrammarChecking] = useState<boolean>(false);
   const [spellCheckerReady, setSpellCheckerReady] = useState<boolean>(false);
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(true);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [grammarCheckEnabled, setGrammarCheckEnabled] = useState<boolean>(true);
   
@@ -228,6 +228,53 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           }
         }
         currentOffset += sentence.length + 2; // +2 for the punctuation and space
+      }
+      
+      // Check for capitalization after periods
+      const periodRegex = /\.\s+([a-z])/g;
+      let match;
+      while ((match = periodRegex.exec(textToCheck)) !== null) {
+        errors.push({
+          message: "Capitalize the first word after a period",
+          messageAr: "يجب أن تبدأ الكلمة بعد النقطة بحرف كبير",
+          offset: match.index + 2, // Position after period and space
+          length: 1,
+          replacements: [match[1].toUpperCase()],
+          context: {
+            text: match[0],
+            offset: 0,
+            length: match[0].length
+          },
+          rule: {
+            id: "UPPERCASE_AFTER_PERIOD",
+            description: "Capitalize the first word after a period",
+            descriptionAr: "ابدأ الكلمة بعد النقطة بحرف كبير",
+            category: "CASING"
+          }
+        });
+      }
+      
+      // Check for capitalization after question marks
+      const questionRegex = /\?\s+([a-z])/g;
+      while ((match = questionRegex.exec(textToCheck)) !== null) {
+        errors.push({
+          message: "Capitalize the first word after a question mark",
+          messageAr: "يجب أن تبدأ الكلمة بعد علامة الاستفهام بحرف كبير",
+          offset: match.index + 2, // Position after question mark and space
+          length: 1,
+          replacements: [match[1].toUpperCase()],
+          context: {
+            text: match[0],
+            offset: 0,
+            length: match[0].length
+          },
+          rule: {
+            id: "UPPERCASE_AFTER_QUESTION",
+            description: "Capitalize the first word after a question mark",
+            descriptionAr: "ابدأ الكلمة بعد علامة الاستفهام بحرف كبير",
+            category: "CASING"
+          }
+        });
       }
       
       // Check for common grammar issues
@@ -798,11 +845,19 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             </div>
             <div className="flex items-start gap-2">
               <div className="bg-blue-200 p-1 rounded-full text-blue-700 mt-1">3</div>
-              <p>حاول الكتابة لمدة 15 دقيقة على الأقل يوميًا</p>
+              <p>حاول الكتابة لمدة 15 دقيقة على الأقل يومياً</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="bg-blue-200 p-1 rounded-full text-blue-700 mt-1">4</div>
               <p>راجع ما كتبت وحسّنه بعد الانتهاء من الكتابة</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <div className="bg-blue-200 p-1 rounded-full text-blue-700 mt-1">5</div>
+              <p>ابدأ كل جملة جديدة بحرف كبير</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <div className="bg-blue-200 p-1 rounded-full text-blue-700 mt-1">6</div>
+              <p>استخدم علامات الترقيم المناسبة في نهاية الجمل</p>
             </div>
           </div>
         </div>
