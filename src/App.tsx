@@ -41,7 +41,7 @@ function App() {
   const [selectedUnit, setSelectedUnit] = useState<{ name: string; words: VocabularyWord[]; grammar: GrammarRule[] } | null>(null);
   
   // Only pass student ID if the user is actually a student with a valid UUID
-  const studentId = gradeAccess?.isStudent && gradeAccess?.studentId ? gradeAccess.studentId : undefined;
+  const studentId = gradeAccess?.isStudent && gradeAccess?.studentKeyId ? gradeAccess.studentKeyId : undefined;
   const { progress, achievements, addScore, updateStreak, completeUnit, getSubjectProgress, getUnitProgress } = useProgress(studentId);
 
   useEffect(() => {
