@@ -1,10 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, Trash2, Clock, FileText, Download, Upload, CheckCircle, XCircle, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Save, Trash2, Clock, Download, Upload, CheckCircle, XCircle, AlertTriangle, Lightbulb } from 'lucide-react';
 import spellChecker from '../utils/spellChecker';
 
 interface FreeWritingProps {
   onScore?: (points: number) => void;
   onSave?: (text: string) => void;
+}
+
+interface GrammarError {
+  message: string;
+  offset: number;
+  length: number;
+  replacements: string[];
+  context: {
+    text: string;
+    offset: number;
+    length: number;
+  };
+  rule?: {
+    id: string;
+    description: string;
+    category: string;
+  };
 }
 
 const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
@@ -16,10 +33,13 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [spellCheckEnabled, setSpellCheckEnabled] = useState<boolean>(true);
   const [spellingErrors, setSpellingErrors] = useState<{word: string, suggestions: string[], index: number}[]>([]);
+  const [grammarErrors, setGrammarErrors] = useState<GrammarError[]>([]);
   const [isSpellChecking, setIsSpellChecking] = useState<boolean>(false);
+  const [isGrammarChecking, setIsGrammarChecking] = useState<boolean>(false);
   const [spellCheckerReady, setSpellCheckerReady] = useState<boolean>(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [grammarCheckEnabled, setGrammarCheckEnabled] = useState<boolean>(true);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -88,6 +108,19 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     }
   }, [text, spellCheckEnabled, spellCheckerReady]);
 
+  // Check grammar when text changes or grammar check is toggled
+  useEffect(() => {
+    if (grammarCheckEnabled && text.trim()) {
+      const debounceTimeout = setTimeout(() => {
+        checkGrammar(text);
+      }, 1500);
+      
+      return () => clearTimeout(debounceTimeout);
+    } else if (!grammarCheckEnabled) {
+      setGrammarErrors([]);
+    }
+  }, [text, grammarCheckEnabled]);
+
   // Start/stop timer
   const toggleTimer = () => {
     if (isTimerRunning) {
@@ -151,6 +184,148 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     }
   };
 
+  // Check grammar
+  const checkGrammar = async (textToCheck: string) => {
+    if (!textToCheck.trim()) {
+      setGrammarErrors([]);
+      return;
+    }
+    
+    setIsGrammarChecking(true);
+    
+    try {
+      // Simple grammar rules for demonstration
+      const errors: GrammarError[] = [];
+      
+      // Check for capitalization at the beginning of sentences
+      const sentences = textToCheck.split(/[.!?]\s+/);
+      let currentOffset = 0;
+      
+      for (const sentence of sentences) {
+        if (sentence.trim() && sentence.length > 0) {
+          const firstChar = sentence.trim()[0];
+          if (firstChar && firstChar === firstChar.toLowerCase() && /[a-z]/.test(firstChar)) {
+            errors.push({
+              message: "Sentences should start with a capital letter",
+              offset: textToCheck.indexOf(sentence, currentOffset),
+              length: 1,
+              replacements: [sentence.charAt(0).toUpperCase() + sentence.slice(1)],
+              context: {
+                text: sentence.substring(0, Math.min(20, sentence.length)),
+                offset: 0,
+                length: 1
+              },
+              rule: {
+                id: "UPPERCASE_SENTENCE_START",
+                description: "Capitalize the first word of a sentence",
+                category: "CASING"
+              }
+            });
+          }
+        }
+        currentOffset += sentence.length + 2; // +2 for the punctuation and space
+      }
+      
+      // Check for common grammar issues
+      const commonErrors = [
+        { pattern: /\bi am\b/gi, message: "Consider capitalizing 'I'", replacement: "I am" },
+        { pattern: /\bthey is\b/gi, message: "Use 'they are' instead of 'they is'", replacement: "they are" },
+        { pattern: /\bhe are\b/gi, message: "Use 'he is' instead of 'he are'", replacement: "he is" },
+        { pattern: /\bshe are\b/gi, message: "Use 'she is' instead of 'she are'", replacement: "she is" },
+        { pattern: /\bit are\b/gi, message: "Use 'it is' instead of 'it are'", replacement: "it is" },
+        { pattern: /\bwe is\b/gi, message: "Use 'we are' instead of 'we is'", replacement: "we are" },
+        { pattern: /\byou is\b/gi, message: "Use 'you are' instead of 'you is'", replacement: "you are" },
+        { pattern: /\ba apple\b/gi, message: "Use 'an' before words starting with vowel sounds", replacement: "an apple" },
+        { pattern: /\ban book\b/gi, message: "Use 'a' before words starting with consonant sounds", replacement: "a book" },
+        { pattern: /\bis you\b/gi, message: "Use 'are you' instead of 'is you'", replacement: "are you" },
+        { pattern: /\bthis books\b/gi, message: "Use 'these books' instead of 'this books'", replacement: "these books" },
+        { pattern: /\bthese book\b/gi, message: "Use 'this book' instead of 'these book'", replacement: "this book" },
+        { pattern: /\bthere is .+ and .+\b/gi, message: "Consider using 'there are' for multiple items", replacement: "there are" },
+        { pattern: /\b(he|she|it) don't\b/gi, message: "Use 'doesn't' with he/she/it", replacement: "$1 doesn't" },
+        { pattern: /\b(I|you|we|they) doesn't\b/gi, message: "Use 'don't' with I/you/we/they", replacement: "$1 don't" }
+      ];
+      
+      for (const error of commonErrors) {
+        let match;
+        while ((match = error.pattern.exec(textToCheck)) !== null) {
+          errors.push({
+            message: error.message,
+            offset: match.index,
+            length: match[0].length,
+            replacements: [error.replacement],
+            context: {
+              text: textToCheck.substring(Math.max(0, match.index - 10), match.index + match[0].length + 10),
+              offset: Math.min(10, match.index),
+              length: match[0].length
+            },
+            rule: {
+              id: "GRAMMAR_RULE",
+              description: error.message,
+              category: "GRAMMAR"
+            }
+          });
+        }
+      }
+      
+      // Check for double spaces
+      let spaceMatch;
+      const doubleSpacePattern = /\s{2,}/g;
+      while ((spaceMatch = doubleSpacePattern.exec(textToCheck)) !== null) {
+        errors.push({
+          message: "Consider removing extra spaces",
+          offset: spaceMatch.index,
+          length: spaceMatch[0].length,
+          replacements: [" "],
+          context: {
+            text: textToCheck.substring(Math.max(0, spaceMatch.index - 10), spaceMatch.index + spaceMatch[0].length + 10),
+            offset: Math.min(10, spaceMatch.index),
+            length: spaceMatch[0].length
+          },
+          rule: {
+            id: "DOUBLE_SPACES",
+            description: "Remove extra spaces",
+            category: "TYPOGRAPHY"
+          }
+        });
+      }
+      
+      // Check for missing periods at the end of sentences
+      const paragraphs = textToCheck.split('\n');
+      let paragraphOffset = 0;
+      
+      for (const paragraph of paragraphs) {
+        if (paragraph.trim() && 
+            paragraph.length > 20 && 
+            !/[.!?]$/.test(paragraph.trim()) && 
+            /[a-zA-Z0-9]$/.test(paragraph.trim())) {
+          errors.push({
+            message: "Consider adding a period at the end of this sentence",
+            offset: paragraphOffset + paragraph.length,
+            length: 0,
+            replacements: ["."],
+            context: {
+              text: paragraph.substring(Math.max(0, paragraph.length - 20)),
+              offset: Math.min(20, paragraph.length),
+              length: 0
+            },
+            rule: {
+              id: "MISSING_PERIOD",
+              description: "Add a period at the end of sentences",
+              category: "PUNCTUATION"
+            }
+          });
+        }
+        paragraphOffset += paragraph.length + 1; // +1 for the newline
+      }
+      
+      setGrammarErrors(errors);
+    } catch (error) {
+      console.error('Error checking grammar:', error);
+    } finally {
+      setIsGrammarChecking(false);
+    }
+  };
+
   // Clear text
   const handleClear = () => {
     if (text.trim() && !window.confirm('هل أنت متأكد من رغبتك في مسح النص؟')) {
@@ -159,6 +334,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     
     setText('');
     setSpellingErrors([]);
+    setGrammarErrors([]);
     
     // Focus on textarea after clearing
     if (textareaRef.current) {
@@ -240,6 +416,21 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     setSpellingErrors(prev => prev.filter(error => error.word !== originalWord));
     
     showNotification(`تم تصحيح "${originalWord}" إلى "${correction}"`, 'success');
+  };
+
+  // Apply grammar correction
+  const applyGrammarCorrection = (error: GrammarError, replacement: string) => {
+    if (error.offset >= 0 && error.length > 0) {
+      const before = text.substring(0, error.offset);
+      const after = text.substring(error.offset + error.length);
+      const newText = before + replacement + after;
+      setText(newText);
+      
+      // Remove the corrected error from the list
+      setGrammarErrors(prev => prev.filter(e => e !== error));
+      
+      showNotification('تم تصحيح الخطأ النحوي', 'success');
+    }
   };
 
   // Show notification
@@ -341,7 +532,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           </button>
         </div>
 
-        {/* Spell Check Toggle */}
+        {/* Spell Check and Grammar Check Toggles */}
         <div className="flex items-center gap-3 mb-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -351,6 +542,16 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
             <span className="text-gray-700">تفعيل التدقيق الإملائي</span>
+          </label>
+          
+          <label className="flex items-center gap-2 cursor-pointer ml-6">
+            <input
+              type="checkbox"
+              checked={grammarCheckEnabled}
+              onChange={() => setGrammarCheckEnabled(!grammarCheckEnabled)}
+              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+            />
+            <span className="text-gray-700">تفعيل التدقيق النحوي</span>
           </label>
           
           <label className="flex items-center gap-2 cursor-pointer ml-6">
@@ -422,6 +623,45 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
                               key={i} 
                               className="bg-white px-2 py-1 rounded border border-gray-300 text-blue-600 cursor-pointer hover:bg-blue-50 mr-1"
                               onClick={() => applySpellingCorrection(error.word, suggestion)}
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Grammar Errors */}
+        {grammarCheckEnabled && grammarErrors.length > 0 && (
+          <div className="mb-6">
+            <h4 className="font-bold text-purple-600 mb-2 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              أخطاء نحوية محتملة ({grammarErrors.length}):
+            </h4>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 max-h-40 overflow-y-auto">
+              <ul className="space-y-3">
+                {grammarErrors.map((error, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <XCircle className="w-4 h-4 text-purple-500 mt-1" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-purple-800">{error.message}</div>
+                      <div className="bg-white p-2 rounded border border-purple-200 my-1 font-mono text-sm">
+                        {error.context.text}
+                      </div>
+                      {error.replacements && error.replacements.length > 0 && (
+                        <div className="text-sm mt-1">
+                          <span className="text-gray-600">اقتراحات: </span>
+                          {error.replacements.slice(0, 3).map((suggestion, i) => (
+                            <button 
+                              key={i} 
+                              className="bg-white px-2 py-1 rounded border border-gray-300 text-purple-600 cursor-pointer hover:bg-purple-50 mr-1"
+                              onClick={() => applyGrammarCorrection(error, suggestion)}
                             >
                               {suggestion}
                             </button>
