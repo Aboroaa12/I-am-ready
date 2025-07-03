@@ -1,174 +1,82 @@
-import { GradeAccess } from '../types';
+import { GradeAccess, Teacher } from '../types';
 
+// Access codes for different grades
 export const gradeAccessCodes: GradeAccess[] = [
-  // Grade 1 access codes
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'ELEM1ST2024' },
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'GRADE1KEY1' },
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'GRADE1KEY2' },
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'GRADE1KEY3' },
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'GRADE1KEY4' },
-  { grade: 1, name: 'الصف الأول الأساسي', code: 'GRADE1KEY5' },
-  
-  // Grade 2 access codes
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'ELEM2ND2024' },
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'GRADE2KEY1' },
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'GRADE2KEY2' },
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'GRADE2KEY3' },
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'GRADE2KEY4' },
-  { grade: 2, name: 'الصف الثاني الأساسي', code: 'GRADE2KEY5' },
-  
-  // Grade 3 access codes
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'ELEM3RD2024' },
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'GRADE3KEY1' },
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'GRADE3KEY2' },
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'GRADE3KEY3' },
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'GRADE3KEY4' },
-  { grade: 3, name: 'الصف الثالث الأساسي', code: 'GRADE3KEY5' },
-  
-  // Grade 4 access codes
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'ELEM4TH2024' },
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'GRADE4KEY1' },
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'GRADE4KEY2' },
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'GRADE4KEY3' },
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'GRADE4KEY4' },
-  { grade: 4, name: 'الصف الرابع الأساسي', code: 'GRADE4KEY5' },
-  
-  // Grade 5 access codes
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'ELEM5TH2024' },
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'GRADE5KEY1' },
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'GRADE5KEY2' },
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'GRADE5KEY3' },
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'GRADE5KEY4' },
-  { grade: 5, name: 'الصف الخامس الأساسي', code: 'GRADE5KEY5' },
-  
-  // Grade 6 access codes
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'ELEM6TH2024' },
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'GRADE6KEY1' },
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'GRADE6KEY2' },
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'GRADE6KEY3' },
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'GRADE6KEY4' },
-  { grade: 6, name: 'الصف السادس الأساسي', code: 'GRADE6KEY5' },
-  
-  // Grade 7 access codes
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'MID1ST2024' },
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'GRADE7KEY1' },
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'GRADE7KEY2' },
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'GRADE7KEY3' },
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'GRADE7KEY4' },
-  { grade: 7, name: 'الصف السابع الأساسي', code: 'GRADE7KEY5' },
-  
-  // Grade 8 access codes
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'MID2ND2024' },
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'GRADE8KEY1' },
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'GRADE8KEY2' },
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'GRADE8KEY3' },
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'GRADE8KEY4' },
-  { grade: 8, name: 'الصف الثامن الأساسي', code: 'GRADE8KEY5' },
-  
-  // Grade 9 access codes
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'MID3RD2024' },
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'GRADE9KEY1' },
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'GRADE9KEY2' },
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'GRADE9KEY3' },
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'GRADE9KEY4' },
-  { grade: 9, name: 'الصف التاسع الأساسي', code: 'GRADE9KEY5' },
-  
-  // Grade 10 access codes
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'HIGH1ST2024' },
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'GRADE10KEY1' },
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'GRADE10KEY2' },
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'GRADE10KEY3' },
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'GRADE10KEY4' },
-  { grade: 10, name: 'الصف العاشر الأساسي', code: 'GRADE10KEY5' },
-  
-  // Grade 11 access codes
-  { grade: 11, name: 'الصف الحادي عشر', code: 'HIGH2ND2024' },
-  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11KEY1' },
-  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11KEY2' },
-  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11KEY3' },
-  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11KEY4' },
-  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11KEY5' },
-  
-  // Grade 12 access codes
-  { grade: 12, name: 'الصف الثاني عشر', code: 'HIGH3RD2024' },
-  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12KEY1' },
-  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12KEY2' },
-  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12KEY3' },
-  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12KEY4' },
-  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12KEY5' },
-  
-  // Admin access
-  { grade: 0, name: 'المدير - جميع الصفوف', code: '1912191984', isAdmin: true }
+  { grade: 0, name: 'المدير', code: 'ADMIN2024', isAdmin: true },
+  { grade: 1, name: 'الصف الأول', code: 'GRADE1' },
+  { grade: 2, name: 'الصف الثاني', code: 'GRADE2' },
+  { grade: 3, name: 'الصف الثالث', code: 'GRADE3' },
+  { grade: 4, name: 'الصف الرابع', code: 'GRADE4' },
+  { grade: 5, name: 'الصف الخامس', code: 'GRADE5' },
+  { grade: 6, name: 'الصف السادس', code: 'GRADE6' },
+  { grade: 7, name: 'الصف السابع', code: 'GRADE7' },
+  { grade: 8, name: 'الصف الثامن', code: 'GRADE8' },
+  { grade: 9, name: 'الصف التاسع', code: 'GRADE9' },
+  { grade: 10, name: 'الصف العاشر', code: 'GRADE10' },
+  { grade: 11, name: 'الصف الحادي عشر', code: 'GRADE11' },
+  { grade: 12, name: 'الصف الثاني عشر', code: 'GRADE12' },
+  { grade: 5, name: 'معلم اللغة الإنجليزية', code: 'TEACHER5', isTeacher: true, teacherId: 'teacher-1' },
+  { grade: 6, name: 'معلم اللغة الإنجليزية', code: 'TEACHER6', isTeacher: true, teacherId: 'teacher-1' },
+  { grade: 8, name: 'معلم اللغة الإنجليزية', code: 'TEACHER8', isTeacher: true, teacherId: 'teacher-1' },
+  { grade: 9, name: 'معلم اللغة الإنجليزية', code: 'TEACHER9', isTeacher: true, teacherId: 'teacher-2' },
+  { grade: 10, name: 'معلم اللغة الإنجليزية', code: 'TEACHER10', isTeacher: true, teacherId: 'teacher-2' },
+  { grade: 11, name: 'معلم اللغة الإنجليزية', code: 'TEACHER11', isTeacher: true, teacherId: 'teacher-3' },
+  { grade: 12, name: 'معلم اللغة الإنجليزية', code: 'TEACHER12', isTeacher: true, teacherId: 'teacher-3' }
 ];
 
-// Empty teacher data object - no default teachers
-export const teachersData = {};
-
-// Get all access codes (including teacher-generated ones)
-let dynamicAccessCodes: GradeAccess[] = [];
-
-export const getGradeByCode = (code: string): GradeAccess | null => {
-  // First check static codes
-  const staticCode = gradeAccessCodes.find(grade => grade.code === code);
-  if (staticCode) return staticCode;
-  
-  // Then check dynamic codes from localStorage
-  try {
-    // Check all teacher access codes
-    for (const teacherId of Object.keys(teachersData)) {
-      const savedCodes = localStorage.getItem(`teacher-access-codes-${teacherId}`);
-      if (savedCodes) {
-        const teacherCodes = JSON.parse(savedCodes);
-        const foundCode = teacherCodes.find((c: any) => c.code === code && c.isActive);
-        
-        if (foundCode) {
-          // Check if code is expired
-          if (foundCode.expiresAt && new Date(foundCode.expiresAt).getTime() < Date.now()) {
-            continue;
-          }
-          
-          // Check if code has reached max usage
-          if (foundCode.maxUsage && foundCode.usageCount >= foundCode.maxUsage) {
-            continue;
-          }
-          
-          // Increment usage count
-          const updatedCodes = teacherCodes.map((c: any) => 
-            c.code === code ? { ...c, usageCount: (c.usageCount || 0) + 1 } : c
-          );
-          localStorage.setItem(`teacher-access-codes-${teacherId}`, JSON.stringify(updatedCodes));
-          
-          // Return grade access
-          const teacher = teachersData[teacherId as keyof typeof teachersData];
-          const gradeName = `الصف ${foundCode.grade}`;
-          
-          return {
-            grade: foundCode.grade,
-            name: gradeName,
-            code: foundCode.code
-          };
-        }
-      }
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('Error checking dynamic access codes:', error);
-    return null;
+// Teacher data
+export const teachersData: { [key: string]: Teacher } = {
+  'teacher-1': {
+    id: 'teacher-1',
+    name: 'فاطمة أحمد',
+    email: 'fatima@school.edu',
+    phone: '96895123456',
+    grades: [5, 6, 8],
+    students: [],
+    joinDate: '2023-08-15T00:00:00.000Z',
+    isActive: true,
+    schoolName: 'مدرسة الأمل الدولية',
+    subjects: ['اللغة الإنجليزية']
+  },
+  'teacher-2': {
+    id: 'teacher-2',
+    name: 'محمد علي',
+    email: 'mohammed@school.edu',
+    phone: '96895789012',
+    grades: [9, 10],
+    students: [],
+    joinDate: '2022-09-01T00:00:00.000Z',
+    isActive: true,
+    schoolName: 'مدرسة الأمل الدولية',
+    subjects: ['اللغة الإنجليزية']
+  },
+  'teacher-3': {
+    id: 'teacher-3',
+    name: 'خالد سعيد',
+    email: 'khalid@school.edu',
+    phone: '96895345678',
+    grades: [11, 12],
+    students: [],
+    joinDate: '2021-08-20T00:00:00.000Z',
+    isActive: true,
+    schoolName: 'مدرسة الأمل الدولية',
+    subjects: ['اللغة الإنجليزية']
   }
 };
 
-export const getTeacherByCode = (code: string) => {
+// Get grade access by code
+export const getGradeByCode = (code: string): GradeAccess | null => {
+  const gradeAccess = gradeAccessCodes.find(
+    access => access.code.toLowerCase() === code.toLowerCase()
+  );
+  return gradeAccess || null;
+};
+
+// Get teacher by code
+export const getTeacherByCode = (code: string): Teacher | null => {
   const gradeAccess = getGradeByCode(code);
-  if (gradeAccess?.isTeacher && gradeAccess.teacherId) {
-    return teachersData[gradeAccess.teacherId as keyof typeof teachersData];
+  if (gradeAccess && gradeAccess.isTeacher && gradeAccess.teacherId) {
+    return teachersData[gradeAccess.teacherId] || null;
   }
   return null;
-};
-
-export const getGradesByUser = (userGrade: number, isAdmin: boolean = false): GradeAccess[] => {
-  if (isAdmin) {
-    return gradeAccessCodes;
-  }
-  return gradeAccessCodes.filter(grade => grade.grade === userGrade);
 };

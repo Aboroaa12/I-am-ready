@@ -5,6 +5,7 @@ import { grade3Grammar, grade3Questions } from './grade3Data';
 import { grade4Grammar, grade4Questions } from './grade4Data';
 import { grade5Grammar, grade5Questions } from './grade5Data';
 import { grade6Grammar, grade6Questions } from './grade6Data';
+import { grade8Grammar, grade8Questions } from './grade8Data';
 import { grade9Grammar, grade9Questions } from './grade9Data';
 import { grade10Grammar, grade10Questions } from './grade10Data';
 import { grade11Grammar, grade11Questions } from './grade11Data';
@@ -18,6 +19,7 @@ export const grammarByGrade: { [key: number]: GrammarRule[] } = {
   4: grade4Grammar,
   5: grade5Grammar,
   6: grade6Grammar,
+  8: grade8Grammar,
   9: grade9Grammar,
   10: grade10Grammar,
   11: grade11Grammar,
@@ -31,6 +33,7 @@ export const questionsByGrade: { [key: number]: QuizQuestion[] } = {
   4: grade4Questions,
   5: grade5Questions,
   6: grade6Questions,
+  8: grade8Questions,
   9: grade9Questions,
   10: grade10Questions,
   11: grade11Questions,
