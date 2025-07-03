@@ -9,6 +9,7 @@ interface FreeWritingProps {
 
 interface GrammarError {
   message: string;
+  messageAr?: string; // Arabic message
   offset: number;
   length: number;
   replacements: string[];
@@ -20,6 +21,7 @@ interface GrammarError {
   rule?: {
     id: string;
     description: string;
+    descriptionAr?: string; // Arabic description
     category: string;
   };
 }
@@ -207,17 +209,19 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           if (firstChar && firstChar === firstChar.toLowerCase() && /[a-z]/.test(firstChar)) {
             errors.push({
               message: "Sentences should start with a capital letter",
+              messageAr: "يجب أن تبدأ الجمل بحرف كبير",
               offset: textToCheck.indexOf(sentence, currentOffset),
-              length: 1,
+              length: sentence.length,
               replacements: [sentence.charAt(0).toUpperCase() + sentence.slice(1)],
               context: {
-                text: sentence.substring(0, Math.min(20, sentence.length)),
+                text: sentence,
                 offset: 0,
-                length: 1
+                length: sentence.length
               },
               rule: {
                 id: "UPPERCASE_SENTENCE_START",
                 description: "Capitalize the first word of a sentence",
+                descriptionAr: "ابدأ الجملة بحرف كبير",
                 category: "CASING"
               }
             });
@@ -228,21 +232,96 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
       
       // Check for common grammar issues
       const commonErrors = [
-        { pattern: /\bi am\b/gi, message: "Consider capitalizing 'I'", replacement: "I am" },
-        { pattern: /\bthey is\b/gi, message: "Use 'they are' instead of 'they is'", replacement: "they are" },
-        { pattern: /\bhe are\b/gi, message: "Use 'he is' instead of 'he are'", replacement: "he is" },
-        { pattern: /\bshe are\b/gi, message: "Use 'she is' instead of 'she are'", replacement: "she is" },
-        { pattern: /\bit are\b/gi, message: "Use 'it is' instead of 'it are'", replacement: "it is" },
-        { pattern: /\bwe is\b/gi, message: "Use 'we are' instead of 'we is'", replacement: "we are" },
-        { pattern: /\byou is\b/gi, message: "Use 'you are' instead of 'you is'", replacement: "you are" },
-        { pattern: /\ba apple\b/gi, message: "Use 'an' before words starting with vowel sounds", replacement: "an apple" },
-        { pattern: /\ban book\b/gi, message: "Use 'a' before words starting with consonant sounds", replacement: "a book" },
-        { pattern: /\bis you\b/gi, message: "Use 'are you' instead of 'is you'", replacement: "are you" },
-        { pattern: /\bthis books\b/gi, message: "Use 'these books' instead of 'this books'", replacement: "these books" },
-        { pattern: /\bthese book\b/gi, message: "Use 'this book' instead of 'these book'", replacement: "this book" },
-        { pattern: /\bthere is .+ and .+\b/gi, message: "Consider using 'there are' for multiple items", replacement: "there are" },
-        { pattern: /\b(he|she|it) don't\b/gi, message: "Use 'doesn't' with he/she/it", replacement: "$1 doesn't" },
-        { pattern: /\b(I|you|we|they) doesn't\b/gi, message: "Use 'don't' with I/you/we/they", replacement: "$1 don't" }
+        { 
+          pattern: /\bi am\b/gi, 
+          message: "Consider capitalizing 'I'", 
+          messageAr: "يجب كتابة ضمير المتكلم 'I' بحرف كبير",
+          replacement: "I am" 
+        },
+        { 
+          pattern: /\bthey is\b/gi, 
+          message: "Use 'they are' instead of 'they is'", 
+          messageAr: "استخدم 'they are' بدلاً من 'they is'",
+          replacement: "they are" 
+        },
+        { 
+          pattern: /\bhe are\b/gi, 
+          message: "Use 'he is' instead of 'he are'", 
+          messageAr: "استخدم 'he is' بدلاً من 'he are'",
+          replacement: "he is" 
+        },
+        { 
+          pattern: /\bshe are\b/gi, 
+          message: "Use 'she is' instead of 'she are'", 
+          messageAr: "استخدم 'she is' بدلاً من 'she are'",
+          replacement: "she is" 
+        },
+        { 
+          pattern: /\bit are\b/gi, 
+          message: "Use 'it is' instead of 'it are'", 
+          messageAr: "استخدم 'it is' بدلاً من 'it are'",
+          replacement: "it is" 
+        },
+        { 
+          pattern: /\bwe is\b/gi, 
+          message: "Use 'we are' instead of 'we is'", 
+          messageAr: "استخدم 'we are' بدلاً من 'we is'",
+          replacement: "we are" 
+        },
+        { 
+          pattern: /\byou is\b/gi, 
+          message: "Use 'you are' instead of 'you is'", 
+          messageAr: "استخدم 'you are' بدلاً من 'you is'",
+          replacement: "you are" 
+        },
+        { 
+          pattern: /\ba apple\b/gi, 
+          message: "Use 'an' before words starting with vowel sounds", 
+          messageAr: "استخدم 'an' قبل الكلمات التي تبدأ بأصوات حروف العلة",
+          replacement: "an apple" 
+        },
+        { 
+          pattern: /\ban book\b/gi, 
+          message: "Use 'a' before words starting with consonant sounds", 
+          messageAr: "استخدم 'a' قبل الكلمات التي تبدأ بأصوات الحروف الساكنة",
+          replacement: "a book" 
+        },
+        { 
+          pattern: /\bis you\b/gi, 
+          message: "Use 'are you' instead of 'is you'", 
+          messageAr: "استخدم 'are you' بدلاً من 'is you'",
+          replacement: "are you" 
+        },
+        { 
+          pattern: /\bthis books\b/gi, 
+          message: "Use 'these books' instead of 'this books'", 
+          messageAr: "استخدم 'these books' بدلاً من 'this books'",
+          replacement: "these books" 
+        },
+        { 
+          pattern: /\bthese book\b/gi, 
+          message: "Use 'this book' instead of 'these book'", 
+          messageAr: "استخدم 'this book' بدلاً من 'these book'",
+          replacement: "this book" 
+        },
+        { 
+          pattern: /\bthere is .+ and .+\b/gi, 
+          message: "Consider using 'there are' for multiple items", 
+          messageAr: "استخدم 'there are' للعناصر المتعددة",
+          replacement: "there are" 
+        },
+        { 
+          pattern: /\b(he|she|it) don't\b/gi, 
+          message: "Use 'doesn't' with he/she/it", 
+          messageAr: "استخدم 'doesn't' مع he/she/it",
+          replacement: "$1 doesn't" 
+        },
+        { 
+          pattern: /\b(I|you|we|they) doesn't\b/gi, 
+          message: "Use 'don't' with I/you/we/they", 
+          messageAr: "استخدم 'don't' مع I/you/we/they",
+          replacement: "$1 don't" 
+        }
       ];
       
       for (const error of commonErrors) {
@@ -250,6 +329,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
         while ((match = error.pattern.exec(textToCheck)) !== null) {
           errors.push({
             message: error.message,
+            messageAr: error.messageAr,
             offset: match.index,
             length: match[0].length,
             replacements: [error.replacement],
@@ -261,6 +341,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             rule: {
               id: "GRAMMAR_RULE",
               description: error.message,
+              descriptionAr: error.messageAr,
               category: "GRAMMAR"
             }
           });
@@ -273,6 +354,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
       while ((spaceMatch = doubleSpacePattern.exec(textToCheck)) !== null) {
         errors.push({
           message: "Consider removing extra spaces",
+          messageAr: "يجب إزالة المسافات الزائدة",
           offset: spaceMatch.index,
           length: spaceMatch[0].length,
           replacements: [" "],
@@ -284,6 +366,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           rule: {
             id: "DOUBLE_SPACES",
             description: "Remove extra spaces",
+            descriptionAr: "إزالة المسافات الزائدة",
             category: "TYPOGRAPHY"
           }
         });
@@ -300,6 +383,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             /[a-zA-Z0-9]$/.test(paragraph.trim())) {
           errors.push({
             message: "Consider adding a period at the end of this sentence",
+            messageAr: "يجب إضافة نقطة في نهاية هذه الجملة",
             offset: paragraphOffset + paragraph.length,
             length: 0,
             replacements: ["."],
@@ -311,6 +395,7 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             rule: {
               id: "MISSING_PERIOD",
               description: "Add a period at the end of sentences",
+              descriptionAr: "أضف نقطة في نهاية الجمل",
               category: "PUNCTUATION"
             }
           });
@@ -650,7 +735,9 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
                   <li key={index} className="flex items-start gap-2">
                     <XCircle className="w-4 h-4 text-purple-500 mt-1" />
                     <div className="flex-1">
-                      <div className="font-semibold text-purple-800">{error.message}</div>
+                      <div className="font-semibold text-purple-800">
+                        {error.messageAr || error.message}
+                      </div>
                       <div className="bg-white p-2 rounded border border-purple-200 my-1 font-mono text-sm">
                         {error.context.text}
                       </div>
