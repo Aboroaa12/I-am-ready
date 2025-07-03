@@ -67,7 +67,8 @@ class SpellChecker {
     'much', 'many', 'lot', 'plenty', 'several', 'few', 'most', 'none', 'no', 'every',
     'each', 'either', 'neither', 'both', 'all', 'any', 'some', 'few', 'little', 'much',
     'many', 'lot', 'plenty', 'several', 'few', 'most', 'none', 'no', 'every', 'each',
-    'so', 'who', 'whom', 'whose', 'which', 'what', 'where', 'when', 'why', 'how'
+    'so', 'who', 'whom', 'whose', 'which', 'what', 'where', 'when', 'why', 'how',
+    'way', 'am' // Added common words that were being flagged incorrectly
   ]);
 
   constructor(options: SpellCheckerOptions = { language: 'en' }) {
