@@ -183,6 +183,11 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     onStreak(false);
   };
 
+  // Helper function to escape special regex characters
+  const escapeRegExp = (string: string): string => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+
   // Helper function to check for common spelling variations (American vs British)
   const checkSpellingVariations = (word: string, targetWord: string): boolean => {
     // Convert both to lowercase for comparison
@@ -398,10 +403,6 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     setScore(score + points);
     setFeedback(feedbackMessage + (points > 0 ? ` (+${points} نقطة)` : ''));
     setFeedbackVisible(true);
-    
-    if (isGameTimerActive) {
-      setRemainingTime(timeLimit);
-    }
   };
 
   // Helper function to generate corrected sentence
@@ -423,7 +424,8 @@ const SentenceWriting: React.FC<SentenceWritingProps> = ({ words, onScore, onStr
     
     // Fix spelling errors
     spellingErrors.forEach(error => {
-      const regex = new RegExp(`\\b${error.word}\\b`, 'gi');
+      const escapedWord = escapeRegExp(error.word);
+      const regex = new RegExp(`\\b${escapedWord}\\b`, 'gi');
       corrected = corrected.replace(regex, error.correction);
     });
     
