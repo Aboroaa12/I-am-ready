@@ -36,7 +36,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     // استخدام timeout أقصر للتحقق من الاتصال
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Connection timeout')), 3000);
+      window.setTimeout(() => reject(new Error('Connection timeout')), 3000);
     });
 
     // استخدام استعلام بسيط للتحقق من الاتصال

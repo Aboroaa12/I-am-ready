@@ -57,7 +57,7 @@ export class EnhancedSpeechEngine {
 
       try {
         // محاولة تحميل فورية
-        const voices = window.speechSynthesis.getVoices();
+        const voices = window.speechSynthesis?.getVoices();
         if (voices && voices.length > 0) {
           this.voices = voices;
           this.isInitialized = true;
@@ -70,7 +70,7 @@ export class EnhancedSpeechEngine {
         window.speechSynthesis.onvoiceschanged = loadVoices;
         
         // timeout احتياطي
-        setTimeout(() => {
+        window.setTimeout(() => {
           if (!this.isInitialized) {
             console.log('تحميل الأصوات بالطريقة الاحتياطية');
             loadVoices();
@@ -234,7 +234,7 @@ export class EnhancedSpeechEngine {
         window.speechSynthesis.speak(utterance);
         
         // حل مشكلة Chrome - التأكد من التشغيل
-        setTimeout(() => {
+        window.setTimeout(() => {
           if (window.speechSynthesis.paused) {
             console.log('استئناف النطق المتوقف');
             window.speechSynthesis.resume();
@@ -242,12 +242,12 @@ export class EnhancedSpeechEngine {
         }, 100);
         
         // فحص دوري للتأكد من التشغيل
-        const checkInterval = setInterval(() => {
+        const checkInterval = window.setInterval(() => {
           if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
-            clearInterval(checkInterval);
+            window.clearInterval(checkInterval);
             if (this.currentUtterance === utterance) {
               console.log('انتهى النطق (فحص دوري)');
-              clearTimeout(timeout);
+              window.clearTimeout(timeout);
               this.currentUtterance = null;
               resolve();
             }
@@ -255,7 +255,7 @@ export class EnhancedSpeechEngine {
         }, 500);
         
       } catch (error) {
-        clearTimeout(timeout);
+        window.clearTimeout(timeout);
         this.currentUtterance = null;
         console.error('خطأ في تشغيل النطق:', error);
         reject(error);

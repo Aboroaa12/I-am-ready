@@ -70,7 +70,7 @@ function App() {
     };
     
     // تأخير فحص الاتصال قليلاً لتجنب التحميل المفرط
-    const timeoutId = setTimeout(checkConnection, 1000);
+    const timeoutId = window.setTimeout(checkConnection, 1000);
     
     // Check for grade parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -106,7 +106,7 @@ function App() {
     // Only check for new achievements when achievements array changes
     const newAchievement = achievements.find(a => 
       a.achieved && (!a.achievedDate || 
-      new Date(a.achievedDate).getTime() > Date.now() - 5000)
+      new Date(a.achievedDate).getTime() > Date.now() - 5000))
     );
     
     if (newAchievement && newAchievement !== currentAchievement) {

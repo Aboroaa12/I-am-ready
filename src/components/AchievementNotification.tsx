@@ -16,12 +16,12 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
   useEffect(() => {
     if (achievement) {
       setIsVisible(true);
-      const timer = setTimeout(() => {
+      const timer = window.setTimeout(() => {
         setIsVisible(false);
-        setTimeout(onClose, 300);
+        window.setTimeout(onClose, 300);
       }, 3000);
       
-      return () => clearTimeout(timer);
+      return () => window.clearTimeout(timer);
     }
   }, [achievement, onClose]);
 
