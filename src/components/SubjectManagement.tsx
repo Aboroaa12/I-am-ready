@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Book, Plus, Edit, Trash2, Search, Filter, Save, X, AlertTriangle, Check, RefreshCw } from 'lucide-react';
 import { Subject } from '../types';
 import { supabase } from '../lib/supabase';
+import { getGradeGradientColor } from '../utils/gradeColors';
 
 const SubjectManagement: React.FC = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -10,6 +11,12 @@ const SubjectManagement: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  
+  // Grade and semester selection
+  const [grades, setGrades] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  const [semesters, setSemesters] = useState<string[]>(['الفصل الأول', 'الفصل الثاني', 'الفصل الصيفي']);
+  const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
 
   // Predefined subject colors
   const subjectColors = {
@@ -215,7 +222,9 @@ const SubjectManagement: React.FC = () => {
   const filteredSubjects = subjects.filter(subject =>
     subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.nameEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    subject.description.toLowerCase().includes(searchTerm.toLowerCase())
+    subject.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (selectedGrade !== null && subject.id.includes(selectedGrade.toString())) ||
+    (selectedSemester !== null && subject.description.includes(selectedSemester))
   );
 
   return (
@@ -239,16 +248,55 @@ const SubjectManagement: React.FC = () => {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="relative">
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="البحث عن مادة..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              بحث
+            </label>
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="البحث عن مادة..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              الصف الدراسي
+            </label>
+            <select
+              value={selectedGrade === null ? '' : selectedGrade}
+              onChange={(e) => setSelectedGrade(e.target.value ? Number(e.target.value) : null)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">جميع الصفوف</option>
+              {grades.map(grade => (
+                <option key={grade} value={grade}>الصف {grade}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              الفصل الدراسي
+            </label>
+            <select
+              value={selectedSemester === null ? '' : selectedSemester}
+              onChange={(e) => setSelectedSemester(e.target.value || null)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">جميع الفصول</option>
+              {semesters.map(semester => (
+                <option key={semester} value={semester}>{semester}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -279,6 +327,18 @@ const SubjectManagement: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-bold text-gray-800">{subject.name}</h3>
                     <p className="text-sm text-gray-600">{subject.nameEn}</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {subject.id.includes('5') && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs ${getGradeGradientColor(5)} text-white`}>
+                          الصف 5
+                        </span>
+                      )}
+                      {subject.id.includes('8') && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs ${getGradeGradientColor(8)} text-white`}>
+                          الصف 8
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -307,6 +367,11 @@ const SubjectManagement: React.FC = () => {
                 }`}>
                   {subject.isActive ? 'نشط' : 'غير نشط'}
                 </span>
+                {selectedSemester && (
+                  <span className="text-sm text-gray-500">
+                    {selectedSemester}
+                  </span>
+                )}
                 <span className="text-sm text-gray-500">
                   تاريخ الإضافة: {new Date(subject.createdAt).toLocaleDateString('ar-SA')}
                 </span>
@@ -492,7 +557,9 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
     icon: subject?.icon || '📚',
     color: subject?.color || 'from-blue-500 to-indigo-600',
     description: subject?.description || '',
-    isActive: subject?.isActive ?? true
+    isActive: subject?.isActive ?? true,
+    grade: subject?.grade || null,
+    semester: subject?.semester || ''
   });
 
   const icons = ['📚', '🔢', '🔬', '☪️', '📖', '🌍', '🎨', '🏃', '🧠', '💻', '🔍', '📝', '🧪', '📊', '🔤'];
@@ -503,6 +570,9 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
     bg: value.bg,
     text: value.text
   }));
+
+  const grades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const semesters = ['الفصل الأول', 'الفصل الثاني', 'الفصل الصيفي'];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -517,7 +587,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            اسم المادة بالعربية *
+            اسم المادة بالعربية * 
           </label>
           <input
             type="text"
@@ -543,6 +613,40 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="مثال: Mathematics"
           />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            الصف الدراسي
+          </label>
+          <select
+            name="grade"
+            value={formData.grade || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, grade: Number(e.target.value) }))}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">اختر الصف</option>
+            {grades.map(grade => (
+              <option key={grade} value={grade}>الصف {grade}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            الفصل الدراسي
+          </label>
+          <select
+            name="semester"
+            value={formData.semester || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, semester: e.target.value }))}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">اختر الفصل</option>
+            {semesters.map(semester => (
+              <option key={semester} value={semester}>{semester}</option>
+            ))}
+          </select>
         </div>
         
         <div>

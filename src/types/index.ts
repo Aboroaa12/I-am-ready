@@ -265,6 +265,8 @@ export interface Subject {
   activities?: ActivityType[];
   createdAt?: string;
   updatedAt?: string;
+  grade?: number | null;
+  semester?: string;
 }
 
 export interface SubjectActivity {
@@ -342,6 +344,7 @@ export interface ContentItem {
   subject: string;
   unit: string;
   grade: number;
+  semester?: string;
   order: number;
   isActive: boolean;
   createdAt: string;

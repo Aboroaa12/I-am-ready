@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/Tabs';
 import VocabularyExtractor from './VocabularyExtractor';
 import GrammarExtractor from './GrammarExtractor';
@@ -11,6 +11,7 @@ import MathContent from './MathContent';
 import { Database, BookOpen, Shield, Users, Settings, Key, Trash2, AlertTriangle, RefreshCw, CheckCircle, Book, Calculator, FlaskRound as Flask, FileText, Bookmark, GraduationCap, Activity, TestTube } from 'lucide-react';
 import { supabase, checkSupabaseConnection, deleteAllRecords, getTableCount } from '../lib/supabase';
 import { useProgress } from '../hooks/useProgress';
+import { useVocabulary } from '../hooks/useVocabulary';
 import { useWordProgress } from '../hooks/useWordProgress';
 
 // Progress Testing Component
@@ -278,6 +279,7 @@ const ProgressTestingComponent: React.FC = () => {
 
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('access-codes');
+  const [activeSubTab, setActiveSubTab] = useState('subjects');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<{
@@ -292,7 +294,33 @@ const AdminPanel: React.FC = () => {
     details: []
   });
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
-  const [activeSubTab, setActiveSubTab] = useState('subjects');
+  
+  // Admin settings state
+  const [grades, setGrades] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  const [semesters, setSemesters] = useState<string[]>(['الفصل الأول', 'الفصل الثاني', 'الفصل الصيفي']);
+  const [subjects, setSubjects] = useState<string[]>(['اللغة الإنجليزية', 'الرياضيات', 'العلوم', 'التربية الإسلامية', 'اللغة العربية']);
+  const [units, setUnits] = useState<{[subject: string]: string[]}>({
+    'اللغة الإنجليزية': ['Welcome Back', 'Talent Show', 'Then and Now', 'Let\'s Explore!'],
+    'الرياضيات': ['الأعداد', 'الجبر', 'الهندسة', 'الإحصاء'],
+    'العلوم': ['الكائنات الحية', 'المادة', 'الطاقة', 'الأرض والفضاء'],
+    'التربية الإسلامية': ['العقيدة', 'العبادات', 'السيرة', 'الأخلاق'],
+    'اللغة العربية': ['القراءة', 'الكتابة', 'القواعد', 'البلاغة']
+  });
+  
+  // Selected values
+  const [selectedGrade, setSelectedGrade] = useState<number>(5);
+  const [selectedSemester, setSelectedSemester] = useState<string>('الفصل الأول');
+  const [selectedSubject, setSelectedSubject] = useState<string>('اللغة الإنجليزية');
+  const [selectedUnit, setSelectedUnit] = useState<string>('');
+  
+  // Update units when subject changes
+  useEffect(() => {
+    if (units[selectedSubject] && units[selectedSubject].length > 0) {
+      setSelectedUnit(units[selectedSubject][0]);
+    } else {
+      setSelectedUnit('');
+    }
+  }, [selectedSubject]);
 
   // Function to check Supabase connection status
   const checkConnection = async () => {
@@ -706,6 +734,189 @@ const AdminPanel: React.FC = () => {
         </TabsContent>
       </Tabs>
       
+      {/* Admin Settings */}
+      {activeTab === 'settings' && (
+        <div className="bg-white rounded-xl p-8 shadow-lg">
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <Settings className="w-6 h-6 text-gray-600" />
+            إعدادات المنصة
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Grade Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الصف الدراسي
+              </label>
+              <select
+                value={selectedGrade}
+                onChange={(e) => setSelectedGrade(Number(e.target.value))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {grades.map(grade => (
+                  <option key={grade} value={grade}>الصف {grade}</option>
+                ))}
+              </select>
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={() => {
+                    const newGrade = window.prompt('أدخل الصف الدراسي الجديد (رقم)');
+                    if (newGrade && !isNaN(Number(newGrade))) {
+                      setGrades(prev => [...prev, Number(newGrade)].sort((a, b) => a - b));
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  + إضافة صف جديد
+                </button>
+              </div>
+            </div>
+            
+            {/* Semester Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الفصل الدراسي
+              </label>
+              <select
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {semesters.map(semester => (
+                  <option key={semester} value={semester}>{semester}</option>
+                ))}
+              </select>
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={() => {
+                    const newSemester = window.prompt('أدخل اسم الفصل الدراسي الجديد');
+                    if (newSemester && newSemester.trim()) {
+                      setSemesters(prev => [...prev, newSemester.trim()]);
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  + إضافة فصل دراسي جديد
+                </button>
+              </div>
+            </div>
+            
+            {/* Subject Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                المادة الدراسية
+              </label>
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {subjects.map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={() => {
+                    const newSubject = window.prompt('أدخل اسم المادة الدراسية الجديدة');
+                    if (newSubject && newSubject.trim()) {
+                      setSubjects(prev => [...prev, newSubject.trim()]);
+                      setUnits(prev => ({...prev, [newSubject.trim()]: []}));
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  + إضافة مادة جديدة
+                </button>
+              </div>
+            </div>
+            
+            {/* Unit Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الوحدة الدراسية
+              </label>
+              <select
+                value={selectedUnit}
+                onChange={(e) => setSelectedUnit(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {units[selectedSubject]?.map(unit => (
+                  <option key={unit} value={unit}>{unit}</option>
+                )) || (
+                  <option value="">لا توجد وحدات</option>
+                )}
+              </select>
+              <div className="mt-2 flex justify-end">
+                <button
+                  onClick={() => {
+                    const newUnit = window.prompt('أدخل اسم الوحدة الدراسية الجديدة');
+                    if (newUnit && newUnit.trim()) {
+                      setUnits(prev => ({
+                        ...prev,
+                        [selectedSubject]: [...(prev[selectedSubject] || []), newUnit.trim()]
+                      }));
+                    }
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  + إضافة وحدة جديدة
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Current Selection Summary */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+            <h4 className="font-bold text-blue-800 mb-4">الإعدادات الحالية:</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-500 mb-1">الصف الدراسي</div>
+                <div className="font-bold text-blue-700">الصف {selectedGrade}</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-500 mb-1">الفصل الدراسي</div>
+                <div className="font-bold text-blue-700">{selectedSemester}</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-500 mb-1">المادة الدراسية</div>
+                <div className="font-bold text-blue-700">{selectedSubject}</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-500 mb-1">الوحدة الدراسية</div>
+                <div className="font-bold text-blue-700">{selectedUnit || 'غير محدد'}</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Save Settings Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                // Save settings to localStorage for persistence
+                localStorage.setItem('admin-settings', JSON.stringify({
+                  grades,
+                  semesters,
+                  subjects,
+                  units,
+                  selectedGrade,
+                  selectedSemester,
+                  selectedSubject,
+                  selectedUnit
+                }));
+                
+                // Show success message
+                alert('تم حفظ الإعدادات بنجاح');
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <CheckCircle className="w-5 h-5" />
+              حفظ الإعدادات
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -826,6 +1037,22 @@ const AdminPanel: React.FC = () => {
           </div>
         </div>
       )}
+      
+      {/* Load saved settings on component mount */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          try {
+            const savedSettings = localStorage.getItem('admin-settings');
+            if (savedSettings) {
+              const settings = JSON.parse(savedSettings);
+              // Apply saved settings here
+              console.log('Loaded admin settings:', settings);
+            }
+          } catch (error) {
+            console.error('Error loading admin settings:', error);
+          }
+        `
+      }} />
     </div>
   );
 };

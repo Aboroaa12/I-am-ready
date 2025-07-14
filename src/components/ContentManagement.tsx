@@ -13,11 +13,13 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingContent, setEditingContent] = useState<ContentItem | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [units, setUnits] = useState<string[]>([]);
   const [grades, setGrades] = useState<number[]>([]);
+  const [semesters, setSemesters] = useState<string[]>(['الفصل الأول', 'الفصل الثاني', 'الفصل الصيفي']);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(subject?.id || null);
 
@@ -195,6 +197,11 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
       return false;
     }
     
+    // Apply semester filter
+    if (selectedSemester && item.semester !== selectedSemester) {
+      return false;
+    }
+    
     // Apply search
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -340,6 +347,23 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
               ))}
             </select>
           </div>
+          
+          <div className="md:w-1/4">
+            <label htmlFor="semester" className="block text-sm font-semibold text-gray-700 mb-2">
+              الفصل الدراسي
+            </label>
+            <select
+              id="semester"
+              value={selectedSemester || ''}
+              onChange={(e) => setSelectedSemester(e.target.value || null)}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+            >
+              <option value="">جميع الفصول</option>
+              {semesters.map((semester) => (
+                <option key={semester} value={semester}>{semester}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex justify-between items-center">
@@ -383,6 +407,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
                     <th className="text-right py-4 px-6 font-semibold text-gray-700">المادة</th>
                   )}
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الصف</th>
+                  <th className="text-right py-4 px-6 font-semibold text-gray-700">الفصل</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الوحدة</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الحالة</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الإجراءات</th>
@@ -411,6 +436,11 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
                     <td className="py-4 px-6">
                       <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-semibold">
                         الصف {item.grade}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-sm font-semibold">
+                        {item.semester || 'غير محدد'}
                       </span>
                     </td>
                     <td className="py-4 px-6">
@@ -579,6 +609,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({ subject }) => {
           }}
           subjects={subjects}
           defaultSubject={subject?.id || selectedSubject}
+          semesters={semesters}
         />
       )}
 
@@ -623,9 +654,10 @@ interface ContentFormProps {
   onSave: (contentData: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => void;
   subjects: Subject[];
   defaultSubject?: string | null;
+  semesters: string[];
 }
 
-const ContentForm: React.FC<ContentFormProps> = ({ content, onClose, onSave, subjects, defaultSubject }) => {
+const ContentForm: React.FC<ContentFormProps> = ({ content, onClose, onSave, subjects, defaultSubject, semesters }) => {
   const [formData, setFormData] = useState<Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>>({
     title: content?.title || '',
     description: content?.description || '',
@@ -634,6 +666,7 @@ const ContentForm: React.FC<ContentFormProps> = ({ content, onClose, onSave, sub
     subject: content?.subject || defaultSubject || (subjects[0]?.id || ''),
     unit: content?.unit || '',
     grade: content?.grade || 5,
+    semester: content?.semester || '',
     order: content?.order || 0,
     isActive: content?.isActive ?? true
   });
@@ -732,6 +765,23 @@ const ContentForm: React.FC<ContentFormProps> = ({ content, onClose, onSave, sub
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
                   <option key={grade} value={grade}>الصف {grade}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الفصل الدراسي
+              </label>
+              <select
+                name="semester"
+                value={formData.semester || ''}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">اختر الفصل</option>
+                {semesters.map(semester => (
+                  <option key={semester} value={semester}>{semester}</option>
                 ))}
               </select>
             </div>
