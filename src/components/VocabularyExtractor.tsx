@@ -24,9 +24,27 @@ const VocabularyExtractor: React.FC = () => {
     setGrades(uniqueGrades);
     
     // استخراج الوحدات الفريدة
-    const uniqueUnits = [...new Set(words.map(word => word.unit))];
+    const uniqueUnits = [...new Set(words.map(word => word.unit))].sort();
     setUnits(uniqueUnits);
   }, [words]);
+
+  // Update units when grade filter changes
+  useEffect(() => {
+    if (selectedGrade !== null) {
+      const gradeWords = words.filter(word => word.grade === selectedGrade);
+      const gradeUnits = [...new Set(gradeWords.map(word => word.unit))].sort();
+      setUnits(gradeUnits);
+      
+      // Reset unit selection if current unit is not available for selected grade
+      if (selectedUnit && !gradeUnits.includes(selectedUnit)) {
+        setSelectedUnit(null);
+      }
+    } else {
+      // Show all units when no grade is selected
+      const allUnits = [...new Set(words.map(word => word.unit))].sort();
+      setUnits(allUnits);
+    }
+  }, [selectedGrade, words]);
 
   const filteredWords = words.filter(word => {
     // تطبيق فلتر الصف
@@ -44,6 +62,7 @@ const VocabularyExtractor: React.FC = () => {
       const term = searchTerm.toLowerCase();
       return word.english.toLowerCase().includes(term) || 
              word.arabic.includes(term) ||
+             word.unit.toLowerCase().includes(term) ||
              (word.pronunciation && word.pronunciation.toLowerCase().includes(term));
     }
     
@@ -72,7 +91,7 @@ const VocabularyExtractor: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', 'english_vocabulary.csv');
+      link.setAttribute('download', `english_vocabulary_${selectedGrade ? `grade_${selectedGrade}_` : ''}${selectedUnit ? `${selectedUnit.replace(/\s+/g, '_')}_` : ''}${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
