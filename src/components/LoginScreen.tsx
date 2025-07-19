@@ -336,44 +336,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
               </div>
               <div className="text-xs font-semibold">التربية الإسلامية</div>
             </div>
-            <div className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
+        <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">المادة المتاحة</h3>
+        <div className="flex justify-center">
                 <span className="text-2xl">📖</span>
               </div>
               <div className="text-xs font-semibold">اللغة العربية</div>
             </div>
             <div className="bg-gradient-to-r from-gray-500 to-slate-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
               <div className="flex items-center justify-center mb-1">
-                <Shield className="w-6 h-6" />
-              </div>
-              <div className="text-xs font-semibold">وصول المدير</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Connection Status */}
-        <div className="mt-6 text-center">
-          <div className={`${isConnected ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} border rounded-xl p-4`}>
-            <p className={`text-sm ${isConnected ? 'text-green-700' : 'text-yellow-700'}`}>
-              <strong>{isConnected ? '✓ متصل بقاعدة البيانات' : '⚠️ وضع غير متصل'}</strong><br />
-              {isConnected 
-                ? 'البيانات متزامنة ومحدثة تلقائياً'
-                : hasValidSupabaseCredentials() 
-                  ? 'سيتم تخزين البيانات محلياً ومزامنتها عند توفر الاتصال'
-                  : 'يرجى تحديث متغيرات البيئة في ملف .env للاتصال بقاعدة البيانات'
-              }
-            </p>
-          </div>
-        </div>
-
-        {/* Help Section */}
-        <div className="mt-6 text-center">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="text-blue-700 text-sm">
-              <strong>تحتاج مساعدة؟</strong><br />
-              تواصل مع معلمك للحصول على الرمز السري الخاص بصفك
-            </p>
-          </div>
         </div>
       </div>
     </div>

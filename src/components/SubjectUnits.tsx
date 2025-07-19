@@ -72,40 +72,7 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       });
       
       setUnits(unitsData);
-    } else if (subject.id === 'math') {
-      // For math subject, create units based on the curriculum structure
-      const mathUnits = [
-        { name: 'نظام الأعداد', nameEn: 'Number System', icon: '🔢', description: 'القيمة المكانية والترتيب والتقريب والمتتاليات' },
-        { name: 'الجمع والطرح', nameEn: 'Addition and Subtraction', icon: '➕', description: 'الاستراتيجيات الذهنية والكتابية للجمع والطرح' },
-        { name: 'الضرب والقسمة', nameEn: 'Multiplication and Division', icon: '✖️', description: 'حقائق الضرب والقسمة والطرق الكتابية' },
-        { name: 'المضاعفات والأعداد المربعة', nameEn: 'Multiples and Square Numbers', icon: '🔲', description: 'المضاعفات والأعداد المربعة والعوامل' },
-        { name: 'الأشكال الهندسية', nameEn: 'Geometric Shapes', icon: '📐', description: 'الخطوط المتوازية والمتعامدة والمثلثات والمكعب' },
-        { name: 'المكان والحركة', nameEn: 'Position and Movement', icon: '📍', description: 'الإحداثيات والانسحاب والانعكاس' },
-        { name: 'الكتلة', nameEn: 'Mass', icon: '⚖️', description: 'قياس الكتلة وتحويل الوحدات' },
-        { name: 'الوقت والجداول الزمنية', nameEn: 'Time and Timetables', icon: '🕐', description: 'قراءة الوقت والجداول الزمنية' },
-        { name: 'المساحة والمحيط', nameEn: 'Area and Perimeter', icon: '📏', description: 'حساب المساحة والمحيط للأشكال المختلفة' },
-        { name: 'المتتاليات العددية', nameEn: 'Number Sequences', icon: '🔄', description: 'الأعداد والمتتاليات العددية والعبارات العامة' },
-        { name: 'الأعداد العشرية', nameEn: 'Decimal Numbers', icon: '🔸', description: 'النظام العشري وحقائق الأعداد العشرية' },
-        { name: 'الاستراتيجيات الذهنية', nameEn: 'Mental Strategies', icon: '🧠', description: 'استراتيجيات الضرب والمضاعفة والتنصيف' },
-        { name: 'الطرق الكتابية', nameEn: 'Written Methods', icon: '📝', description: 'الطرق الكتابية للضرب والقسمة' }
-      ];
-      
-      const unitsData: UnitData[] = mathUnits.map((unit, index) => ({
-        name: unit.name,
-        nameEn: unit.nameEn,
-        description: unit.description,
-        icon: unit.icon,
-        color: getUnitColor(index),
-        words: [], // No vocabulary words for math
-        grammar: [], // No grammar rules for math
-        difficulty: 'medium' as const,
-        estimatedTime: '45 دقيقة',
-        totalWords: 0
-      }));
-      
-      setUnits(unitsData);
     } else {
-      // For other subjects, show "Not available now" message
       setUnits([]);
     }
     
@@ -267,11 +234,7 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
   };
 
   const handleUnitClick = (unit: UnitData) => {
-    if (subject.id === 'math') {
-      // For math, we don't need vocabulary words, just show the unit
-      setSelectedUnit(unit.nameEn);
-      onUnitSelect(unit.nameEn, [], []); // Empty arrays for words and grammar
-    } else if (unit.words.length > 0) {
+    if (unit.words.length > 0) {
       setSelectedUnit(unit.nameEn);
       onUnitSelect(unit.nameEn, unit.words, unit.grammar);
     }
@@ -449,10 +412,10 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
                 )}
 
                 {/* Action Button */}
-                {(unit.words.length > 0 || subject.id === 'math') ? (
+                {unit.words.length > 0 ? (
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <span className="text-sm font-medium text-slate-700">
-                      {subject.id === 'math' ? 'ابدأ حل المسائل' : 'ابدأ التعلم'}
+                      ابدأ التعلم
                     </span>
                     <div className="flex items-center gap-2 text-blue-600 group-hover:text-blue-800 transition-colors">
                       <Play className="w-4 h-4" />
@@ -480,10 +443,10 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
           <p className="text-lg text-gray-600 mb-4">نعمل على إضافة محتوى هذه المادة</p>
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 max-w-md mx-auto border border-blue-200">
             <p className="text-gray-700 text-center">
-              <span className="font-semibold">حالياً متوفر:</span> مادة اللغة الإنجليزية فقط
+              <span className="font-semibold">المحتوى قيد التطوير</span>
             </p>
             <p className="text-sm text-gray-600 text-center mt-2">
-              باقي المواد قيد التطوير وستكون متاحة قريباً
+              سيكون متاحاً قريباً
             </p>
           </div>
         </div>

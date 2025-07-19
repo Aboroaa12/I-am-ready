@@ -9,7 +9,6 @@ interface VocabularyUnitProps {
   words: VocabularyWord[];
   grammarRules?: GrammarRule[];
   onWordPronounce?: (word: string) => void;
-  subject?: string;
 }
 
 const VocabularyUnit: React.FC<VocabularyUnitProps> = ({ 
@@ -17,42 +16,18 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
   words, 
   grammarRules, 
   onWordPronounce,
-  subject = 'english'
 }) => {
   const [expandedRules, setExpandedRules] = useState<Set<number>>(new Set());
   const [showAllWords, setShowAllWords] = useState(false);
   const [playingExample, setPlayingExample] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [mathProblems, setMathProblems] = useState<any[]>([]);
 
   useEffect(() => {
-    if (subject === 'math') {
-      // Load math problems for this unit
-      loadMathProblems();
-    } else {
-      // Simulate loading data for other subjects
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [words, grammarRules]);
-
-  const loadMathProblems = async () => {
-    try {
-      // Import math problems dynamically
-      const { grade5MathProblems } = await import('../data/grade5MathData');
-      const unitProblems = grade5MathProblems.filter(problem => 
-        problem.unit === title || problem.topic.includes(title.split(' ')[0])
-      );
-      setMathProblems(unitProblems);
-    } catch (error) {
-      console.error('Error loading math problems:', error);
-      setMathProblems([]);
-    } finally {
+    const timer = setTimeout(() => {
       setLoading(false);
-    }
-  };
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [words, grammarRules]);
   const toggleRuleExpansion = (index: number) => {
     const newExpanded = new Set(expandedRules);
     if (newExpanded.has(index)) {
@@ -181,137 +156,6 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  // For Math subject, show math problems instead of vocabulary
-  if (subject === 'math') {
-    return (
-      <div className="space-y-12">
-        {/* Enhanced Header for Math */}
-        <div className="text-center relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-green-100 via-blue-50 to-teal-100 rounded-3xl opacity-50"></div>
-          <div className="relative z-10 py-8 px-6">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-4">
-              <div className="bg-gradient-to-r from-green-500 to-teal-600 p-3 rounded-2xl shadow-lg">
-                <Target className="w-10 h-10 text-white" />
-              </div>
-              <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                {title}
-              </span>
-            </h2>
-            <div className="flex items-center justify-center gap-4 text-slate-600">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-green-500" />
-                <span>{mathProblems.length} مسألة</span>
-              </div>
-            </div>
-            <div className="w-32 h-1 bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 mx-auto rounded-full mt-4"></div>
-          </div>
-        </div>
-
-        {/* Math Problems Grid */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-              <Sparkles className="w-7 h-7 text-yellow-500" />
-              المسائل الرياضية التفاعلية
-            </h3>
-          </div>
-
-          {mathProblems.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mathProblems.map((problem, index) => (
-                <div
-                  key={problem.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105"
-                >
-                  {/* Problem Header */}
-                  <div className="bg-gradient-to-r from-green-500 to-teal-600 p-4 text-white">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">🔢</span>
-                      {getDifficultyBadge(problem.difficulty)}
-                    </div>
-                    <h4 className="text-lg font-bold">{problem.topic}</h4>
-                  </div>
-
-                  {/* Problem Content */}
-                  <div className="p-4">
-                    <div className="space-y-3">
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <p className="text-gray-800 font-medium">{problem.question}</p>
-                      </div>
-                      
-                      {problem.options && problem.options.length > 0 && (
-                        <div className="space-y-2">
-                          <p className="text-sm font-semibold text-gray-700">الخيارات:</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {problem.options.map((option, optIndex) => (
-                              <div key={optIndex} className="bg-gray-100 p-2 rounded text-sm text-center">
-                                {option}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className="bg-green-50 p-3 rounded-lg">
-                        <p className="text-sm font-semibold text-green-800 mb-1">الإجابة:</p>
-                        <p className="text-green-700 font-bold">{problem.answer}</p>
-                      </div>
-                      
-                      <div className="bg-yellow-50 p-3 rounded-lg">
-                        <p className="text-sm font-semibold text-yellow-800 mb-1">الحل:</p>
-                        <p className="text-yellow-700 text-sm">{problem.solution}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center">
-              <Target className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
-              <p className="text-yellow-700 text-lg">لا توجد مسائل متاحة لهذه الوحدة حالياً</p>
-              <p className="text-yellow-600 mt-2">يرجى اختيار وحدة أخرى أو التواصل مع المعلم</p>
-            </div>
-          )}
-        </div>
-
-        {/* Math Tips */}
-        <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
-          <h5 className="font-bold text-green-800 mb-3 flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            نصائح لحل المسائل الرياضية:
-          </h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-700">
-            <div className="flex items-center gap-2">
-              <span>📖</span>
-              <span>اقرأ المسألة بعناية</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>🎯</span>
-              <span>حدد المطلوب إيجاده</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>📝</span>
-              <span>اكتب المعطيات</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>🔢</span>
-              <span>اختر العملية المناسبة</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>✅</span>
-              <span>تحقق من الإجابة</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>💡</span>
-              <span>فكر في طرق مختلفة للحل</span>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
@@ -656,7 +500,7 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
       )}
 
       {/* No content message */}
-      {words.length === 0 && (!grammarRules || grammarRules.length === 0) && subject !== 'math' && (
+      {words.length === 0 && (!grammarRules || grammarRules.length === 0) && (
         <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 text-center">
           <BookOpen className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
           <h3 className="text-2xl font-bold text-yellow-700 mb-2">لا يوجد محتوى متاح</h3>

@@ -8,7 +8,7 @@ export interface VocabularyWord {
   partOfSpeech?: 'noun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'pronoun' | 'conjunction' | 'interjection';
   exampleSentence?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
-  subject?: string; // Added subject field
+  subject?: string;
 }
 
 export interface WordKnowledge {
@@ -48,7 +48,7 @@ export interface StudySession {
   totalScore: number;
   activitiesCompleted: string[];
   duration: number; // in seconds
-  studentId?: string; // للربط مع الطالب
+  studentId?: string;
 }
 
 export interface WordProgress {
@@ -62,7 +62,7 @@ export interface GrammarRule {
   examples: string[];
   unit: string;
   grade: number;
-  subject?: string; // Added subject field
+  subject?: string;
 }
 
 export interface QuizQuestion {
@@ -73,7 +73,7 @@ export interface QuizQuestion {
   explanation: string;
   unit: string;
   grade: number;
-  subject?: string; // Added subject field
+  subject?: string;
 }
 
 export interface UserProgress {
@@ -86,7 +86,7 @@ export interface UserProgress {
   wordProgress: WordProgress;
   studySessions: StudySession[];
   totalStudyTime: number; // in seconds
-  studentId?: string; // للربط مع الطالب
+  studentId?: string;
 }
 
 export interface Achievement {
@@ -117,7 +117,6 @@ export interface GradeAccess {
   studentKeyId?: string;
 }
 
-// نظام إدارة الطلاب
 export interface Student {
   id: string;
   name: string;
@@ -139,12 +138,12 @@ export interface Teacher {
   name: string;
   email: string;
   phone?: string;
-  grades: number[]; // الصفوف التي يدرسها
-  students?: string[]; // معرفات الطلاب
+  grades: number[];
+  students?: string[];
   joinDate: string;
   isActive: boolean;
   schoolName?: string;
-  subjects?: string[]; // المواد التي يدرسها
+  subjects?: string[];
 }
 
 export interface ClassRoom {
@@ -158,7 +157,7 @@ export interface ClassRoom {
   isActive: boolean;
   description?: string;
   lastActivity?: string;
-  subject?: string; // المادة الدراسية
+  subject?: string;
 }
 
 export interface StudentActivity {
@@ -174,7 +173,7 @@ export interface StudentActivity {
   timeSpent: number; // in seconds
   unit: string;
   grade: number;
-  subject?: string; // Added subject field
+  subject?: string;
 }
 
 export interface StudentReport {
@@ -249,11 +248,10 @@ export interface AccessCode {
   isActive: boolean;
   usageCount?: number;
   maxUsage?: number;
-  studentId?: string; // إذا كان الرمز مخصصًا لطالب محدد
-  classRoomId?: string; // إذا كان الرمز مخصصًا لفصل محدد
+  studentId?: string;
+  classRoomId?: string;
 }
 
-// Subject interface for managing different subjects
 export interface Subject {
   id: string;
   name: string;
@@ -276,7 +274,6 @@ export interface SubjectActivity {
   description?: string;
 }
 
-// Default subjects configuration
 export const defaultSubjects: Subject[] = [
   {
     id: 'english',
@@ -288,82 +285,8 @@ export const defaultSubjects: Subject[] = [
     isActive: true,
     activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises']
   },
-  {
-    id: 'math',
-    name: 'الرياضيات',
-    nameEn: 'Mathematics',
-    icon: '🔢',
-    color: 'from-green-500 to-teal-600',
-    description: 'تعلم الرياضيات من خلال المسائل والتمارين التفاعلية',
-    isActive: true,
-    activities: ['quiz', 'memory', 'test-exercises']
-  },
-  {
-    id: 'science',
-    name: 'العلوم',
-    nameEn: 'Science',
-    icon: '🔬',
-    color: 'from-purple-500 to-violet-600',
-    description: 'تعلم العلوم من خلال التجارب والمفاهيم العلمية (للصفوف 1-8)',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when science content is added
-    // activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises'] // RESTORE: Uncomment when adding science content
-  },
-  {
-    id: 'physics',
-    name: 'الفيزياء',
-    nameEn: 'Physics',
-    icon: '⚛️',
-    color: 'from-blue-500 to-cyan-600',
-    description: 'دراسة الفيزياء والظواهر الطبيعية (للصفوف 9-12)',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when physics content is added
-  },
-  {
-    id: 'chemistry',
-    name: 'الكيمياء',
-    nameEn: 'Chemistry',
-    icon: '🧪',
-    color: 'from-green-500 to-emerald-600',
-    description: 'دراسة الكيمياء والتفاعلات الكيميائية (للصفوف 9-12)',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when chemistry content is added
-  },
-  {
-    id: 'biology',
-    name: 'الأحياء',
-    nameEn: 'Biology',
-    icon: '🧬',
-    color: 'from-teal-500 to-green-600',
-    description: 'دراسة علم الأحياء والكائنات الحية (للصفوف 9-12)',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when biology content is added
-  },
-  {
-    id: 'islamic',
-    name: 'التربية الإسلامية',
-    nameEn: 'Islamic Education',
-    icon: '☪️',
-    color: 'from-emerald-500 to-green-600',
-    description: 'تعلم التربية الإسلامية من خلال القرآن والحديث والفقه',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when islamic content is added
-    // activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises'] // RESTORE: Uncomment when adding islamic content
-  },
-  {
-    id: 'arabic',
-    name: 'اللغة العربية',
-    nameEn: 'Arabic',
-    icon: '📖',
-    color: 'from-amber-500 to-yellow-600',
-    description: 'تعلم اللغة العربية من خلال القراءة والكتابة والقواعد',
-    isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when arabic content is added
-    // activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises'] // RESTORE: Uncomment when adding arabic content
-  }
 ];
 
-// Content item for different subjects
 export interface ContentItem {
   id: string;
   title: string;
@@ -380,75 +303,6 @@ export interface ContentItem {
   updatedAt?: string;
 }
 
-// Math-specific interfaces
-export interface MathProblem {
-  id: string;
-  question: string;
-  options?: string[];
-  answer: string;
-  solution: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  topic: string;
-  unit: string;
-  grade: number;
-  subject: string;
-  imageUrl?: string;
-  createdAt?: string;
-}
-
-// Science-specific interfaces
-export interface ScienceExperiment {
-  id: string;
-  title: string;
-  objective: string;
-  materials: string[];
-  procedure: string[];
-  conclusion: string;
-  safetyNotes: string[];
-  topic: string;
-  unit: string;
-  grade: number;
-  subject: string;
-  imageUrl?: string;
-}
-
-// Islamic Education-specific interfaces
-export interface IslamicContent {
-  id: string;
-  title: string;
-  type: 'quran' | 'hadith' | 'fiqh' | 'seerah' | 'akhlaq';
-  arabicText: string;
-  translation?: string;
-  explanation: string;
-  topic: string;
-  unit: string;
-  grade: number;
-  subject: string;
-}
-
-// Arabic Language-specific interfaces
-export interface ArabicContent {
-  id: string;
-  title: string;
-  type: 'reading' | 'grammar' | 'writing' | 'literature';
-  text: string;
-  explanation: string;
-  examples: string[];
-  exercises: ArabicExercise[];
-  topic: string;
-  unit: string;
-  grade: number;
-  subject: string;
-}
-
-export interface ArabicExercise {
-  id: string;
-  question: string;
-  options?: string[];
-  answer: string;
-  explanation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-}
 
 export type ActivityType = 'flashcards' | 'quiz' | 'memory' | 'pronunciation' | 'grammar' | 'spelling' | 'sentence-writing' | 'sentence-completion' | 'test-exercises';
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
