@@ -5,7 +5,6 @@ import GrammarExtractor from './GrammarExtractor';
 import TeacherManagement from './TeacherManagement';
 import StudentManagement from './StudentManagement';
 import AccessCodeSettings from './AccessCodeSettings';
-import GrammarExtractor from './GrammarExtractor';
 import ProgressTestingPanel from './ProgressTestingPanel';
 import { Database, BookOpen, Shield, Users, Settings, Key, Trash2, AlertTriangle, RefreshCw, CheckCircle, Book, Calculator, FlaskRound as Flask, FileText, Bookmark, GraduationCap, Activity, TestTube } from 'lucide-react';
 import { supabase, checkSupabaseConnection, deleteAllRecords, getTableCount } from '../lib/supabase';
