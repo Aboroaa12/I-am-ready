@@ -577,7 +577,34 @@ const AdminPanel: React.FC = () => {
               >
                 <div className="flex items-center gap-2 justify-center">
                   <Flask className="w-5 h-5" />
-                  <span>العلوم</span>
+                  <span>العلوم (1-8)</span>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="physics" 
+                className="flex-1 py-3 data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 rounded-lg transition-all"
+              >
+                <div className="flex items-center gap-2 justify-center">
+                  <span className="text-lg">⚛️</span>
+                  <span>الفيزياء (9-12)</span>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="chemistry" 
+                className="flex-1 py-3 data-[state=active]:bg-green-100 data-[state=active]:text-green-700 rounded-lg transition-all"
+              >
+                <div className="flex items-center gap-2 justify-center">
+                  <span className="text-lg">🧪</span>
+                  <span>الكيمياء (9-12)</span>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="biology" 
+                className="flex-1 py-3 data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 rounded-lg transition-all"
+              >
+                <div className="flex items-center gap-2 justify-center">
+                  <span className="text-lg">🧬</span>
+                  <span>الأحياء (9-12)</span>
                 </div>
               </TabsTrigger>
               <TabsTrigger 
@@ -606,8 +633,97 @@ const AdminPanel: React.FC = () => {
             <TabsContent value="science">
               <div className="bg-white rounded-xl p-8 shadow-lg text-center">
                 <Flask className="w-16 h-16 text-purple-500 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوى العلوم</h3>
-                <p className="text-gray-600 mb-6">سيتم إضافة إدارة محتوى العلوم قريباً</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوى العلوم (الصفوف 1-8)</h3>
+                <p className="text-gray-600 mb-6">إدارة محتوى العلوم العامة للصفوف الأساسية</p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-700 text-sm">
+                    <strong>ملاحظة:</strong> من الصف التاسع فصاعداً، يتم تقسيم العلوم إلى فيزياء وكيمياء وأحياء كمواد منفصلة.
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="physics">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+                <div className="text-6xl mb-4">⚛️</div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوى الفيزياء (الصفوف 9-12)</h3>
+                <p className="text-gray-600 mb-6">إدارة محتوى الفيزياء للمرحلة الثانوية</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-bold text-blue-800 mb-2">المواضيع الرئيسية</h4>
+                    <ul className="text-blue-700 text-sm space-y-1">
+                      <li>• الميكانيكا</li>
+                      <li>• الكهرباء والمغناطيسية</li>
+                      <li>• الضوء والبصريات</li>
+                      <li>• الفيزياء الحديثة</li>
+                    </ul>
+                  </div>
+                  <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+                    <h4 className="font-bold text-cyan-800 mb-2">الأنشطة المتاحة</h4>
+                    <ul className="text-cyan-700 text-sm space-y-1">
+                      <li>• تجارب افتراضية</li>
+                      <li>• حل المسائل</li>
+                      <li>• محاكاة الظواهر</li>
+                      <li>• اختبارات تفاعلية</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="chemistry">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+                <div className="text-6xl mb-4">🧪</div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوى الكيمياء (الصفوف 9-12)</h3>
+                <p className="text-gray-600 mb-6">إدارة محتوى الكيمياء للمرحلة الثانوية</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-bold text-green-800 mb-2">المواضيع الرئيسية</h4>
+                    <ul className="text-green-700 text-sm space-y-1">
+                      <li>• الكيمياء العامة</li>
+                      <li>• الكيمياء العضوية</li>
+                      <li>• الكيمياء التحليلية</li>
+                      <li>• الكيمياء الفيزيائية</li>
+                    </ul>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                    <h4 className="font-bold text-emerald-800 mb-2">الأنشطة المتاحة</h4>
+                    <ul className="text-emerald-700 text-sm space-y-1">
+                      <li>• تجارب معملية</li>
+                      <li>• معادلات كيميائية</li>
+                      <li>• جدول دوري تفاعلي</li>
+                      <li>• حسابات كيميائية</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="biology">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+                <div className="text-6xl mb-4">🧬</div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوى الأحياء (الصفوف 9-12)</h3>
+                <p className="text-gray-600 mb-6">إدارة محتوى الأحياء للمرحلة الثانوية</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                  <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                    <h4 className="font-bold text-teal-800 mb-2">المواضيع الرئيسية</h4>
+                    <ul className="text-teal-700 text-sm space-y-1">
+                      <li>• علم الخلية</li>
+                      <li>• الوراثة</li>
+                      <li>• التطور</li>
+                      <li>• علم البيئة</li>
+                    </ul>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-bold text-green-800 mb-2">الأنشطة المتاحة</h4>
+                    <ul className="text-green-700 text-sm space-y-1">
+                      <li>• مراقبة الكائنات</li>
+                      <li>• تشريح افتراضي</li>
+                      <li>• دراسة الحمض النووي</li>
+                      <li>• النظم البيئية</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </TabsContent>
             

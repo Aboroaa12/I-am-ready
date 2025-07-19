@@ -37,7 +37,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
       }
       
       if (data && data.length > 0) {
-        const formattedSubjects: Subject[] = data.map(subject => {
+          const defaultSubjectsList = getSubjectsForGrade(currentSubject?.grade || 5);
           // Find the default subject to get activities
           const defaultSubject = defaultSubjects.find(ds => ds.id === subject.id);
           
@@ -64,7 +64,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
         }
       } else {
         // If no data found, use default subjects
-        const defaultSubjectsList = getDefaultSubjects();
+        const defaultSubjectsList = getSubjectsForGrade(currentSubject?.grade || 5);
         console.log('Using default subjects:', defaultSubjectsList);
         setSubjects(defaultSubjectsList);
         
@@ -76,7 +76,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
     } catch (err) {
       console.error('Error loading subjects:', err);
       // Always use default subjects as fallback to ensure activities are included
-      const defaultSubjectsList = getDefaultSubjects();
+      const defaultSubjectsList = getSubjectsForGrade(currentSubject?.grade || 5);
       console.log('Error fallback - using default subjects:', defaultSubjectsList);
       setSubjects(defaultSubjectsList);
       
@@ -93,12 +93,26 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
     return defaultSubjects;
   };
 
+  const getSubjectsForGrade = (grade: number): Subject[] => {
+    // For grades 9-12, replace general science with specific science subjects
+    if (grade >= 9) {
+      return defaultSubjects.filter(subject => subject.id !== 'science');
+    } else {
+      // For grades 1-8, exclude specific science subjects
+      return defaultSubjects.filter(subject => 
+        !['physics', 'chemistry', 'biology'].includes(subject.id)
+      );
+    }
+  };
+
   const getSubjectBgColor = (color: string) => {
     if (color.includes('blue')) return 'bg-blue-100';
     if (color.includes('green')) return 'bg-green-100';
     if (color.includes('purple')) return 'bg-purple-100';
     if (color.includes('emerald')) return 'bg-emerald-100';
     if (color.includes('amber')) return 'bg-amber-100';
+    if (color.includes('cyan')) return 'bg-cyan-100';
+    if (color.includes('teal')) return 'bg-teal-100';
     if (color.includes('red')) return 'bg-red-100';
     if (color.includes('pink')) return 'bg-pink-100';
     return 'bg-gray-100';
@@ -110,6 +124,8 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
     if (color.includes('purple')) return 'text-purple-800';
     if (color.includes('emerald')) return 'text-emerald-800';
     if (color.includes('amber')) return 'text-amber-800';
+    if (color.includes('cyan')) return 'text-cyan-800';
+    if (color.includes('teal')) return 'text-teal-800';
     if (color.includes('red')) return 'text-red-800';
     if (color.includes('pink')) return 'text-pink-800';
     return 'text-gray-800';

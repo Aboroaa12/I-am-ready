@@ -47,10 +47,10 @@ export const getGradeSolidColor = (grade: number): string => {
   if (grade === 6) return 'text-violet-600';
   if (grade === 7) return 'text-indigo-600';
   if (grade === 8) return 'text-teal-600';
-  if (grade === 9) return 'text-amber-600';
-  if (grade === 10) return 'text-red-600';
-  if (grade === 11) return 'text-rose-600';
-  if (grade === 12) return 'text-purple-600';
+  if (grade === 9) return 'text-cyan-600';
+  if (grade === 10) return 'text-emerald-600';
+  if (grade === 11) return 'text-blue-600';
+  if (grade === 12) return 'text-teal-600';
   return 'text-gray-600';
 };
 

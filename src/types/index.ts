@@ -305,10 +305,40 @@ export const defaultSubjects: Subject[] = [
     nameEn: 'Science',
     icon: '🔬',
     color: 'from-purple-500 to-violet-600',
-    description: 'تعلم العلوم من خلال التجارب والمفاهيم العلمية',
+    description: 'تعلم العلوم من خلال التجارب والمفاهيم العلمية (للصفوف 1-8)',
     isActive: true,
     // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when science content is added
     // activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises'] // RESTORE: Uncomment when adding science content
+  },
+  {
+    id: 'physics',
+    name: 'الفيزياء',
+    nameEn: 'Physics',
+    icon: '⚛️',
+    color: 'from-blue-500 to-cyan-600',
+    description: 'دراسة الفيزياء والظواهر الطبيعية (للصفوف 9-12)',
+    isActive: true,
+    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when physics content is added
+  },
+  {
+    id: 'chemistry',
+    name: 'الكيمياء',
+    nameEn: 'Chemistry',
+    icon: '🧪',
+    color: 'from-green-500 to-emerald-600',
+    description: 'دراسة الكيمياء والتفاعلات الكيميائية (للصفوف 9-12)',
+    isActive: true,
+    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when chemistry content is added
+  },
+  {
+    id: 'biology',
+    name: 'الأحياء',
+    nameEn: 'Biology',
+    icon: '🧬',
+    color: 'from-teal-500 to-green-600',
+    description: 'دراسة علم الأحياء والكائنات الحية (للصفوف 9-12)',
+    isActive: true,
+    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when biology content is added
   },
   {
     id: 'islamic',

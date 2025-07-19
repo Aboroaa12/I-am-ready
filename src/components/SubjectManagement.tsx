@@ -126,7 +126,37 @@ const SubjectManagement: React.FC = () => {
         nameEn: 'Science',
         icon: '🔬',
         color: 'from-purple-500 to-violet-600',
-        description: 'تعلم العلوم من خلال التجارب والمفاهيم العلمية',
+        description: 'تعلم العلوم من خلال التجارب والمفاهيم العلمية (للصفوف 1-8)',
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'physics',
+        name: 'الفيزياء',
+        nameEn: 'Physics',
+        icon: '⚛️',
+        color: 'from-blue-500 to-cyan-600',
+        description: 'دراسة الفيزياء والظواهر الطبيعية (للصفوف 9-12)',
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'chemistry',
+        name: 'الكيمياء',
+        nameEn: 'Chemistry',
+        icon: '🧪',
+        color: 'from-green-500 to-emerald-600',
+        description: 'دراسة الكيمياء والتفاعلات الكيميائية (للصفوف 9-12)',
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'biology',
+        name: 'الأحياء',
+        nameEn: 'Biology',
+        icon: '🧬',
+        color: 'from-teal-500 to-green-600',
+        description: 'دراسة علم الأحياء والكائنات الحية (للصفوف 9-12)',
         isActive: true,
         createdAt: new Date().toISOString()
       },
@@ -571,6 +601,15 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
     text: value.text
   }));
 
+  // Add new color options for science subjects
+  const additionalColors = [
+    { id: 'physics', gradient: 'from-blue-500 to-cyan-600', bg: 'bg-cyan-100', text: 'text-cyan-800' },
+    { id: 'chemistry', gradient: 'from-green-500 to-emerald-600', bg: 'bg-emerald-100', text: 'text-emerald-800' },
+    { id: 'biology', gradient: 'from-teal-500 to-green-600', bg: 'bg-teal-100', text: 'text-teal-800' }
+  ];
+  
+  const allColorOptions = [...colorOptions, ...additionalColors];
+
   const grades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const semesters = ['الفصل الأول', 'الفصل الثاني', 'الفصل الصيفي'];
 
@@ -685,7 +724,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onClose, onSave, sub
             لون المادة
           </label>
           <div className="grid grid-cols-3 gap-2 mb-2">
-            {colorOptions.map(color => (
+            {allColorOptions.map(color => (
               <button
                 key={color.id}
                 type="button"
