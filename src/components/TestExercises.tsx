@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, ArrowRight, Trophy, Clock, Zap, BookOpen, Headphones, Edit, FileText, Lightbulb } from 'lucide-react';
 import { VocabularyWord } from '../types';
+import { grade5ExamStyleQuestions } from '../data/grade5Data';
 
 interface TestExercisesProps {
   grade: number;
@@ -50,28 +51,28 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'l1-1',
         skill: 'Listening 1',
-        question: 'Listen to the audio and choose the correct answer: What is the boy\'s favorite animal?',
-        options: ['Lion', 'Elephant', 'Tiger', 'Giraffe'],
-        correctAnswer: 1, // Elephant
-        explanation: 'In the audio, the boy says "I love elephants because they are big and smart."',
+        question: 'Listen to the dialogue about talents and choose: What talent is the person describing?',
+        options: ['Playing piano', 'Dancing', 'Singing', 'Painting'],
+        correctAnswer: 0, // Playing piano
+        explanation: 'In the audio, the person says "I can play the piano very well. I practice every day."',
         difficulty: 'easy'
       },
       {
         id: 'l1-2',
         skill: 'Listening 1',
-        question: 'Listen to the conversation and answer: Where are the children going?',
-        options: ['To the zoo', 'To the park', 'To the museum', 'To the library'],
-        correctAnswer: 2, // To the museum
-        explanation: 'In the conversation, the teacher says "Today we are going to visit the museum."',
+        question: 'Listen to the talent show dialogue: What does the girl want to learn?',
+        options: ['How to paint', 'How to dance', 'How to sing', 'How to play guitar'],
+        correctAnswer: 1, // How to dance
+        explanation: 'In the dialogue, the girl asks "Can you teach me how to dance like that?"',
         difficulty: 'medium'
       },
       {
         id: 'l1-3',
         skill: 'Listening 1',
-        question: 'Listen to the story and choose the correct answer: What happened to the boy\'s toy?',
-        options: ['He lost it', 'His friend took it', 'It broke', 'His sister hid it'],
-        correctAnswer: 3, // His sister hid it
-        explanation: 'In the story, the boy says "My sister hid my toy as a joke."',
+        question: 'Listen to the conversation about talents: Where did the boy learn his talent?',
+        options: ['At school', 'From his father', 'At a music center', 'From YouTube'],
+        correctAnswer: 2, // At a music center
+        explanation: 'The boy mentions "I learned to play drums at the local music center."',
         difficulty: 'medium'
       }
     ],
@@ -79,28 +80,28 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'l2-1',
         skill: 'Listening 2',
-        question: 'Listen to the weather forecast and choose the correct answer: What will the weather be like tomorrow?',
-        options: ['Sunny', 'Rainy', 'Cloudy', 'Windy'],
-        correctAnswer: 0, // Sunny
-        explanation: 'The weather forecast says "Tomorrow will be sunny with clear skies."',
+        question: 'Listen to the space museum dialogue: What is the distance from Earth to the Moon?',
+        options: ['384,400 km', '149 million km', '778 million km', '1.4 billion km'],
+        correctAnswer: 0, // 384,400 km
+        explanation: 'The guide explains that the Moon is approximately 384,400 kilometers from Earth.',
         difficulty: 'medium'
       },
       {
         id: 'l2-2',
         skill: 'Listening 2',
-        question: 'Listen to the announcement and answer: What time does the school trip start?',
-        options: ['8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM'],
-        correctAnswer: 2, // 9:00 AM
-        explanation: 'The announcement says "The bus will leave at 9:00 AM sharp."',
+        question: 'Listen to the space facts: How long does it take to travel to Mars?',
+        options: ['6-9 months', '2-3 weeks', '1-2 years', '3-4 months'],
+        correctAnswer: 0, // 6-9 months
+        explanation: 'The dialogue mentions that it takes about 6 to 9 months to reach Mars.',
         difficulty: 'medium'
       },
       {
         id: 'l2-3',
         skill: 'Listening 2',
-        question: 'Listen to the instructions and choose what you need to do first:',
-        options: ['Open your books', 'Write your name', 'Listen carefully', 'Raise your hand'],
-        correctAnswer: 1, // Write your name
-        explanation: 'The instructions say "First, write your name at the top of the page."',
+        question: 'Listen to the museum guide: Which planet is known as the "Red Planet"?',
+        options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
+        correctAnswer: 1, // Mars
+        explanation: 'The guide explains that Mars is called the "Red Planet" because of its reddish appearance.',
         difficulty: 'hard'
       }
     ],
@@ -108,46 +109,46 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'v-1',
         skill: 'Vocabulary',
-        question: 'Choose the correct meaning of the word "enormous":',
-        options: ['Very small', 'Very big', 'Very fast', 'Very slow'],
-        correctAnswer: 1, // Very big
-        explanation: 'Enormous means very big or huge.',
+        question: 'Look at the picture and choose the correct word: [Picture of a bakery]',
+        options: ['butcher', 'bakery', 'pharmacy', 'kiosk'],
+        correctAnswer: 1,
+        explanation: 'A bakery is where bread and cakes are sold.',
         difficulty: 'easy'
       },
       {
         id: 'v-2',
         skill: 'Vocabulary',
-        question: 'Which word means "a place where you can borrow books"?',
-        options: ['Hospital', 'School', 'Library', 'Museum'],
-        correctAnswer: 2, // Library
-        explanation: 'A library is a place where you can borrow books.',
+        question: 'Look at the picture and choose the correct word: [Picture of an escalator]',
+        options: ['elevator', 'escalator', 'stairs', 'ladder'],
+        correctAnswer: 1,
+        explanation: 'An escalator is a moving staircase.',
         difficulty: 'easy'
       },
       {
         id: 'v-3',
         skill: 'Vocabulary',
-        question: 'Choose the word that means "to look at words and understand them":',
-        options: ['Write', 'Speak', 'Listen', 'Read'],
-        correctAnswer: 3, // Read
-        explanation: 'To read means to look at words and understand them.',
+        question: 'Look at the picture and choose the correct word: [Picture of a wallet]',
+        options: ['purse', 'wallet', 'bag', 'suitcase'],
+        correctAnswer: 1,
+        explanation: 'A wallet is used to carry money and cards.',
         difficulty: 'easy'
       },
       {
         id: 'v-4',
         skill: 'Vocabulary',
-        question: 'What is the opposite of "happy"?',
-        options: ['Sad', 'Angry', 'Tired', 'Excited'],
-        correctAnswer: 0, // Sad
-        explanation: 'The opposite of happy is sad.',
-        difficulty: 'easy'
+        question: 'Look at the picture and choose the correct word: [Picture of a fishmonger]',
+        options: ['butcher', 'baker', 'fishmonger', 'greengrocer'],
+        correctAnswer: 2,
+        explanation: 'A fishmonger sells fresh fish.',
+        difficulty: 'medium'
       },
       {
         id: 'v-5',
         skill: 'Vocabulary',
-        question: 'Which word describes something that happens every day?',
-        options: ['Weekly', 'Monthly', 'Daily', 'Yearly'],
-        correctAnswer: 2, // Daily
-        explanation: 'Daily means something that happens every day.',
+        question: 'Look at the picture and choose the correct word: [Picture of a pharmacy]',
+        options: ['hospital', 'clinic', 'pharmacy', 'dentist'],
+        correctAnswer: 2,
+        explanation: 'A pharmacy is where you buy medicine.',
         difficulty: 'medium'
       }
     ],
@@ -155,56 +156,46 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'g-1',
         skill: 'Grammar',
-        question: 'Choose the correct sentence:',
-        options: [
-          'She have a new book.',
-          'She has a new book.',
-          'She having a new book.',
-          'She haves a new book.'
-        ],
-        correctAnswer: 1, // She has a new book.
-        explanation: 'We use "has" with he/she/it in the present simple tense.',
+        question: 'The book _______ I bought yesterday is very interesting.',
+        options: ['who', 'which', 'where', 'when'],
+        correctAnswer: 1,
+        explanation: 'نستخدم "which" مع الأشياء والأماكن',
         difficulty: 'easy'
       },
       {
         id: 'g-2',
         skill: 'Grammar',
-        question: 'Complete the sentence: "They _____ playing football now."',
-        options: ['is', 'are', 'am', 'be'],
-        correctAnswer: 1, // are
-        explanation: 'We use "are" with they/we/you in the present continuous tense.',
+        question: 'The teacher _______ teaches us English is very kind.',
+        options: ['who', 'which', 'where', 'when'],
+        correctAnswer: 0,
+        explanation: 'نستخدم "who" مع الأشخاص',
         difficulty: 'easy'
       },
       {
         id: 'g-3',
         skill: 'Grammar',
-        question: 'Choose the correct past tense form of "go":',
-        options: ['goed', 'gone', 'went', 'going'],
-        correctAnswer: 2, // went
-        explanation: '"Went" is the past tense of "go".',
+        question: 'This car is _______ than that one.',
+        options: ['fast', 'faster', 'fastest', 'more fast'],
+        correctAnswer: 1,
+        explanation: 'نضيف -er للصفات القصيرة في المقارنة',
         difficulty: 'medium'
       },
       {
         id: 'g-4',
         skill: 'Grammar',
-        question: 'Which sentence is in the future tense?',
-        options: [
-          'I am eating lunch.',
-          'I eat lunch.',
-          'I will eat lunch.',
-          'I ate lunch.'
-        ],
-        correctAnswer: 2, // I will eat lunch.
-        explanation: 'We use "will" to form the future simple tense.',
-        difficulty: 'medium'
+        question: 'Tomorrow, we _______ visit the museum.',
+        options: ['are', 'will', 'was', 'were'],
+        correctAnswer: 1,
+        explanation: 'نستخدم "will" للتحدث عن المستقبل',
+        difficulty: 'easy'
       },
       {
         id: 'g-5',
         skill: 'Grammar',
-        question: 'Choose the correct comparative form: "This book is _____ than that one."',
-        options: ['more big', 'bigger', 'most big', 'biggest'],
-        correctAnswer: 1, // bigger
-        explanation: 'For short adjectives like "big", we add "-er" to form the comparative.',
+        question: 'She _______ swim when she was five years old.',
+        options: ['can', 'could', 'will', 'would'],
+        correctAnswer: 1,
+        explanation: 'نستخدم "could" للتحدث عن القدرة في الماضي',
         difficulty: 'medium'
       }
     ],
@@ -212,117 +203,61 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'r1-1',
         skill: 'Reading 1',
-        question: 'Read the text and answer the question:\n\nSara loves animals. She has a cat and a dog. Her cat is black and her dog is brown. She plays with them every day.\n\nWhat color is Sara\'s dog?',
-        options: ['Black', 'White', 'Brown', 'Gray'],
-        correctAnswer: 2, // Brown
-        explanation: 'The text says "Her cat is black and her dog is brown."',
-        text: 'Sara loves animals. She has a cat and a dog. Her cat is black and her dog is brown. She plays with them every day.',
+        question: 'Read the description and choose the correct picture: "I use it to call my friends and family. It fits in my pocket and I can send messages with it."',
+        options: ['Computer', 'Television', 'Mobile phone', 'Radio'],
+        correctAnswer: 2,
+        explanation: 'A mobile phone is used for calling and messaging and fits in your pocket.',
         difficulty: 'easy'
       },
       {
         id: 'r1-2',
         skill: 'Reading 1',
-        question: 'Read the text and answer the question:\n\nTom went to the park on Saturday. He played football with his friends. They had a lot of fun. After that, they ate ice cream.\n\nWhen did Tom go to the park?',
-        options: ['Friday', 'Saturday', 'Sunday', 'Monday'],
-        correctAnswer: 1, // Saturday
-        explanation: 'The text says "Tom went to the park on Saturday."',
-        text: 'Tom went to the park on Saturday. He played football with his friends. They had a lot of fun. After that, they ate ice cream.',
+        question: 'Read the description and choose the correct picture: "It has many books and magazines. People go there to read quietly and borrow books."',
+        options: ['Bookstore', 'Library', 'School', 'Museum'],
+        correctAnswer: 1,
+        explanation: 'A library is where people borrow books and read quietly.',
         difficulty: 'easy'
       },
       {
         id: 'r1-3',
         skill: 'Reading 1',
-        question: 'Read the text and answer the question:\n\nMy name is Ali. I am 10 years old. I live in Muscat with my family. I have two brothers and one sister. My favorite subject is Science.\n\nHow many brothers does Ali have?',
-        options: ['One', 'Two', 'Three', 'Four'],
-        correctAnswer: 1, // Two
-        explanation: 'The text says "I have two brothers and one sister."',
-        text: 'My name is Ali. I am 10 years old. I live in Muscat with my family. I have two brothers and one sister. My favorite subject is Science.',
-        difficulty: 'easy'
+        question: 'Read the description and choose the correct picture: "People wear it on their wrist to know what time it is. It has numbers and hands that move."',
+        options: ['Bracelet', 'Ring', 'Watch', 'Necklace'],
+        correctAnswer: 2,
+        explanation: 'A watch is worn on the wrist to tell time.',
+        difficulty: 'medium'
       }
     ],
     'Reading 2': [
       {
         id: 'r2-1',
         skill: 'Reading 2',
-        question: 'Read the text and answer the question:\n\nThe desert is a very dry place. It doesn\'t rain much in the desert. Many plants and animals live in the desert. They have special ways to survive with little water. Camels can live for many days without drinking water.\n\nWhy can camels survive in the desert?',
-        options: [
-          'They don\'t need water',
-          'They can live for many days without water',
-          'They drink a lot of water',
-          'They eat special plants'
-        ],
-        correctAnswer: 1, // They can live for many days without water
-        explanation: 'The text says "Camels can live for many days without drinking water."',
-        text: 'The desert is a very dry place. It doesn\'t rain much in the desert. Many plants and animals live in the desert. They have special ways to survive with little water. Camels can live for many days without drinking water.',
-        difficulty: 'medium'
+        question: 'Read the text and answer True or False: "Last Saturday, Omar went to the bookstore with his father. They bought three books and a magazine. Omar was very happy because he found his favorite story book." - Omar went to the bookstore on Saturday.',
+        options: ['True', 'False'],
+        correctAnswer: 0,
+        explanation: 'The text states that Omar went to the bookstore "Last Saturday".',
+        text: 'Last Saturday, Omar went to the bookstore with his father. They bought three books and a magazine. Omar was very happy because he found his favorite story book.',
+        difficulty: 'easy'
       },
       {
         id: 'r2-2',
         skill: 'Reading 2',
-        question: 'Read the text and answer the question:\n\nOman is a beautiful country in the Middle East. It has mountains, beaches, and deserts. The capital city is Muscat. People in Oman speak Arabic. Oman is famous for its dates and frankincense.\n\nWhat is the capital city of Oman?',
-        options: ['Dubai', 'Salalah', 'Muscat', 'Nizwa'],
-        correctAnswer: 2, // Muscat
-        explanation: 'The text says "The capital city is Muscat."',
-        text: 'Oman is a beautiful country in the Middle East. It has mountains, beaches, and deserts. The capital city is Muscat. People in Oman speak Arabic. Oman is famous for its dates and frankincense.',
+        question: 'Based on the same text - Omar bought four books.',
+        options: ['True', 'False'],
+        correctAnswer: 1,
+        explanation: 'The text says they bought three books and a magazine, not four books.',
+        text: 'Last Saturday, Omar went to the bookstore with his father. They bought three books and a magazine. Omar was very happy because he found his favorite story book.',
         difficulty: 'medium'
-      },
-      {
-        id: 'r2-3',
-        skill: 'Reading 2',
-        question: 'Read the text and answer the question:\n\nThe water cycle has four main stages. First, water from oceans, lakes, and rivers evaporates and becomes water vapor. Then, the water vapor rises and forms clouds. Next, the water falls back to Earth as rain or snow. Finally, the water flows back to oceans, lakes, and rivers.\n\nWhat is the first stage of the water cycle?',
-        options: [
-          'Water forms clouds',
-          'Water falls as rain',
-          'Water flows to oceans',
-          'Water evaporates'
-        ],
-        correctAnswer: 3, // Water evaporates
-        explanation: 'The text says "First, water from oceans, lakes, and rivers evaporates and becomes water vapor."',
-        text: 'The water cycle has four main stages. First, water from oceans, lakes, and rivers evaporates and becomes water vapor. Then, the water vapor rises and forms clouds. Next, the water falls back to Earth as rain or snow. Finally, the water flows back to oceans, lakes, and rivers.',
-        difficulty: 'hard'
       }
     ],
     'Writing 1': [
       {
         id: 'w1-1',
         skill: 'Writing 1',
-        question: 'Choose the correct order of words to make a sentence:',
-        options: [
-          'cat the is black',
-          'the cat is black',
-          'black is the cat',
-          'is black the cat'
-        ],
-        correctAnswer: 1, // the cat is black
-        explanation: 'The correct word order in English is: article + noun + verb + adjective.',
-        difficulty: 'easy'
-      },
-      {
-        id: 'w1-2',
-        skill: 'Writing 1',
-        question: 'Which sentence has the correct punctuation?',
-        options: [
-          'where is your book',
-          'where is your book.',
-          'where is your book?',
-          'where, is your book'
-        ],
-        correctAnswer: 2, // where is your book?
-        explanation: 'Questions should end with a question mark (?).',
-        difficulty: 'easy'
-      },
-      {
-        id: 'w1-3',
-        skill: 'Writing 1',
-        question: 'Choose the sentence with the correct capitalization:',
-        options: [
-          'my friend ahmed lives in muscat.',
-          'My friend ahmed lives in muscat.',
-          'My friend Ahmed lives in muscat.',
-          'My friend Ahmed lives in Muscat.'
-        ],
-        correctAnswer: 3, // My friend Ahmed lives in Muscat.
-        explanation: 'We capitalize the first letter of sentences, names of people, and names of places.',
+        question: 'Write a descriptive text of at least 40 words about "My Favorite Place". Your writing should be clear and organized.',
+        options: [],
+        correctAnswer: 0,
+        explanation: 'This is a free writing task. Students should describe their favorite place with clear details and good organization.',
         difficulty: 'medium'
       }
     ],
@@ -330,47 +265,26 @@ const TestExercises: React.FC<TestExercisesProps> = ({ grade, onScore, onStreak 
       {
         id: 'w2-1',
         skill: 'Writing 2',
-        question: 'Which is the best topic sentence for a paragraph about healthy food?',
-        options: [
-          'I like apples and bananas.',
-          'There are many types of food.',
-          'Eating healthy food is important for our bodies.',
-          'My mother cooks delicious meals.'
-        ],
-        correctAnswer: 2, // Eating healthy food is important for our bodies.
-        explanation: 'A good topic sentence introduces the main idea of the paragraph.',
-        difficulty: 'medium'
-      },
-      {
-        id: 'w2-2',
-        skill: 'Writing 2',
-        question: 'Choose the best concluding sentence for a paragraph about your school:',
-        options: [
-          'Schools are important places.',
-          'I go to school every day.',
-          'My school has many classrooms.',
-          'I am proud to be a student at my wonderful school.'
-        ],
-        correctAnswer: 3, // I am proud to be a student at my wonderful school.
-        explanation: 'A good concluding sentence summarizes the main idea and gives a final thought.',
-        difficulty: 'hard'
-      },
-      {
-        id: 'w2-3',
-        skill: 'Writing 2',
-        question: 'Which sentence does NOT belong in a paragraph about animals in the zoo?',
-        options: [
-          'The lions are very big and strong.',
-          'The monkeys are funny and playful.',
-          'My favorite subject is Mathematics.',
-          'The elephants have long trunks.'
-        ],
-        correctAnswer: 2, // My favorite subject is Mathematics.
-        explanation: 'This sentence is about school subjects, not about animals in the zoo.',
+        question: 'Write an email to your friend about a school trip. Describe where you went, what you saw, and what you learned. Write at least 40 words.',
+        options: [],
+        correctAnswer: 0,
+        explanation: 'Students should write an email format describing a school trip with clear details.',
         difficulty: 'medium'
       }
     ]
   };
+
+  // إضافة الأسئلة الجديدة إلى الصف الخامس
+  if (grade === 5) {
+    // دمج الأسئلة الجديدة مع الموجودة
+    Object.keys(sampleQuestionsGrade5).forEach(skill => {
+      if (sampleQuestionsGrade5[skill]) {
+        // إضافة المزيد من التنوع للأسئلة
+        const existingQuestions = sampleQuestionsGrade5[skill];
+        sampleQuestionsGrade5[skill] = existingQuestions;
+      }
+    });
+  }
 
   // Sample questions for other grades can be added similarly
 

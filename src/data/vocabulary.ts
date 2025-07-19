@@ -10,6 +10,7 @@ import { grade9Vocabulary } from './grade9Data';
 import { grade10Vocabulary } from './grade10Data';
 import { grade11Vocabulary } from './grade11Data';
 import { grade12Vocabulary } from './grade12Data';
+import { grade5AllVocabulary } from './grade5Data';
 
 // Vocabulary organized by grade
 export const vocabularyByGrade: { [key: number]: VocabularyWord[] } = {
@@ -17,7 +18,7 @@ export const vocabularyByGrade: { [key: number]: VocabularyWord[] } = {
   2: grade2Vocabulary,
   3: grade3Vocabulary,
   4: grade4Vocabulary,
-  5: grade5Vocabulary,
+  5: grade5AllVocabulary,
   6: grade6Vocabulary,
   8: grade8Vocabulary,
   9: grade9Vocabulary,

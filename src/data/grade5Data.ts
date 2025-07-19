@@ -89,6 +89,25 @@ export const grade5Vocabulary: VocabularyWord[] = [
   { english: "respect", arabic: "احترام", unit: "Community and Culture", pronunciation: "/rɪˈspekt/", grade: 5, partOfSpeech: "noun", exampleSentence: "We should show respect for people of all cultures." }
 ];
 
+// مفردات إضافية مشابهة لورقة الامتحان
+export const grade5ShopsVocabulary: VocabularyWord[] = [
+  { english: "bakery", arabic: "مخبز", unit: "Off to the Shops", pronunciation: "/ˈbeɪkəri/", grade: 5, partOfSpeech: "noun", exampleSentence: "We buy fresh bread from the bakery.", difficulty: "easy" },
+  { english: "butcher", arabic: "جزار", unit: "Off to the Shops", pronunciation: "/ˈbʊtʃə/", grade: 5, partOfSpeech: "noun", exampleSentence: "The butcher sells fresh meat.", difficulty: "easy" },
+  { english: "fishmonger", arabic: "بائع السمك", unit: "Off to the Shops", pronunciation: "/ˈfɪʃmʌŋɡə/", grade: 5, partOfSpeech: "noun", exampleSentence: "We bought fish from the fishmonger.", difficulty: "medium" },
+  { english: "greengrocer", arabic: "بائع الخضار", unit: "Off to the Shops", pronunciation: "/ˈɡriːnɡrəʊsə/", grade: 5, partOfSpeech: "noun", exampleSentence: "The greengrocer has fresh vegetables.", difficulty: "medium" },
+  { english: "pharmacy", arabic: "صيدلية", unit: "Off to the Shops", pronunciation: "/ˈfɑːməsi/", grade: 5, partOfSpeech: "noun", exampleSentence: "I need to go to the pharmacy for medicine.", difficulty: "easy" },
+  { english: "kiosk", arabic: "كشك", unit: "Off to the Shops", pronunciation: "/ˈkiːɒsk/", grade: 5, partOfSpeech: "noun", exampleSentence: "She bought a magazine from the kiosk.", difficulty: "medium" },
+  { english: "jeweller", arabic: "صائغ", unit: "Off to the Shops", pronunciation: "/ˈdʒuːələ/", grade: 5, partOfSpeech: "noun", exampleSentence: "The jeweller showed us beautiful rings.", difficulty: "medium" },
+  { english: "optician", arabic: "أخصائي البصريات", unit: "Off to the Shops", pronunciation: "/ɒpˈtɪʃən/", grade: 5, partOfSpeech: "noun", exampleSentence: "I need to visit the optician for new glasses.", difficulty: "hard" },
+  { english: "escalator", arabic: "سلم متحرك", unit: "Technology and Communication", pronunciation: "/ˈeskəleɪtə/", grade: 5, partOfSpeech: "noun", exampleSentence: "We took the escalator to the second floor.", difficulty: "medium" },
+  { english: "elevator", arabic: "مصعد", unit: "Technology and Communication", pronunciation: "/ˈelɪveɪtə/", grade: 5, partOfSpeech: "noun", exampleSentence: "The elevator is broken, so we used the stairs.", difficulty: "easy" },
+  { english: "wallet", arabic: "محفظة", unit: "Off to the Shops", pronunciation: "/ˈwɒlɪt/", grade: 5, partOfSpeech: "noun", exampleSentence: "He keeps his money in his wallet.", difficulty: "easy" },
+  { english: "purse", arabic: "حقيبة يد صغيرة", unit: "Off to the Shops", pronunciation: "/pɜːs/", grade: 5, partOfSpeech: "noun", exampleSentence: "She put her keys in her purse.", difficulty: "easy" }
+];
+
+// دمج المفردات الجديدة مع الموجودة
+export const grade5AllVocabulary = [...grade5Vocabulary, ...grade5ShopsVocabulary];
+
 // Grade 5 Grammar Rules - Intermediate structures
 export const grade5Grammar: GrammarRule[] = [
   {
@@ -273,117 +292,6 @@ export const grade5Questions: QuizQuestion[] = [
     correct: 2,
     explanation: "talent تعني موهبة",
     unit: "Talent Show",
-    grade: 5
-  }
-];
-
-// أسئلة امتحانية إضافية مشابهة لورقة الامتحان التجريبية
-export const grade5ExamStyleQuestions: QuizQuestion[] = [
-  // أسئلة القواعد - الضمائر الوصلية
-  {
-    question: "The book _______ I bought yesterday is very interesting.",
-    options: ["who", "which", "where", "when"],
-    correct: 1,
-    explanation: "نستخدم 'which' مع الأشياء والأماكن",
-    unit: "Grammar - Relative Clauses",
-    grade: 5
-  },
-  {
-    question: "The teacher _______ teaches us English is very kind.",
-    options: ["who", "which", "where", "when"],
-    correct: 0,
-    explanation: "نستخدم 'who' مع الأشخاص",
-    unit: "Grammar - Relative Clauses", 
-    grade: 5
-  },
-  
-  // أسئلة القواعد - المقارنات
-  {
-    question: "This car is _______ than that one.",
-    options: ["fast", "faster", "fastest", "more fast"],
-    correct: 1,
-    explanation: "نضيف -er للصفات القصيرة في المقارنة",
-    unit: "Grammar - Comparatives",
-    grade: 5
-  },
-  {
-    question: "Mount Everest is the _______ mountain in the world.",
-    options: ["high", "higher", "highest", "more high"],
-    correct: 2,
-    explanation: "نضيف -est للصفات القصيرة في التفضيل",
-    unit: "Grammar - Superlatives",
-    grade: 5
-  },
-  
-  // أسئلة القواعد - المستقبل
-  {
-    question: "Tomorrow, we _______ visit the museum.",
-    options: ["are", "will", "was", "were"],
-    correct: 1,
-    explanation: "نستخدم 'will' للتحدث عن المستقبل",
-    unit: "Grammar - Future Tense",
-    grade: 5
-  },
-  {
-    question: "Next week, my family _______ travel to Dubai.",
-    options: ["will", "was", "are", "were"],
-    correct: 0,
-    explanation: "نستخدم 'will' للخطط المستقبلية",
-    unit: "Grammar - Future Tense",
-    grade: 5
-  },
-  
-  // أسئلة القواعد - الأفعال الناقصة
-  {
-    question: "She _______ swim when she was five years old.",
-    options: ["can", "could", "will", "would"],
-    correct: 1,
-    explanation: "نستخدم 'could' للتحدث عن القدرة في الماضي",
-    unit: "Grammar - Modals",
-    grade: 5
-  },
-  {
-    question: "The tourist was sad because he _______ find a good restaurant.",
-    options: ["can", "could", "couldn't", "can't"],
-    correct: 2,
-    explanation: "نستخدم 'couldn't' للتعبير عن عدم القدرة في الماضي",
-    unit: "Grammar - Modals",
-    grade: 5
-  },
-  
-  // أسئلة فهم القراءة - صح أم خطأ
-  {
-    question: "Read the text and answer: 'Last Saturday, Omar went to the bookstore with his father. They bought three books and a magazine. Omar was very happy because he found his favorite story book.' - Omar went to the bookstore on Saturday.",
-    options: ["True", "False"],
-    correct: 0,
-    explanation: "النص يذكر أن عمر ذهب إلى المكتبة يوم السبت الماضي",
-    unit: "Reading Comprehension",
-    grade: 5
-  },
-  {
-    question: "Based on the same text - Omar bought four books.",
-    options: ["True", "False"],
-    correct: 1,
-    explanation: "النص يذكر أنهم اشتروا ثلاثة كتب ومجلة، وليس أربعة كتب",
-    unit: "Reading Comprehension",
-    grade: 5
-  },
-  
-  // أسئلة المفردات - مطابقة الوصف
-  {
-    question: "What do you call a place where you can buy fresh bread and cakes?",
-    options: ["butcher", "bakery", "pharmacy", "kiosk"],
-    correct: 1,
-    explanation: "المخبز (bakery) هو المكان الذي يُباع فيه الخبز والكعك",
-    unit: "Vocabulary - Shops",
-    grade: 5
-  },
-  {
-    question: "What do you call moving stairs in a building?",
-    options: ["elevator", "escalator", "ladder", "stairs"],
-    correct: 1,
-    explanation: "السلم المتحرك يُسمى escalator",
-    unit: "Vocabulary - Buildings",
     grade: 5
   }
 ];
