@@ -20,7 +20,7 @@ const GrammarExtractor: React.FC = () => {
   const [editingQuestion, setEditingQuestion] = useState<QuizQuestion | null>(null);
   const [activeTab, setActiveTab] = useState<'rules' | 'questions'>('rules');
 
-  const { rules, questions, loading, error, addRule, updateRule, deleteRule, addQuestion, updateQuestion, deleteQuestion, refreshGrammar } = useGrammar();
+  const { rules, questions, loading, error, addRule, updateRule, deleteRule, addQuestion, updateQuestion, deleteQuestion, refreshGrammar } = useGrammar(selectedGrade);
 
   useEffect(() => {
     // Extract unique grades
@@ -31,6 +31,11 @@ const GrammarExtractor: React.FC = () => {
     const uniqueUnits = [...new Set(rules.map(rule => rule.unit))];
     setUnits(uniqueUnits);
   }, [rules]);
+
+  // Refresh data when grade selection changes
+  useEffect(() => {
+    refreshGrammar();
+  }, [selectedGrade, refreshGrammar]);
 
   const filteredRules = rules.filter(rule => {
     // Apply grade filter
@@ -395,6 +400,18 @@ const GrammarExtractor: React.FC = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
               <p className="text-gray-600">جاري تحميل قواعد اللغة...</p>
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="text-red-500 mb-4">⚠️</div>
+              <p className="text-red-600 font-bold mb-2">خطأ في تحميل القواعد</p>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={refreshGrammar}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                إعادة المحاولة
+              </button>
+            </div>
           ) : filteredRules.length > 0 ? (
             <div className="space-y-6">
               {filteredRules.map((rule, index) => {
@@ -423,6 +440,11 @@ const GrammarExtractor: React.FC = () => {
                           <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
                             {rule.unit}
                           </span>
+                          {rule.subject && (
+                            <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                              {rule.subject}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-2">

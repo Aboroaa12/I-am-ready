@@ -42,13 +42,17 @@ export const questionsByGrade: { [key: number]: QuizQuestion[] } = {
 
 export const getGrammarByGrade = (grade: number): GrammarRule[] => {
   const rules = grammarByGrade[grade] || [];
-  console.log(`الصف ${grade}: تم تحميل ${rules.length} قاعدة نحوية`);
+  if (rules.length > 0) {
+    console.log(`الصف ${grade}: تم تحميل ${rules.length} قاعدة نحوية`);
+  }
   return rules;
 };
 
 export const getQuestionsByGrade = (grade: number): QuizQuestion[] => {
   const questions = questionsByGrade[grade] || [];
-  console.log(`الصف ${grade}: تم تحميل ${questions.length} سؤال`);
+  if (questions.length > 0) {
+    console.log(`الصف ${grade}: تم تحميل ${questions.length} سؤال`);
+  }
   return questions;
 };
 

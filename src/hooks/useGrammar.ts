@@ -46,8 +46,8 @@ export const useGrammar = (grade?: number) => {
       
       // Try to load from Supabase if connected
       try {
-        let rulesQuery = supabase.from('grammar_rules').select('*');
-        let questionsQuery = supabase.from('quiz_questions').select('*');
+        let rulesQuery = supabase.from('grammar_rules').select('*').order('created_at', { ascending: false });
+        let questionsQuery = supabase.from('quiz_questions').select('*').order('created_at', { ascending: false });
         
         if (grade) {
           rulesQuery = rulesQuery.eq('grade', grade);
@@ -59,7 +59,7 @@ export const useGrammar = (grade?: number) => {
           questionsQuery
         ]);
         
-        if (!rulesResult.error && rulesResult.data && rulesResult.data.length > 0) {
+        if (!rulesResult.error && rulesResult.data) {
           // Convert data from Supabase format to app format
           const formattedRules: GrammarRule[] = rulesResult.data.map(rule => ({
             id: rule.id,
@@ -67,16 +67,19 @@ export const useGrammar = (grade?: number) => {
             explanation: rule.explanation,
             examples: rule.examples,
             unit: rule.unit,
-            grade: rule.grade
+            grade: rule.grade,
+            subject: rule.subject || 'english'
           }));
           
-          setRules(formattedRules);
+          // Combine Supabase data with static data
+          const combinedRules = [...formattedRules, ...staticRules];
+          setRules(combinedRules);
         } else {
           // If no data found, use static data
           setRules(staticRules);
         }
         
-        if (!questionsResult.error && questionsResult.data && questionsResult.data.length > 0) {
+        if (!questionsResult.error && questionsResult.data) {
           // Convert data from Supabase format to app format
           const formattedQuestions: QuizQuestion[] = questionsResult.data.map(question => ({
             id: question.id,
@@ -85,10 +88,13 @@ export const useGrammar = (grade?: number) => {
             correct: question.correct,
             explanation: question.explanation,
             unit: question.unit,
-            grade: question.grade
+            grade: question.grade,
+            subject: question.subject || 'english'
           }));
           
-          setQuestions(formattedQuestions);
+          // Combine Supabase data with static data
+          const combinedQuestions = [...formattedQuestions, ...staticQuestions];
+          setQuestions(combinedQuestions);
         } else {
           // If no data found, use static data
           setQuestions(staticQuestions);

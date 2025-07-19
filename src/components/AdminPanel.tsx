@@ -649,7 +649,13 @@ const AdminPanel: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="grammar">
-              <GrammarExtractor />
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-6 shadow-lg">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">إدارة القواعد النحوية</h3>
+                  <p className="text-gray-600 mb-4">عرض وتعديل وإضافة قواعد اللغة الإنجليزية لجميع الصفوف</p>
+                </div>
+                <GrammarExtractor />
+              </div>
             </TabsContent>
           </Tabs>
         </TabsContent>
