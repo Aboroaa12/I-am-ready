@@ -310,43 +310,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
 
         {/* Grade Information */}
         <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">المواد المتاحة</h3>
-          <div className="grid grid-cols-3 gap-3">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">المادة المتاحة</h3>
+          <div className="flex justify-center">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
               <div className="flex items-center justify-center mb-1">
                 <span className="text-2xl">📚</span>
               </div>
-              <div className="text-xs font-semibold">اللغة الإنجليزية</div>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
-                <span className="text-2xl">🔢</span>
-              </div>
-              <div className="text-xs font-semibold">الرياضيات</div>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
-                <span className="text-2xl">🔬</span>
-              </div>
-              <div className="text-xs font-semibold">العلوم</div>
-            </div>
-            <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
-                <span className="text-2xl">☪️</span>
-              </div>
-              <div className="text-xs font-semibold">التربية الإسلامية</div>
-            </div>
-            <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
-                <span className="text-2xl">📖</span>
-              </div>
-              <div className="text-xs font-semibold">اللغة العربية</div>
-            </div>
-            <div className="bg-gradient-to-r from-gray-500 to-slate-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-center justify-center mb-1">
-                <span className="text-2xl">🌍</span>
-              </div>
-              <div className="text-xs font-semibold">الجغرافيا</div>
+              <div className="text-sm font-semibold">اللغة الإنجليزية</div>
             </div>
           </div>
         </div>
