@@ -296,8 +296,7 @@ export const defaultSubjects: Subject[] = [
     color: 'from-green-500 to-teal-600',
     description: 'تعلم الرياضيات من خلال المسائل والتمارين التفاعلية',
     isActive: true,
-    // activities: ['quiz', 'memory', 'test-exercises'] // COMMENTED: Will be enabled when math content is added
-    // activities: ['flashcards', 'quiz', 'memory', 'pronunciation', 'grammar', 'spelling', 'sentence-writing', 'sentence-completion', 'test-exercises'] // RESTORE: Uncomment when adding math content
+    activities: ['quiz', 'memory', 'test-exercises']
   },
   {
     id: 'science',
