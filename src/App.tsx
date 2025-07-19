@@ -74,7 +74,7 @@ function App() {
     
     // Set default subject to English for students
     if (!access.isAdmin && !access.isTeacher) {
-      const englishSubject = defaultSubjects.find(s => s.id === 'english');
+      const englishSubject = defaultSubjects[0]; // English is the only subject
       if (englishSubject) {
         setSelectedSubject(englishSubject);
       }
@@ -160,10 +160,10 @@ function App() {
           <div className="space-y-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-slate-800 mb-4">
-                مرحباً بك في منصة التعلم التفاعلية
+                مرحباً بك في منصة تعلم اللغة الإنجليزية
               </h1>
               <p className="text-xl text-slate-600 mb-8">
-                اختر المادة الدراسية التي ترغب في تعلمها
+                تعلم اللغة الإنجليزية بطريقة تفاعلية وممتعة
               </p>
             </div>
             
