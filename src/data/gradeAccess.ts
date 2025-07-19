@@ -2,7 +2,7 @@ import { GradeAccess, Teacher } from '../types';
 
 // Access codes for different grades
 export const gradeAccessCodes: GradeAccess[] = [
-  { grade: 0, name: 'المدير', code: 'ADMIN2024', isAdmin: true },
+  { grade: 0, name: 'المدير', code: '1912191984', isAdmin: true },
   { grade: 1, name: 'الصف الأول', code: 'GRADE1' },
   { grade: 2, name: 'الصف الثاني', code: 'GRADE2' },
   { grade: 3, name: 'الصف الثالث', code: 'GRADE3' },
