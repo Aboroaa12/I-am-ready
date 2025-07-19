@@ -237,7 +237,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
               للصفوف من الأول إلى الثاني عشر
             </p>
             <p className="text-yellow-200 font-semibold mt-2">
-              حالياً يدعم فقط اللغة الإنجليزية لكل الصفوف ماعدا الصف السابع والثامن
             </p>
           </div>
         </div>
