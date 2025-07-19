@@ -394,6 +394,7 @@ export interface MathProblem {
   grade: number;
   subject: string;
   imageUrl?: string;
+  createdAt?: string;
 }
 
 // Science-specific interfaces

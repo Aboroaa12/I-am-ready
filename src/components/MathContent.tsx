@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calculator, Plus, Edit, Trash2, Search, Filter, Save, X, AlertTriangle, RefreshCw } from 'lucide-react';
 import { MathProblem, Subject } from '../types';
 import { supabase } from '../lib/supabase';
+import { grade5MathProblems } from '../data/grade5MathData';
 
 interface MathContentProps {
   subject?: Subject;
@@ -54,11 +55,52 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
           imageUrl: problem.image_url
         }));
         
-        setProblems(formattedProblems);
+        // دمج البيانات من Supabase مع البيانات المحلية
+        const combinedProblems = [...formattedProblems];
+        
+        // إضافة البيانات المحلية للصف الخامس إذا لم تكن موجودة
+        if (subject?.id === 'math' || !subject) {
+          const localProblems = grade5MathProblems.filter(problem => 
+            !formattedProblems.some(existing => existing.id === problem.id)
+          );
+          combinedProblems.push(...localProblems);
+        }
+        
+        setProblems(combinedProblems);
         
         // Extract unique topics and grades
-        const uniqueTopics = [...new Set(formattedProblems.map(problem => problem.topic))];
-        const uniqueGrades = [...new Set(formattedProblems.map(problem => problem.grade))].sort((a, b) => a - b);
+        const uniqueTopics = [...new Set(combinedProblems.map(problem => problem.topic))];
+        const uniqueGrades = [...new Set(combinedProblems.map(problem => problem.grade))].sort((a, b) => a - b);
+        
+        setTopics(uniqueTopics);
+        setGrades(uniqueGrades);
+      } else {
+        // إذا لم توجد بيانات في Supabase، استخدم البيانات المحلية
+        if (subject?.id === 'math' || !subject) {
+          setProblems(grade5MathProblems);
+          
+          // Extract unique topics and grades from local data
+          const uniqueTopics = [...new Set(grade5MathProblems.map(problem => problem.topic))];
+          const uniqueGrades = [...new Set(grade5MathProblems.map(problem => problem.grade))].sort((a, b) => a - b);
+          
+          setTopics(uniqueTopics);
+          setGrades(uniqueGrades);
+        } else {
+          setProblems([]);
+          setTopics([]);
+          setGrades([]);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading math problems:', err);
+      
+      // في حالة الخطأ، استخدم البيانات المحلية
+      if (subject?.id === 'math' || !subject) {
+        setProblems(grade5MathProblems);
+        
+        // Extract unique topics and grades from local data
+        const uniqueTopics = [...new Set(grade5MathProblems.map(problem => problem.topic))];
+        const uniqueGrades = [...new Set(grade5MathProblems.map(problem => problem.grade))].sort((a, b) => a - b);
         
         setTopics(uniqueTopics);
         setGrades(uniqueGrades);
@@ -67,11 +109,109 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
         setTopics([]);
         setGrades([]);
       }
-    } catch (err) {
-      console.error('Error loading math problems:', err);
-      setProblems([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const addMathProblem = async (problemData: Omit<MathProblem, 'id'>) => {
+    try {
+      const newProblemId = crypto.randomUUID();
+      
+      // إضافة المسألة إلى Supabase
+      const { error } = await supabase.from('math_problems').insert({
+        id: newProblemId,
+        question: problemData.question,
+        options: problemData.options,
+        answer: problemData.answer,
+        solution: problemData.solution,
+        difficulty: problemData.difficulty,
+        topic: problemData.topic,
+        unit: problemData.unit,
+        grade: problemData.grade,
+        subject: problemData.subject || subject?.id || 'math',
+        image_url: problemData.imageUrl,
+        created_at: new Date().toISOString()
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // تحديث الحالة المحلية
+      const newProblem: MathProblem = {
+        id: newProblemId,
+        ...problemData
+      };
+      
+      setProblems(prev => [newProblem, ...prev]);
+      
+      // تحديث القوائم المنسدلة
+      if (!topics.includes(problemData.topic)) {
+        setTopics(prev => [...prev, problemData.topic]);
+      }
+      if (!grades.includes(problemData.grade)) {
+        setGrades(prev => [...prev, problemData.grade].sort((a, b) => a - b));
+      }
+      
+      return newProblem;
+    } catch (err: any) {
+      console.error('Error adding math problem:', err);
+      throw err;
+    }
+  };
+
+  const updateMathProblem = async (problemId: string, updates: Partial<MathProblem>) => {
+    try {
+      // تحديث المسألة في Supabase
+      const { error } = await supabase
+        .from('math_problems')
+        .update({
+          question: updates.question,
+          options: updates.options,
+          answer: updates.answer,
+          solution: updates.solution,
+          difficulty: updates.difficulty,
+          topic: updates.topic,
+          unit: updates.unit,
+          grade: updates.grade,
+          subject: updates.subject || subject?.id || 'math',
+          image_url: updates.imageUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', problemId);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // تحديث الحالة المحلية
+      setProblems(prev => prev.map(problem => 
+        problem.id === problemId ? { ...problem, ...updates } : problem
+      ));
+    } catch (err: any) {
+      console.error('Error updating math problem:', err);
+      throw err;
+    }
+  };
+
+  const deleteMathProblem = async (problemId: string) => {
+    try {
+      // حذف المسألة من Supabase
+      const { error } = await supabase
+        .from('math_problems')
+        .delete()
+        .eq('id', problemId);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // تحديث الحالة المحلية
+      setProblems(prev => prev.filter(problem => problem.id !== problemId));
+    } catch (err: any) {
+      console.error('Error deleting math problem:', err);
+      throw err;
     }
   };
 
@@ -91,18 +231,7 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
 
   const confirmDelete = async (problemId: string) => {
     try {
-      // Delete problem from Supabase
-      const { error } = await supabase
-        .from('math_problems')
-        .delete()
-        .eq('id', problemId);
-      
-      if (error) {
-        throw error;
-      }
-      
-      // Update local state
-      setProblems(prev => prev.filter(problem => problem.id !== problemId));
+      await deleteMathProblem(problemId);
       setShowDeleteConfirm(null);
       
       // Show success message
@@ -333,6 +462,7 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">المسألة</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الصف</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الموضوع</th>
+                  <th className="text-right py-4 px-6 font-semibold text-gray-700">الوحدة</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الصعوبة</th>
                   <th className="text-right py-4 px-6 font-semibold text-gray-700">الإجراءات</th>
                 </tr>
@@ -352,6 +482,11 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
                     <td className="py-4 px-6">
                       <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-semibold">
                         {problem.topic}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-semibold">
+                        {problem.unit}
                       </span>
                     </td>
                     <td className="py-4 px-6">
@@ -406,330 +541,54 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
 
       {/* Add/Edit Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-t-xl">
-              <h3 className="text-xl font-bold">
-                {editingProblem ? 'تعديل مسألة رياضية' : 'إضافة مسألة رياضية جديدة'}
-              </h3>
-              <p className="opacity-90 text-sm">
-                {editingProblem ? 'قم بتعديل بيانات المسألة' : 'قم بإدخال بيانات المسألة الجديدة'}
-              </p>
-            </div>
-            
-            <form className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    نص المسألة *
-                  </label>
-                  <textarea
-                    name="question"
-                    value={editingProblem?.question || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, question: e.target.value } : null)}
-                    required
-                    rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="أدخل نص المسألة الرياضية"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الإجابة الصحيحة *
-                  </label>
-                  <input
-                    type="text"
-                    name="answer"
-                    value={editingProblem?.answer || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, answer: e.target.value } : null)}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="أدخل الإجابة الصحيحة"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    مستوى الصعوبة *
-                  </label>
-                  <select
-                    name="difficulty"
-                    value={editingProblem?.difficulty || 'medium'}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, difficulty: e.target.value as any } : null)}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  >
-                    <option value="easy">سهل</option>
-                    <option value="medium">متوسط</option>
-                    <option value="hard">صعب</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الموضوع *
-                  </label>
-                  <input
-                    type="text"
-                    name="topic"
-                    value={editingProblem?.topic || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, topic: e.target.value } : null)}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="مثال: الجبر، الهندسة، الإحصاء"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الوحدة *
-                  </label>
-                  <input
-                    type="text"
-                    name="unit"
-                    value={editingProblem?.unit || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, unit: e.target.value } : null)}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="أدخل اسم الوحدة"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الصف *
-                  </label>
-                  <select
-                    name="grade"
-                    value={editingProblem?.grade || 5}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, grade: Number(e.target.value) } : null)}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
-                      <option key={grade} value={grade}>الصف {grade}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الحل التفصيلي *
-                  </label>
-                  <textarea
-                    name="solution"
-                    value={editingProblem?.solution || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, solution: e.target.value } : null)}
-                    required
-                    rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="اشرح خطوات الحل بالتفصيل"
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    رابط الصورة (اختياري)
-                  </label>
-                  <input
-                    type="text"
-                    name="imageUrl"
-                    value={editingProblem?.imageUrl || ''}
-                    onChange={(e) => setEditingProblem(prev => prev ? { ...prev, imageUrl: e.target.value } : null)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="أدخل رابط الصورة التوضيحية (إن وجدت)"
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    الخيارات (للأسئلة متعددة الاختيارات، اتركها فارغة للأسئلة المفتوحة)
-                  </label>
-                  <div className="space-y-2">
-                    {(editingProblem?.options || ['', '', '', '']).map((option, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={option}
-                        onChange={(e) => {
-                          if (editingProblem) {
-                            const newOptions = [...(editingProblem.options || ['', '', '', ''])];
-                            newOptions[index] = e.target.value;
-                            setEditingProblem({ ...editingProblem, options: newOptions });
-                          }
-                        }}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-2"
-                        placeholder={`الخيار ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+        <MathProblemModal
+          problem={editingProblem}
+          onClose={() => setShowAddModal(false)}
+          onSave={async (problemData) => {
+            try {
+              if (editingProblem) {
+                await updateMathProblem(editingProblem.id, problemData);
+              } else {
+                await addMathProblem(problemData);
+              }
+              setShowAddModal(false);
               
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (editingProblem) {
-                      // Update problem in Supabase
-                      supabase
-                        .from('math_problems')
-                        .update({
-                          question: editingProblem.question,
-                          options: editingProblem.options,
-                          answer: editingProblem.answer,
-                          solution: editingProblem.solution,
-                          difficulty: editingProblem.difficulty,
-                          topic: editingProblem.topic,
-                          unit: editingProblem.unit,
-                          grade: editingProblem.grade,
-                          subject: editingProblem.subject || subject?.id || 'math',
-                          image_url: editingProblem.imageUrl,
-                          updated_at: new Date().toISOString()
-                        })
-                        .eq('id', editingProblem.id)
-                        .then(({ error }) => {
-                          if (error) {
-                            throw error;
-                          }
-                          
-                          // Update local state
-                          setProblems(prev => prev.map(p => 
-                            p.id === editingProblem.id ? editingProblem : p
-                          ));
-                          
-                          setShowAddModal(false);
-                          
-                          // Show success message
-                          const notification = document.createElement('div');
-                          notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
-                          notification.textContent = 'تم تحديث المسألة بنجاح';
-                          document.body.appendChild(notification);
-                          
-                          setTimeout(() => {
-                            notification.style.opacity = '0';
-                            notification.style.transform = 'translate(-50%, -100%)';
-                            setTimeout(() => {
-                              if (document.body.contains(notification)) {
-                                document.body.removeChild(notification);
-                              }
-                            }, 300);
-                          }, 3000);
-                        })
-                        .catch(err => {
-                          console.error('Error updating math problem:', err);
-                          
-                          // Show error message
-                          const notification = document.createElement('div');
-                          notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
-                          notification.textContent = 'حدث خطأ أثناء تحديث المسألة';
-                          document.body.appendChild(notification);
-                          
-                          setTimeout(() => {
-                            notification.style.opacity = '0';
-                            notification.style.transform = 'translate(-50%, -100%)';
-                            setTimeout(() => {
-                              if (document.body.contains(notification)) {
-                                document.body.removeChild(notification);
-                              }
-                            }, 300);
-                          }, 3000);
-                        });
-                    } else {
-                      // Add new problem
-                      const newProblem: MathProblem = {
-                        id: crypto.randomUUID(),
-                        question: '',
-                        answer: '',
-                        solution: '',
-                        difficulty: 'medium',
-                        topic: '',
-                        unit: '',
-                        grade: 5,
-                        subject: subject?.id || 'math',
-                        options: ['', '', '', '']
-                      };
-                      
-                      supabase
-                        .from('math_problems')
-                        .insert({
-                          id: newProblem.id,
-                          question: newProblem.question,
-                          options: newProblem.options,
-                          answer: newProblem.answer,
-                          solution: newProblem.solution,
-                          difficulty: newProblem.difficulty,
-                          topic: newProblem.topic,
-                          unit: newProblem.unit,
-                          grade: newProblem.grade,
-                          subject: newProblem.subject,
-                          image_url: newProblem.imageUrl,
-                          created_at: new Date().toISOString()
-                        })
-                        .then(({ error }) => {
-                          if (error) {
-                            throw error;
-                          }
-                          
-                          // Update local state
-                          setProblems(prev => [newProblem, ...prev]);
-                          
-                          setShowAddModal(false);
-                          
-                          // Show success message
-                          const notification = document.createElement('div');
-                          notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
-                          notification.textContent = 'تمت إضافة المسألة بنجاح';
-                          document.body.appendChild(notification);
-                          
-                          setTimeout(() => {
-                            notification.style.opacity = '0';
-                            notification.style.transform = 'translate(-50%, -100%)';
-                            setTimeout(() => {
-                              if (document.body.contains(notification)) {
-                                document.body.removeChild(notification);
-                              }
-                            }, 300);
-                          }, 3000);
-                        })
-                        .catch(err => {
-                          console.error('Error adding math problem:', err);
-                          
-                          // Show error message
-                          const notification = document.createElement('div');
-                          notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
-                          notification.textContent = 'حدث خطأ أثناء إضافة المسألة';
-                          document.body.appendChild(notification);
-                          
-                          setTimeout(() => {
-                            notification.style.opacity = '0';
-                            notification.style.transform = 'translate(-50%, -100%)';
-                            setTimeout(() => {
-                              if (document.body.contains(notification)) {
-                                document.body.removeChild(notification);
-                              }
-                            }, 300);
-                          }, 3000);
-                        });
-                    }
-                  }}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  <Save className="w-5 h-5" />
-                  {editingProblem ? 'حفظ التغييرات' : 'إضافة المسألة'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                >
-                  إلغاء
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+              // إظهار رسالة نجاح
+              const notification = document.createElement('div');
+              notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
+              notification.textContent = editingProblem ? 'تم تحديث المسألة بنجاح' : 'تمت إضافة المسألة بنجاح';
+              document.body.appendChild(notification);
+              
+              setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -100%)';
+                setTimeout(() => {
+                  if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                  }
+                }, 300);
+              }, 3000);
+            } catch (err) {
+              console.error('Error saving math problem:', err);
+              
+              // إظهار رسالة خطأ
+              const notification = document.createElement('div');
+              notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
+              notification.textContent = 'حدث خطأ أثناء حفظ المسألة';
+              document.body.appendChild(notification);
+              
+              setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -100%)';
+                setTimeout(() => {
+                  if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                  }
+                }, 300);
+              }, 3000);
+            }
+          }}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
@@ -763,6 +622,219 @@ const MathContent: React.FC<MathContentProps> = ({ subject }) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+interface MathProblemModalProps {
+  problem: MathProblem | null;
+  onClose: () => void;
+  onSave: (problemData: Omit<MathProblem, 'id'>) => void;
+}
+
+const MathProblemModal: React.FC<MathProblemModalProps> = ({ problem, onClose, onSave }) => {
+  const [formData, setFormData] = useState<Omit<MathProblem, 'id'>>({
+    question: problem?.question || '',
+    options: problem?.options || ['', '', '', ''],
+    answer: problem?.answer || '',
+    solution: problem?.solution || '',
+    difficulty: problem?.difficulty || 'medium',
+    topic: problem?.topic || '',
+    unit: problem?.unit || '',
+    grade: problem?.grade || 5,
+    subject: problem?.subject || 'math',
+    imageUrl: problem?.imageUrl || ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'grade' ? Number(value) : value
+    }));
+  };
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...formData.options];
+    newOptions[index] = value;
+    setFormData(prev => ({ ...prev, options: newOptions }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-t-xl">
+          <h3 className="text-xl font-bold">
+            {problem ? 'تعديل مسألة رياضية' : 'إضافة مسألة رياضية جديدة'}
+          </h3>
+          <p className="opacity-90 text-sm">
+            {problem ? 'قم بتعديل بيانات المسألة' : 'قم بإدخال بيانات المسألة الجديدة'}
+          </p>
+        </div>
+        
+        <form className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                نص المسألة *
+              </label>
+              <textarea
+                name="question"
+                value={formData.question}
+                onChange={handleChange}
+                required
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="أدخل نص المسألة الرياضية"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الإجابة الصحيحة *
+              </label>
+              <input
+                type="text"
+                name="answer"
+                value={formData.answer}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="أدخل الإجابة الصحيحة"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                مستوى الصعوبة *
+              </label>
+              <select
+                name="difficulty"
+                value={formData.difficulty}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="easy">سهل</option>
+                <option value="medium">متوسط</option>
+                <option value="hard">صعب</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الموضوع *
+              </label>
+              <input
+                type="text"
+                name="topic"
+                value={formData.topic}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="مثال: الجبر، الهندسة، الإحصاء"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الوحدة *
+              </label>
+              <input
+                type="text"
+                name="unit"
+                value={formData.unit}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="أدخل اسم الوحدة"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الصف *
+              </label>
+              <select
+                name="grade"
+                value={formData.grade}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                  <option key={grade} value={grade}>الصف {grade}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الحل التفصيلي *
+              </label>
+              <textarea
+                name="solution"
+                value={formData.solution}
+                onChange={handleChange}
+                required
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="اشرح خطوات الحل بالتفصيل"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                رابط الصورة (اختياري)
+              </label>
+              <input
+                type="text"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                placeholder="أدخل رابط الصورة التوضيحية (إن وجدت)"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                الخيارات (للأسئلة متعددة الاختيارات، اتركها فارغة للأسئلة المفتوحة)
+              </label>
+              <div className="space-y-2">
+                {formData.options.map((option, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    value={option}
+                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-2"
+                    placeholder={`الخيار ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => onSave(formData)}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+            >
+              <Save className="w-5 h-5" />
+              {problem ? 'حفظ التغييرات' : 'إضافة المسألة'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            >
+              إلغاء
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
