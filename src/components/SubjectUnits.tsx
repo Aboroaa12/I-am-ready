@@ -268,6 +268,7 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
             title={unit.name}
             words={unit.words}
             grammarRules={unit.grammar}
+            subject={subject.id}
           />
         </div>
       );

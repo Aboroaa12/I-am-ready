@@ -9,13 +9,15 @@ interface VocabularyUnitProps {
   words: VocabularyWord[];
   grammarRules?: GrammarRule[];
   onWordPronounce?: (word: string) => void;
+  subject?: string;
 }
 
 const VocabularyUnit: React.FC<VocabularyUnitProps> = ({ 
   title, 
   words, 
   grammarRules, 
-  onWordPronounce 
+  onWordPronounce,
+  subject = 'english'
 }) => {
   const [expandedRules, setExpandedRules] = useState<Set<number>>(new Set());
   const [showAllWords, setShowAllWords] = useState(false);
@@ -182,7 +184,7 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <Sparkles className="w-7 h-7 text-yellow-500" />
-            المفردات التفاعلية
+            {subject === 'math' ? 'المسائل الرياضية' : 'المفردات التفاعلية'}
           </h3>
           {words.length > 12 && (
             <button
@@ -216,7 +218,9 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
           </div>
         ) : (
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center">
-            <p className="text-yellow-700 text-lg">لا توجد مفردات متاحة لهذه الوحدة</p>
+            <p className="text-yellow-700 text-lg">
+              {subject === 'math' ? 'لا توجد مسائل متاحة لهذه الوحدة' : 'لا توجد مفردات متاحة لهذه الوحدة'}
+            </p>
             <p className="text-yellow-600 mt-2">يرجى اختيار وحدة أخرى أو التواصل مع المعلم</p>
           </div>
         )}
