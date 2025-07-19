@@ -48,7 +48,6 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
   const loadUnitsForSubject = async () => {
     setLoading(true);
     
-    // For now, we'll focus on English subject since that's where the data exists
     if (subject.id === 'english') {
       const allWords = getVocabularyByGrade(grade);
       const allGrammar = getGrammarByGrade(grade);
@@ -73,8 +72,40 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       });
       
       setUnits(unitsData);
+    } else if (subject.id === 'math') {
+      // For math subject, create units based on the curriculum structure
+      const mathUnits = [
+        { name: 'نظام الأعداد', nameEn: 'Number System', icon: '🔢', description: 'القيمة المكانية والترتيب والتقريب والمتتاليات' },
+        { name: 'الجمع والطرح', nameEn: 'Addition and Subtraction', icon: '➕', description: 'الاستراتيجيات الذهنية والكتابية للجمع والطرح' },
+        { name: 'الضرب والقسمة', nameEn: 'Multiplication and Division', icon: '✖️', description: 'حقائق الضرب والقسمة والطرق الكتابية' },
+        { name: 'المضاعفات والأعداد المربعة', nameEn: 'Multiples and Square Numbers', icon: '🔲', description: 'المضاعفات والأعداد المربعة والعوامل' },
+        { name: 'الأشكال الهندسية', nameEn: 'Geometric Shapes', icon: '📐', description: 'الخطوط المتوازية والمتعامدة والمثلثات والمكعب' },
+        { name: 'المكان والحركة', nameEn: 'Position and Movement', icon: '📍', description: 'الإحداثيات والانسحاب والانعكاس' },
+        { name: 'الكتلة', nameEn: 'Mass', icon: '⚖️', description: 'قياس الكتلة وتحويل الوحدات' },
+        { name: 'الوقت والجداول الزمنية', nameEn: 'Time and Timetables', icon: '🕐', description: 'قراءة الوقت والجداول الزمنية' },
+        { name: 'المساحة والمحيط', nameEn: 'Area and Perimeter', icon: '📏', description: 'حساب المساحة والمحيط للأشكال المختلفة' },
+        { name: 'المتتاليات العددية', nameEn: 'Number Sequences', icon: '🔄', description: 'الأعداد والمتتاليات العددية والعبارات العامة' },
+        { name: 'الأعداد العشرية', nameEn: 'Decimal Numbers', icon: '🔸', description: 'النظام العشري وحقائق الأعداد العشرية' },
+        { name: 'الاستراتيجيات الذهنية', nameEn: 'Mental Strategies', icon: '🧠', description: 'استراتيجيات الضرب والمضاعفة والتنصيف' },
+        { name: 'الطرق الكتابية', nameEn: 'Written Methods', icon: '📝', description: 'الطرق الكتابية للضرب والقسمة' }
+      ];
+      
+      const unitsData: UnitData[] = mathUnits.map((unit, index) => ({
+        name: unit.name,
+        nameEn: unit.nameEn,
+        description: unit.description,
+        icon: unit.icon,
+        color: getUnitColor(index),
+        words: [], // No vocabulary words for math
+        grammar: [], // No grammar rules for math
+        difficulty: 'medium' as const,
+        estimatedTime: '45 دقيقة',
+        totalWords: 0
+      }));
+      
+      setUnits(unitsData);
     } else {
-      // For other subjects, show "Not available now" message instead of placeholder units
+      // For other subjects, show "Not available now" message
       setUnits([]);
     }
     
@@ -236,7 +267,11 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
   };
 
   const handleUnitClick = (unit: UnitData) => {
-    if (unit.words.length > 0) {
+    if (subject.id === 'math') {
+      // For math, we don't need vocabulary words, just show the unit
+      setSelectedUnit(unit.nameEn);
+      onUnitSelect(unit.nameEn, [], []); // Empty arrays for words and grammar
+    } else if (unit.words.length > 0) {
       setSelectedUnit(unit.nameEn);
       onUnitSelect(unit.nameEn, unit.words, unit.grammar);
     }
@@ -414,9 +449,11 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
                 )}
 
                 {/* Action Button */}
-                {unit.words.length > 0 ? (
+                {(unit.words.length > 0 || subject.id === 'math') ? (
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span className="text-sm font-medium text-slate-700">ابدأ التعلم</span>
+                    <span className="text-sm font-medium text-slate-700">
+                      {subject.id === 'math' ? 'ابدأ حل المسائل' : 'ابدأ التعلم'}
+                    </span>
                     <div className="flex items-center gap-2 text-blue-600 group-hover:text-blue-800 transition-colors">
                       <Play className="w-4 h-4" />
                       <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

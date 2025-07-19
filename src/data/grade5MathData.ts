@@ -18,25 +18,6 @@ export const grade5MathUnits = [
   'الطرق الكتابية للضرب والقسمة'
 ];
 
-// Math vocabulary for Grade 5
-export const grade5MathVocabulary = [
-  { english: "addition", arabic: "جمع", unit: "الجمع والطرح", pronunciation: "/əˈdɪʃn/", grade: 5, partOfSpeech: "noun", exampleSentence: "Addition is the process of adding numbers together.", difficulty: "easy", subject: "math" },
-  { english: "subtraction", arabic: "طرح", unit: "الجمع والطرح", pronunciation: "/səbˈtrækʃn/", grade: 5, partOfSpeech: "noun", exampleSentence: "Subtraction means taking one number away from another.", difficulty: "easy", subject: "math" },
-  { english: "multiplication", arabic: "ضرب", unit: "الضرب والقسمة", pronunciation: "/ˌmʌltɪplɪˈkeɪʃn/", grade: 5, partOfSpeech: "noun", exampleSentence: "Multiplication is repeated addition.", difficulty: "medium", subject: "math" },
-  { english: "division", arabic: "قسمة", unit: "الضرب والقسمة", pronunciation: "/dɪˈvɪʒn/", grade: 5, partOfSpeech: "noun", exampleSentence: "Division is splitting a number into equal parts.", difficulty: "medium", subject: "math" },
-  { english: "decimal", arabic: "عدد عشري", unit: "الأعداد العشرية", pronunciation: "/ˈdesɪml/", grade: 5, partOfSpeech: "noun", exampleSentence: "0.5 is a decimal number.", difficulty: "medium", subject: "math" },
-  { english: "fraction", arabic: "كسر", unit: "الأعداد العشرية", pronunciation: "/ˈfrækʃn/", grade: 5, partOfSpeech: "noun", exampleSentence: "One half is written as the fraction 1/2.", difficulty: "medium", subject: "math" },
-  { english: "area", arabic: "مساحة", unit: "المساحة والمحيط", pronunciation: "/ˈeəriə/", grade: 5, partOfSpeech: "noun", exampleSentence: "The area of a rectangle is length times width.", difficulty: "medium", subject: "math" },
-  { english: "perimeter", arabic: "محيط", unit: "المساحة والمحيط", pronunciation: "/pəˈrɪmɪtə/", grade: 5, partOfSpeech: "noun", exampleSentence: "The perimeter is the distance around a shape.", difficulty: "medium", subject: "math" },
-  { english: "triangle", arabic: "مثلث", unit: "الأشكال الهندسية", pronunciation: "/ˈtraɪæŋɡl/", grade: 5, partOfSpeech: "noun", exampleSentence: "A triangle has three sides.", difficulty: "easy", subject: "math" },
-  { english: "rectangle", arabic: "مستطيل", unit: "الأشكال الهندسية", pronunciation: "/ˈrektæŋɡl/", grade: 5, partOfSpeech: "noun", exampleSentence: "A rectangle has four right angles.", difficulty: "easy", subject: "math" },
-  { english: "square", arabic: "مربع", unit: "الأشكال الهندسية", pronunciation: "/skweə/", grade: 5, partOfSpeech: "noun", exampleSentence: "A square has four equal sides.", difficulty: "easy", subject: "math" },
-  { english: "circle", arabic: "دائرة", unit: "الأشكال الهندسية", pronunciation: "/ˈsɜːkl/", grade: 5, partOfSpeech: "noun", exampleSentence: "A circle is perfectly round.", difficulty: "easy", subject: "math" },
-  { english: "coordinate", arabic: "إحداثي", unit: "المكان والحركة", pronunciation: "/kəʊˈɔːdɪnət/", grade: 5, partOfSpeech: "noun", exampleSentence: "The coordinate (3,4) shows a point on the grid.", difficulty: "hard", subject: "math" },
-  { english: "pattern", arabic: "نمط", unit: "المتتاليات", pronunciation: "/ˈpætn/", grade: 5, partOfSpeech: "noun", exampleSentence: "Can you see the pattern in these numbers?", difficulty: "medium", subject: "math" },
-  { english: "sequence", arabic: "متتالية", unit: "المتتاليات", pronunciation: "/ˈsiːkwəns/", grade: 5, partOfSpeech: "noun", exampleSentence: "The sequence 2, 4, 6, 8 follows a pattern.", difficulty: "medium", subject: "math" }
-];
-
 // Grade 5 Math Problems - Based on the curriculum units
 export const grade5MathProblems: MathProblem[] = [
   // الوحدة 1أ: الأعداد وحل المشكلات
