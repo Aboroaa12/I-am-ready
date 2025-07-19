@@ -336,14 +336,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
               </div>
               <div className="text-xs font-semibold">التربية الإسلامية</div>
             </div>
-        <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">المادة المتاحة</h3>
-        <div className="flex justify-center">
+            <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
+              <div className="flex items-center justify-center mb-1">
                 <span className="text-2xl">📖</span>
               </div>
               <div className="text-xs font-semibold">اللغة العربية</div>
             </div>
             <div className="bg-gradient-to-r from-gray-500 to-slate-600 text-white p-3 rounded-lg text-center shadow-md cursor-pointer transition-transform hover:scale-105">
               <div className="flex items-center justify-center mb-1">
+                <span className="text-2xl">🌍</span>
+              </div>
+              <div className="text-xs font-semibold">الجغرافيا</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
