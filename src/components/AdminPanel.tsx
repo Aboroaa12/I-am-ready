@@ -50,16 +50,44 @@ const AdminPanel: React.FC = () => {
 
     setLoading(true);
     try {
-      const result = await deleteAllRecords(tableName);
-      if (result.success) {
-        alert(`تم حذف ${result.count} سجل من جدول ${tableName} بنجاح`);
-        await loadDatabaseStats();
+      let totalDeleted = 0;
+      
+      // Handle students table with foreign key dependencies
+      if (tableName === 'students') {
+        // Delete dependent records first
+        const dependentTables = ['user_progress', 'achievements', 'student_activities'];
+        
+        for (const depTable of dependentTables) {
+          const depResult = await deleteAllRecords(depTable);
+          if (depResult.success) {
+            totalDeleted += depResult.count;
+          } else {
+            throw new Error(`فشل في حذف البيانات من جدول ${depTable}: ${depResult.error}`);
+          }
+        }
+        
+        // Now delete from students table
+        const result = await deleteAllRecords(tableName);
+        if (result.success) {
+          totalDeleted += result.count;
+          alert(`تم حذف ${totalDeleted} سجل إجمالي (${result.count} طالب و ${totalDeleted - result.count} سجل مرتبط) بنجاح`);
+        } else {
+          throw new Error(result.error);
+        }
       } else {
-        alert(`فشل في حذف البيانات: ${result.error}`);
+        // Handle other tables normally
+        const result = await deleteAllRecords(tableName);
+        if (result.success) {
+          alert(`تم حذف ${result.count} سجل من جدول ${tableName} بنجاح`);
+        } else {
+          throw new Error(result.error);
+        }
       }
+      
+      await loadDatabaseStats();
     } catch (error) {
       console.error('Error clearing table:', error);
-      alert('حدث خطأ أثناء حذف البيانات');
+      alert(`حدث خطأ أثناء حذف البيانات: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`);
     } finally {
       setLoading(false);
     }
