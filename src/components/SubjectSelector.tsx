@@ -37,6 +37,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSubjectChange, curr
       }
       
       if (data && data.length > 0) {
+        const formattedSubjects = data.map((subject) => {
           const defaultSubjectsList = getSubjectsForGrade(currentSubject?.grade || 5);
           // Find the default subject to get activities
           const defaultSubject = defaultSubjects.find(ds => ds.id === subject.id);
