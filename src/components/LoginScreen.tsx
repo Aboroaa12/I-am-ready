@@ -323,50 +323,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
         </div>
       </div>
 
-      {/* Quick Access Panel */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-800">دخول سريع</h3>
-          <button
-            onClick={() => setShowQuickAccess(!showQuickAccess)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-semibold"
-          >
-            {showQuickAccess ? 'إخفاء' : 'إظهار'}
-          </button>
-        </div>
-        
-        {showQuickAccess && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              onClick={() => setCode('1912191984')}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all hover:scale-105 shadow-lg"
-            >
-              <div className="text-2xl mb-2">👑</div>
-              <div className="font-bold">المدير العام</div>
-              <div className="text-sm opacity-90">صلاحيات كاملة</div>
-            </button>
-            
-            <button
-              onClick={() => setCode('TEACHER5')}
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all hover:scale-105 shadow-lg"
-            >
-              <div className="text-2xl mb-2">👨‍🏫</div>
-              <div className="font-bold">معلم تجريبي</div>
-              <div className="text-sm opacity-90">الصف الخامس</div>
-            </button>
-            
-            <button
-              onClick={() => setCode('GRADE5')}
-              className="bg-gradient-to-r from-green-500 to-teal-500 text-white p-4 rounded-lg hover:from-green-600 hover:to-teal-600 transition-all hover:scale-105 shadow-lg"
-            >
-              <div className="text-2xl mb-2">👨‍🎓</div>
-              <div className="font-bold">طالب تجريبي</div>
-              <div className="text-sm opacity-90">الصف الخامس</div>
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
 
   );
 };
