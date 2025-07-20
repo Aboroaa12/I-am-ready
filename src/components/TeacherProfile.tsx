@@ -253,20 +253,6 @@ const TeacherProfile: React.FC<TeacherProfileProps> = ({ teacher, onUpdate }) =>
                   ))}
                 </div>
               </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex items-center gap-3 mb-2">
-                  <BookOpen className="w-5 h-5 text-teal-600" />
-                  <h4 className="font-semibold text-gray-700">المواد التي يدرسها</h4>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {teacher.subjects?.map((subject, index) => (
-                    <span key={index} className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-sm">
-                      {subject}
-                    </span>
-                  )) || <span className="text-gray-500">غير محدد</span>}
-                </div>
-              </div>
             </div>
             
             {/* Access Code Limits */}
