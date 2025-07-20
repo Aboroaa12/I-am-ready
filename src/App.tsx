@@ -29,6 +29,7 @@ import { Achievement, ActivityType, GradeAccess, Subject, defaultSubjects, Vocab
 import { speechEngine } from './utils/speechEngine';
 import { getGradeBackgroundColor } from './utils/gradeColors';
 import { supabase, checkSupabaseConnection, hasValidSupabaseCredentials } from './lib/supabase';
+import { ChevronRight } from 'lucide-react';
 
 function App() {
   const [gradeAccess, setGradeAccess] = useState<GradeAccess | null>(null);
@@ -302,24 +303,11 @@ function App() {
         )}
         
         {activeTab === 'spelling' && selectedWords.length > 0 && (
-          <div className="space-y-6">
-            {/* Back Button */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setActiveTab('practice')}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
-              >
-                <ChevronRight className="w-5 h-5 rotate-180" />
-                العودة للتدريب التفاعلي
-              </button>
-            </div>
-            
           <SpellingExercise 
             words={selectedWords}
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
           />
-          </div>
         )}
         
         {activeTab === 'free-writing' && (
