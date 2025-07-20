@@ -190,7 +190,18 @@ const TeacherManagement: React.FC = () => {
           localStorage.setItem('admin-teachers', JSON.stringify(updatedTeachers));
 
           alert('تم تحديث بيانات المعلم بنجاح');
-          
+        } else {
+          // Add new teacher
+          const newTeacher = {
+            ...teacherData,
+            joinDate: new Date().toISOString()
+          };
+
+          const { data, error } = await supabase
+            .from('teachers')
+            .insert([{
+              name: newTeacher.name,
+              email: newTeacher.email,
               phone: newTeacher.phone,
               grades: newTeacher.grades,
               school_name: newTeacher.schoolName,
@@ -429,7 +440,7 @@ const TeacherManagement: React.FC = () => {
             
             <div className="flex gap-3">
               <button
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                onClick={() => confirmDelete(showDeleteConfirm)}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors"
               >
                 نعم، حذف المعلم
@@ -480,6 +491,12 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose, onSave }) =
         : [...prev.grades, grade];
       return { ...prev, grades: newGrades };
     });
+  };
+
+  const handleSubjectsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const subjectsText = e.target.value;
+    const subjectsArray = subjectsText.split(',').map(s => s.trim()).filter(s => s);
+    setFormData(prev => ({ ...prev, subjects: subjectsArray }));
   };
 
   return (
