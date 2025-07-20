@@ -36,6 +36,9 @@ const getWelcomeMessage = (gradeAccess?: GradeAccess): string => {
   return 'مرحباً بك 👋';
 };
 const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
+  // Debug: Log gradeAccess to see what data we have
+  console.log('Header gradeAccess:', gradeAccess);
+  
   const getGradeColor = () => {
     if (!gradeAccess) return 'from-purple-600 via-blue-600 to-teal-600';
     return `${getGradeGradientColor(gradeAccess.grade)}`;
@@ -51,7 +54,17 @@ const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
               أنا مستعد
             </h1>
             <div className="text-xl opacity-90">
-              <p className="mb-1 text-2xl font-semibold">{getWelcomeMessage(gradeAccess)}</p>
+              <p className="mb-1 text-2xl font-semibold">
+                {getWelcomeMessage(gradeAccess)}
+                {/* Debug info */}
+                {gradeAccess && (
+                  <span className="text-sm opacity-60 block">
+                    Debug: isStudent={gradeAccess.isStudent ? 'true' : 'false'}, 
+                    studentName="{gradeAccess.studentName || 'undefined'}", 
+                    studentKeyId="{gradeAccess.studentKeyId || 'undefined'}"
+                  </span>
+                )}
+              </p>
               <p className="text-lg">
                 {gradeAccess ? `دليل شامل لتعلم اللغة الإنجليزية - ${gradeAccess.name}` : 'للصفوف من الخامس إلى الثاني عشر'}
               </p>
