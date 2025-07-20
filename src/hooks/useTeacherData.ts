@@ -784,12 +784,19 @@ export const useTeacherData = (teacherId: string) => {
 const generateSampleStudents = (teacherId: string): Student[] => {
   const sampleNames = [
     'أحمد محمد علي', 'فاطمة أحمد', 'محمد عبدالله', 'عائشة سالم', 'علي حسن',
-    'مريم خالد', 'يوسف إبراهيم', 'زينب عمر', 'حسن محمود', 'نور الدين'
+    'مريم خالد', 'يوسف إبراهيم', 'زينب عمر', 'حسن محمود', 'نور الدين',
+    'رؤى أحمد', 'أروى سالم', 'البتول محمد'
   ];
 
+  const studentGenders = [
+    'male', 'female', 'male', 'female', 'male',
+    'female', 'male', 'female', 'male', 'female',
+    'female', 'female', 'female'
+  ];
   return sampleNames.map((name, index) => ({
     id: `student-${index + 1}`,
     name,
+    gender: studentGenders[index] as 'male' | 'female',
     grade: 5,
     teacherId,
     joinDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
