@@ -53,6 +53,12 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       const allGrammar = getGrammarByGrade(grade);
       const availableUnits = getUnitsByGrade(grade);
       
+      console.log(`Loading English units for grade ${grade}:`, {
+        totalWords: allWords.length,
+        totalGrammar: allGrammar.length,
+        availableUnits: availableUnits
+      });
+      
       const unitsData: UnitData[] = availableUnits.map((unitName, index) => {
         const unitWords = allWords.filter(word => word.unit === unitName);
         const unitGrammar = allGrammar.filter(rule => rule.unit === unitName);
@@ -71,9 +77,12 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
         };
       });
       
+      console.log('Generated units data:', unitsData);
       setUnits(unitsData);
     } else {
-      setUnits([]);
+      // For non-English subjects, create placeholder units
+      const placeholderUnits = createPlaceholderUnits(subject, grade);
+      setUnits(placeholderUnits);
     }
     
     setLoading(false);
@@ -81,6 +90,24 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
 
   const getUnitNameInArabic = (unitName: string, grade: number): string => {
     const translations: { [key: string]: string } = {
+      // Grade 1 units
+      'Family': 'العائلة',
+      'Animals': 'الحيوانات',
+      'Colors': 'الألوان',
+      'Numbers': 'الأرقام',
+      'Body Parts': 'أجزاء الجسم',
+      'Food': 'الطعام',
+      'School': 'المدرسة',
+      
+      // Grade 2 units
+      'Home': 'المنزل',
+      'Toys and Games': 'الألعاب',
+      'Weather': 'الطقس',
+      'Clothes': 'الملابس',
+      'Actions': 'الأفعال',
+      'Transportation': 'وسائل النقل',
+      'Time': 'الوقت',
+      
       // Grade 5 units
       'Welcome Back': 'مرحباً بالعودة',
       'Talent Show': 'عرض المواهب',
@@ -93,6 +120,13 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Health and Fitness': 'الصحة واللياقة',
       'Community and Culture': 'المجتمع والثقافة',
       
+      // Grade 8 units
+      "Let's get started!": 'هيا نبدأ!',
+      'Our planet': 'كوكبنا',
+      'Adventure sports': 'الرياضات المغامرة',
+      'Spend or save?': 'أنفق أم ادخر؟',
+      'WOW Learning Club': 'نادي التعلم الرائع',
+      
       // Grade 10 units
       'Future Aspirations': 'الطموحات المستقبلية',
       'Science and Discovery': 'العلوم والاكتشاف',
@@ -100,17 +134,19 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Global Challenges': 'التحديات العالمية',
       'Arts and Culture': 'الفنون والثقافة',
       
-      // Add more grades as needed
-      'Family': 'العائلة',
-      'Animals': 'الحيوانات',
-      'Colors': 'الألوان',
-      'Numbers': 'الأرقام',
-      'Body Parts': 'أجزاء الجسم',
-      'Food': 'الطعام',
-      'School': 'المدرسة',
-      'Home': 'المنزل',
-      'Toys': 'الألعاب',
-      'Weather': 'الطقس'
+      // Grade 11 units
+      'Higher Education': 'التعليم العالي',
+      'Globalization': 'العولمة',
+      'Environmental Sustainability': 'الاستدامة البيئية',
+      'Innovation and Technology': 'الابتكار والتكنولوجيا',
+      'Literature and Arts': 'الأدب والفنون',
+      
+      // Grade 12 units
+      'Career Planning': 'التخطيط المهني',
+      'Global Issues': 'القضايا العالمية',
+      'Scientific Research': 'البحث العلمي',
+      'Cultural Exchange': 'التبادل الثقافي',
+      'Future Challenges': 'تحديات المستقبل'
     };
     
     return translations[unitName] || unitName;
@@ -118,6 +154,25 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
 
   const getUnitDescription = (unitName: string, grade: number): string => {
     const descriptions: { [key: string]: string } = {
+      // Grade 1 descriptions
+      'Family': 'تعرف على أفراد العائلة',
+      'Animals': 'اكتشف عالم الحيوانات',
+      'Colors': 'تعلم الألوان الجميلة',
+      'Numbers': 'العد والأرقام',
+      'Body Parts': 'أجزاء جسم الإنسان',
+      'Food': 'أنواع الطعام المختلفة',
+      'School': 'أدوات وأماكن المدرسة',
+      
+      // Grade 2 descriptions
+      'Home': 'تعلم عن البيت وأجزائه',
+      'Toys and Games': 'الألعاب والأنشطة الممتعة',
+      'Weather': 'أحوال الطقس المختلفة',
+      'Clothes': 'أنواع الملابس',
+      'Actions': 'الأفعال والحركات',
+      'Transportation': 'وسائل النقل المختلفة',
+      'Time': 'الوقت والأيام',
+      
+      // Grade 5 descriptions
       'Welcome Back': 'تعلم كلمات الترحيب والعودة للمدرسة',
       'Talent Show': 'اكتشف كلمات المواهب والعروض',
       'Then and Now': 'قارن بين الماضي والحاضر',
@@ -129,6 +184,13 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Health and Fitness': 'تعلم أهمية الصحة والرياضة',
       'Community and Culture': 'اكتشف ثقافات المجتمع',
       
+      // Grade 8 descriptions
+      "Let's get started!": 'مراجعة وبداية العام الدراسي',
+      'Our planet': 'تعلم عن البيئة والطقس والكوارث الطبيعية',
+      'Adventure sports': 'الرياضات المثيرة والاتجاهات',
+      'Spend or save?': 'التسوق والمال والمواقف الافتراضية',
+      'WOW Learning Club': 'الأرقام الكبيرة والمشاكل البيئية',
+      
       // Grade 10 descriptions
       'Future Aspirations': 'استكشف طموحاتك وأهدافك المستقبلية',
       'Science and Discovery': 'اكتشف عالم العلوم والاختراعات',
@@ -136,12 +198,19 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Global Challenges': 'فهم التحديات العالمية المعاصرة',
       'Arts and Culture': 'استكشف عالم الفنون والثقافات المختلفة',
       
-      'Family': 'تعرف على أفراد العائلة',
-      'Animals': 'اكتشف عالم الحيوانات',
-      'Colors': 'تعلم الألوان الجميلة',
-      'Numbers': 'العد والأرقام',
-      'Body Parts': 'أجزاء جسم الإنسان',
-      'Food': 'أنواع الطعام المختلفة'
+      // Grade 11 descriptions
+      'Higher Education': 'التعليم الجامعي والمنح الدراسية',
+      'Globalization': 'العولمة والاقتصاد العالمي',
+      'Environmental Sustainability': 'الاستدامة البيئية والطاقة المتجددة',
+      'Innovation and Technology': 'الابتكار والتكنولوجيا المتقدمة',
+      'Literature and Arts': 'الأدب والفنون والثقافة',
+      
+      // Grade 12 descriptions
+      'Career Planning': 'التخطيط للمستقبل المهني',
+      'Global Issues': 'القضايا العالمية المعاصرة',
+      'Scientific Research': 'البحث العلمي والاكتشافات',
+      'Cultural Exchange': 'التبادل الثقافي والحضاري',
+      'Future Challenges': 'تحديات المستقبل والحلول'
     };
     
     return descriptions[unitName] || 'وحدة تعليمية تفاعلية';
@@ -149,6 +218,25 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
 
   const getUnitIcon = (unitName: string, index: number): string => {
     const icons: { [key: string]: string } = {
+      // Grade 1 icons
+      'Family': '👨‍👩‍👧‍👦',
+      'Animals': '🦁',
+      'Colors': '🎨',
+      'Numbers': '🔢',
+      'Body Parts': '👤',
+      'Food': '🍎',
+      'School': '🏫',
+      
+      // Grade 2 icons
+      'Home': '🏠',
+      'Toys and Games': '🧸',
+      'Weather': '🌤️',
+      'Clothes': '👕',
+      'Actions': '🏃',
+      'Transportation': '🚗',
+      'Time': '⏰',
+      
+      // Grade 5 icons
       'Welcome Back': '👋',
       'Talent Show': '🎭',
       'Then and Now': '⏰',
@@ -160,16 +248,33 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Health and Fitness': '💪',
       'Community and Culture': '🏛️',
       
-      'Family': '👨‍👩‍👧‍👦',
-      'Animals': '🦁',
-      'Colors': '🎨',
-      'Numbers': '🔢',
-      'Body Parts': '👤',
-      'Food': '🍎',
-      'School': '🏫',
-      'Home': '🏠',
-      'Toys': '🧸',
-      'Weather': '🌤️'
+      // Grade 8 icons
+      "Let's get started!": '🚀',
+      'Our planet': '🌍',
+      'Adventure sports': '🏔️',
+      'Spend or save?': '💰',
+      'WOW Learning Club': '🌟',
+      
+      // Grade 10 icons
+      'Future Aspirations': '🎯',
+      'Science and Discovery': '🔬',
+      'Media and Communication': '📺',
+      'Global Challenges': '🌍',
+      'Arts and Culture': '🎨',
+      
+      // Grade 11 icons
+      'Higher Education': '🎓',
+      'Globalization': '🌐',
+      'Environmental Sustainability': '🌱',
+      'Innovation and Technology': '💡',
+      'Literature and Arts': '📖',
+      
+      // Grade 12 icons
+      'Career Planning': '💼',
+      'Global Issues': '🌍',
+      'Scientific Research': '🔬',
+      'Cultural Exchange': '🤝',
+      'Future Challenges': '🚀'
     };
     
     return icons[unitName] || ['📖', '📝', '📚', '📋', '📊'][index % 5];
