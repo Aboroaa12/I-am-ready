@@ -170,18 +170,28 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
   }
   return (
     <div className="space-y-12">
-      {/* Back Button */}
-      {onBack && (
-        <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
-          >
-            <ChevronRight className="w-5 h-5 rotate-180" />
-            العودة للوحدات الدراسية
-          </button>
+      {/* Enhanced Back Button and Breadcrumb */}
+      <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border-l-4 border-blue-500">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg"
+            >
+              <ChevronRight className="w-5 h-5 rotate-180" />
+              ← العودة للوحدات الدراسية
+              <span className="text-sm opacity-90 block">Back to Units</span>
+            </button>
+          </div>
+          
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="hover:text-blue-600 cursor-pointer" onClick={handleBack}>الوحدات الدراسية</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-blue-600 font-semibold">{title}</span>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Enhanced Header */}
       <div className="text-center relative">
