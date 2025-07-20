@@ -18,27 +18,17 @@ const getTabsByGrade = (grade: number, isAdmin: boolean = false, currentSubject?
   ];
 
   const baseTabs = [
-    { id: 'subjects', label: 'اللغة الإنجليزية', englishLabel: 'English Language', icon: BookOpen },
+    { id: 'units', label: 'الوحدات الدراسية', englishLabel: 'Study Units', icon: BookOpen },
     { id: 'practice', label: 'التدريب التفاعلي', englishLabel: 'Interactive Practice', icon: GamepadIcon },
     { id: 'free-writing', label: 'الكتابة الحرة', englishLabel: 'Free Writing', icon: Edit }
   ];
 
-  // Add units tab only for English subject
-  const unitsTab = { id: 'units', label: 'الوحدات الدراسية', englishLabel: 'Units', icon: Book };
-  
-  let finalTabs = [...baseTabs];
-  
-  // If English subject is selected, add units tab
-  if (currentSubject && currentSubject.id === 'english') {
-    finalTabs.splice(1, 0, unitsTab); // Insert units tab after subjects tab
-  }
-  
   // إذا كان المستخدم مديراً، أضف تبويب لوحة التحكم في المقدمة
   if (isAdmin) {
-    return [...adminTabs, ...finalTabs];
+    return [...adminTabs, ...baseTabs];
   }
   
-  return finalTabs;
+  return baseTabs;
 };
 
 const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange, gradeAccess, currentSubject, onLogout }) => {

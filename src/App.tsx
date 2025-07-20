@@ -32,7 +32,7 @@ import { supabase, checkSupabaseConnection, hasValidSupabaseCredentials } from '
 
 function App() {
   const [gradeAccess, setGradeAccess] = useState<GradeAccess | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('subjects');
+  const [activeTab, setActiveTab] = useState<string>('units');
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [selectedWords, setSelectedWords] = useState<VocabularyWord[]>([]);
@@ -72,18 +72,16 @@ function App() {
   const handleLogin = (access: GradeAccess) => {
     setGradeAccess(access);
     
-    // Set default subject to English for students
-    if (!access.isAdmin && !access.isTeacher) {
-      const englishSubject = defaultSubjects[0]; // English is the only subject
-      if (englishSubject) {
-        setSelectedSubject(englishSubject);
-      }
+    // Set default subject to English for all users
+    const englishSubject = defaultSubjects[0]; // English is the only subject
+    if (englishSubject) {
+      setSelectedSubject(englishSubject);
     }
   };
 
   const handleLogout = () => {
     setGradeAccess(null);
-    setActiveTab('subjects');
+    setActiveTab('units');
     setSelectedSubject(null);
     setSelectedUnit(null);
     setSelectedWords([]);
@@ -156,39 +154,28 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         <ProgressBar progress={progress} currentActivity={activeTab} />
         
-        {activeTab === 'subjects' && (
+        {activeTab === 'units' && !selectedUnit && (
           <div className="space-y-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-slate-800 mb-4">
-                تعلم اللغة الإنجليزية
+                الوحدات الدراسية
               </h1>
               <p className="text-xl text-slate-600 mb-8">
-                بطريقة تفاعلية وممتعة للصف {gradeAccess.grade}
+                اختر الوحدة التي تريد دراستها - الصف {gradeAccess.grade}
               </p>
             </div>
             
-            {(() => {
-              // Auto-select English subject if not already selected
-              if (!selectedSubject) {
-                const englishSubject = defaultSubjects[0];
-                if (englishSubject) {
-                  handleSubjectChange(englishSubject);
-                }
-              }
-              return selectedSubject && (
-              <SubjectUnits
-                subject={selectedSubject}
-                grade={gradeAccess.grade}
-                onUnitSelect={handleUnitSelect}
-                getUnitProgress={getUnitProgress}
-                getSubjectProgress={getSubjectProgress}
-              />
-              );
-            })()}
+            <SubjectUnits
+              subject={selectedSubject || defaultSubjects[0]}
+              grade={gradeAccess.grade}
+              onUnitSelect={handleUnitSelect}
+              getUnitProgress={getUnitProgress}
+              getSubjectProgress={getSubjectProgress}
+            />
           </div>
         )}
         
-        {activeTab === 'units' && selectedSubject && selectedUnit && (
+        {activeTab === 'units' && selectedUnit && (
           <VocabularyUnit
             title={selectedUnit}
             words={selectedWords}
@@ -198,6 +185,10 @@ function App() {
         
         {activeTab === 'practice' && selectedWords.length > 0 && (
           <div className="space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-slate-800 mb-2">التدريب التفاعلي</h2>
+              <p className="text-slate-600">اختر نوع التمرين الذي تريد ممارسته</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('flashcards')}>
@@ -234,6 +225,23 @@ function App() {
                 <h3 className="text-xl font-bold text-gray-800 mb-2">✍️ تمرين التهجئة</h3>
                 <p className="text-gray-600">تحسين مهارات التهجئة</p>
               </div>
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'practice' && selectedWords.length === 0 && (
+          <div className="text-center py-20">
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold text-yellow-700 mb-4">اختر وحدة أولاً</h3>
+              <p className="text-yellow-600 mb-6">
+                يجب اختيار وحدة دراسية من تبويب "الوحدات الدراسية" قبل البدء في التدريب
+              </p>
+              <button
+                onClick={() => setActiveTab('units')}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                اذهب للوحدات الدراسية
+              </button>
             </div>
           </div>
         )}
