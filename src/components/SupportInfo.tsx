@@ -9,7 +9,7 @@ interface SupportInfoProps {
 }
 
 const SupportInfo: React.FC<SupportInfoProps> = ({
-  whatsappNumber = '+96895466785',
+  whatsappNumber = '+96895585810',
   email = 'support@example.com',
   showHeader = true,
   className = ''
