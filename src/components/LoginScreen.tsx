@@ -322,8 +322,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
           </div>
         </div>
       </div>
-
-
+    </div>
   );
 };
 
