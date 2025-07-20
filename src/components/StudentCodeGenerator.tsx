@@ -9,6 +9,7 @@ interface StudentCodeGeneratorProps {
 const StudentCodeGenerator: React.FC<StudentCodeGeneratorProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     studentName: '',
+    gender: 'male' as 'male' | 'female',
     grade: 1,
     expiresAt: '2026-03-01',
     notes: ''
@@ -40,6 +41,7 @@ const StudentCodeGenerator: React.FC<StudentCodeGeneratorProps> = ({ onSuccess }
       // Step 1: Create student record
       const studentData = {
         name: formData.studentName.trim(),
+        gender: formData.gender,
         grade: formData.grade,
         teacher_id: null,
         join_date: new Date().toISOString(),
@@ -152,6 +154,7 @@ const StudentCodeGenerator: React.FC<StudentCodeGeneratorProps> = ({ onSuccess }
                 setGeneratedCode(null);
                 setFormData({
                   studentName: '',
+                  gender: 'male',
                   grade: 1,
                   expiresAt: '',
                   notes: ''
@@ -190,6 +193,22 @@ const StudentCodeGenerator: React.FC<StudentCodeGeneratorProps> = ({ onSuccess }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             placeholder="أدخل اسم الطالب الكامل"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            الجنس *
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="male">ذكر 👨‍🎓</option>
+            <option value="female">أنثى 👩‍🎓</option>
+          </select>
         </div>
 
         <div>

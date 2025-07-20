@@ -27,6 +27,7 @@ const StudentManagement: React.FC = () => {
   // Form state
   const [formData, setFormData] = useState({
     student_name: '',
+    gender: 'male' as 'male' | 'female',
     grade: 1,
     expires_at: ''
   });
@@ -135,6 +136,7 @@ const StudentManagement: React.FC = () => {
         // Step 1: Create student record first
         const studentData = {
           name: formData.student_name.trim(),
+          gender: formData.gender,
           grade: formData.grade,
           teacher_id: null, // No teacher assigned for now
           join_date: new Date().toISOString(),
@@ -237,6 +239,7 @@ const StudentManagement: React.FC = () => {
       // Reset form
       setFormData({
         student_name: '',
+        gender: 'male',
         grade: 1,
         expires_at: ''
       });
@@ -502,6 +505,7 @@ const StudentManagement: React.FC = () => {
                 setErrors({});
                 setFormData({
                   student_name: '',
+                  gender: 'male',
                   grade: 1,
                   expires_at: ''
                 });
@@ -531,6 +535,22 @@ const StudentManagement: React.FC = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.student_name}</p>
                 )}
           </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                الجنس *
+              </label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
+                required
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="male">ذكر 👨‍🎓</option>
+                <option value="female">أنثى 👩‍🎓</option>
+              </select>
+            </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

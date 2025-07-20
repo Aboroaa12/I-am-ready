@@ -173,7 +173,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
             isAdmin: false,
             isStudent: true,
             studentName: studentAccess.students?.name || null,
-            studentKeyId: studentAccess.student_id
+            studentKeyId: studentAccess.student_id,
+            gender: studentAccess.students?.gender || 'male'
           };
           
           onLogin(access);

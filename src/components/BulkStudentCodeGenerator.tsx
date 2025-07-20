@@ -9,6 +9,7 @@ interface BulkStudentCodeGeneratorProps {
 interface StudentData {
   id: string;
   name: string;
+  gender: 'male' | 'female';
   grade: number;
   notes?: string;
 }
@@ -35,6 +36,7 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
     const newStudent: StudentData = {
       id: Date.now().toString(),
       name: '',
+      gender: 'male',
       grade: bulkSettings.grade,
       notes: ''
     };
@@ -73,6 +75,7 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
               importedStudents.push({
                 id: Date.now().toString() + i,
                 name: parts[0].trim(),
+                gender: parts[1]?.toLowerCase() === 'female' || parts[1]?.toLowerCase() === 'أنثى' ? 'female' : 'male',
                 grade: parts[1] ? parseInt(parts[1].trim()) || bulkSettings.grade : bulkSettings.grade,
                 notes: parts[2]?.trim() || ''
               });
@@ -91,10 +94,10 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
 
   const downloadTemplate = () => {
     const csvContent = [
-      ['اسم الطالب', 'الصف', 'ملاحظات'].join(','),
-      ['أحمد محمد', '5', 'طالب متميز'].join(','),
-      ['فاطمة علي', '5', ''].join(','),
-      ['محمد سالم', '6', 'يحتاج متابعة'].join(',')
+      ['اسم الطالب', 'الجنس', 'الصف', 'ملاحظات'].join(','),
+      ['أحمد محمد', 'ذكر', '5', 'طالب متميز'].join(','),
+      ['فاطمة علي', 'أنثى', '5', ''].join(','),
+      ['محمد سالم', 'ذكر', '6', 'يحتاج متابعة'].join(',')
     ].join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -131,6 +134,7 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
         // Step 1: Create student record
         const studentData = {
           name: student.name.trim(),
+          gender: student.gender,
           grade: student.grade,
           teacher_id: null,
           join_date: new Date().toISOString(),
@@ -217,9 +221,10 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
 
   const exportCodes = () => {
     const csvContent = [
-      ['اسم الطالب', 'رمز الدخول', 'الصف', 'تاريخ الإنشاء', 'تاريخ الانتهاء'].join(','),
+      ['اسم الطالب', 'الجنس', 'رمز الدخول', 'الصف', 'تاريخ الإنشاء', 'تاريخ الانتهاء'].join(','),
       ...generatedCodes.map(item => [
         item.student,
+        students.find(s => s.name === item.student)?.gender === 'female' ? 'أنثى' : 'ذكر',
         item.code,
         bulkSettings.grade,
         new Date().toLocaleDateString('ar-SA'),
@@ -263,6 +268,7 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
               <thead className="bg-green-50">
                 <tr>
                   <th className="text-right py-2 px-4 font-semibold text-green-800">اسم الطالب</th>
+                  <th className="text-right py-2 px-4 font-semibold text-green-800">الجنس</th>
                   <th className="text-right py-2 px-4 font-semibold text-green-800">رمز الدخول</th>
                 </tr>
               </thead>
@@ -270,6 +276,9 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
                 {generatedCodes.map((item, index) => (
                   <tr key={index} className="border-t border-green-100">
                     <td className="py-2 px-4">{item.student}</td>
+                    <td className="py-2 px-4">
+                      {students.find(s => s.name === item.student)?.gender === 'female' ? '👩‍🎓 أنثى' : '👨‍🎓 ذكر'}
+                    </td>
                     <td className="py-2 px-4 font-mono font-bold text-green-700">{item.code}</td>
                   </tr>
                 ))}
@@ -416,6 +425,18 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                       placeholder="أدخل اسم الطالب"
                     />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">الجنس</label>
+                    <select
+                      value={student.gender}
+                      onChange={(e) => updateStudent(student.id, 'gender', e.target.value as 'male' | 'female')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="male">ذكر 👨‍🎓</option>
+                      <option value="female">أنثى 👩‍🎓</option>
+                    </select>
                   </div>
                   
                   <div>
