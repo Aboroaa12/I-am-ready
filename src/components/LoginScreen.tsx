@@ -133,11 +133,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
           .eq('is_active', true)
           .eq('is_teacher', false)
           .eq('is_admin', false)
-          .not('student_id', 'is', null);
-        
-        // إذا لم يكن هناك خطأ ووجدت بيانات للطلاب
-        if (!studentAccessError && studentAccessData && studentAccessData.length > 0) {
-          const studentAccess = studentAccessData[0]; // أخذ أول نتيجة
+          .not('student_id', 'is', null)
+          .single();
+        if (!studentAccessError && studentAccessData) {
+          const studentAccess = studentAccessData;
           
           // التحقق من صلاحية المفتاح
           if (studentAccess.expires_at && new Date(studentAccess.expires_at) < new Date()) {
@@ -174,7 +173,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
             isTeacher: false,
             isAdmin: false,
             isStudent: true,
-            studentName: studentAccess.students?.name || 'طالب',
+            studentName: studentAccess.students?.name || null,
             studentKeyId: studentAccess.student_id
           };
           

@@ -1,8 +1,10 @@
 import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Star, Zap, LogOut } from 'lucide-react';
 import { UserProgress, GradeAccess } from '../types';
 import { getGradeGradientColor } from '../utils/gradeColors';
 import SupabaseConnectionStatus from './SupabaseConnectionStatus';
+import { supabase } from '../lib/supabase';
 
 interface HeaderProps {
   progress: UserProgress;
@@ -28,16 +30,53 @@ const getWelcomeMessage = (gradeAccess?: GradeAccess): string => {
     return `مرحباً أستاذ ${firstName} 👨‍🏫`;
   }
   
-  if (gradeAccess.isStudent && gradeAccess.studentName) {
-    const firstName = extractFirstName(gradeAccess.studentName);
+  return 'مرحباً بك 👋';
+};
+
+const getWelcomeMessageWithName = (gradeAccess?: GradeAccess, studentName?: string | null): string => {
+  if (!gradeAccess) return 'مرحباً بك';
+  
+  if (gradeAccess.isAdmin) {
+    return 'مرحباً أيها المدير 👑';
+  }
+  
+  if (gradeAccess.isTeacher && gradeAccess.teacherName) {
+    const firstName = extractFirstName(gradeAccess.teacherName);
+    return `مرحباً أستاذ ${firstName} 👨‍🏫`;
+  }
+  
+  if (gradeAccess.isStudent && (gradeAccess.studentName || studentName)) {
+    const firstName = extractFirstName(gradeAccess.studentName || studentName || '');
     return `مرحباً بك يا "${firstName}" 👋`;
   }
   
   return 'مرحباً بك 👋';
 };
 const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
-  // Debug: Log gradeAccess to see what data we have
-  console.log('Header gradeAccess:', gradeAccess);
+  // Load student name from database if we have studentKeyId but no studentName
+  const [studentName, setStudentName] = useState<string | null>(gradeAccess?.studentName || null);
+  
+  useEffect(() => {
+    const loadStudentName = async () => {
+      if (gradeAccess?.isStudent && gradeAccess.studentKeyId && !gradeAccess.studentName) {
+        try {
+          const { data, error } = await supabase
+            .from('students')
+            .select('name')
+            .eq('id', gradeAccess.studentKeyId)
+            .single();
+          
+          if (!error && data) {
+            setStudentName(data.name);
+          }
+        } catch (err) {
+          console.error('Error loading student name:', err);
+        }
+      }
+    };
+    
+    loadStudentName();
+  }, [gradeAccess]);
   
   const getGradeColor = () => {
     if (!gradeAccess) return 'from-purple-600 via-blue-600 to-teal-600';
@@ -55,15 +94,7 @@ const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
             </h1>
             <div className="text-xl opacity-90">
               <p className="mb-1 text-2xl font-semibold">
-                {getWelcomeMessage(gradeAccess)}
-                {/* Debug info */}
-                {gradeAccess && (
-                  <span className="text-sm opacity-60 block">
-                    Debug: isStudent={gradeAccess.isStudent ? 'true' : 'false'}, 
-                    studentName="{gradeAccess.studentName || 'undefined'}", 
-                    studentKeyId="{gradeAccess.studentKeyId || 'undefined'}"
-                  </span>
-                )}
+                {getWelcomeMessageWithName(gradeAccess, studentName)}
               </p>
               <p className="text-lg">
                 {gradeAccess ? `دليل شامل لتعلم اللغة الإنجليزية - ${gradeAccess.name}` : 'للصفوف من الخامس إلى الثاني عشر'}
