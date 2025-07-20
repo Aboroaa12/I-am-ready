@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VocabularyWord, GrammarRule } from '../types';
 import VocabularyCard from './VocabularyCard';
-import { BookOpen, Lightbulb, ChevronDown, ChevronUp, Play, Volume2, Sparkles, Target, Award, Users, Brain, Zap, Star, CheckCircle, Trophy, Rocket, PenTool } from 'lucide-react';
+import { BookOpen, Lightbulb, ChevronDown, ChevronUp, Play, Volume2, Sparkles, Target, Award, Users, Brain, Zap, Star, CheckCircle, Trophy, Rocket, PenTool, ChevronRight } from 'lucide-react';
 import { speechEngine } from '../utils/speechEngine';
 
 interface VocabularyUnitProps {
@@ -9,6 +9,7 @@ interface VocabularyUnitProps {
   words: VocabularyWord[];
   grammarRules?: GrammarRule[];
   onWordPronounce?: (word: string) => void;
+  onBack?: () => void;
 }
 
 const VocabularyUnit: React.FC<VocabularyUnitProps> = ({ 
@@ -16,6 +17,7 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
   words, 
   grammarRules, 
   onWordPronounce,
+  onBack,
 }) => {
   const [expandedRules, setExpandedRules] = useState<Set<number>>(new Set());
   const [showAllWords, setShowAllWords] = useState(false);
