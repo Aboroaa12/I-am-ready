@@ -53,7 +53,7 @@ serve(async (req) => {
     }
 
     // Call Google Gemini API
-    const apiKey = Deno.env.get('GOOGLE_AI_API_KEY') || 'AIzaSyAZrgXBV27w9TV-OYd8i5TyS8yXPgUUIp8'
+    const apiKey = 'AIzaSyAZrgXBV27w9TV-OYd8i5TyS8yXPgUUIp8'
     
     const prompt = `
 Please analyze the following English text written by an Arabic-speaking student learning English. Provide detailed feedback in the following JSON format:
