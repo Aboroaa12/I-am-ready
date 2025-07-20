@@ -406,13 +406,19 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
                               <Target className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                              <h6 className="font-bold text-green-800 mb-3 text-lg">💡 نصيحة ذكية للممارسة:</h6>
+                              <h6 className="font-bold text-green-800 mb-3 text-lg">💡 نصيحة ذكية للتعلم:</h6>
                               <p className="text-green-700 leading-relaxed font-medium">
-                                ابدأ بكتابة جملة واحدة بسيطة، ثم أضف كلمة جديدة في كل مرة. هذا يساعدك على فهم القاعدة تدريجياً وبناء الثقة في استخدامها.
+                                {getRandomLearningTip().arabic}
+                              </p>
+                              <p className="text-green-600 text-sm mt-2 italic" dir="ltr">
+                                {getRandomLearningTip().english}
                               </p>
                               <div className="mt-3 bg-green-100 p-3 rounded-lg">
                                 <p className="text-green-800 text-sm font-semibold">
-                                  🎯 هدف اليوم: استخدم هذه القاعدة في 3 جمل مختلفة
+                                  🎯 {getRandomGoal().arabic}
+                                </p>
+                                <p className="text-green-600 text-xs mt-1" dir="ltr">
+                                  {getRandomGoal().english}
                                 </p>
                               </div>
                             </div>
@@ -511,6 +517,94 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
       )}
     </div>
   );
+};
+
+// نصائح تعليمية متنوعة ومحفزة
+const getRandomLearningTip = () => {
+  const tips = [
+    {
+      arabic: "العلم نور يضيء طريق المستقبل، فلا تتوقف عن التعلم أبداً",
+      english: "Knowledge is light that illuminates the path to the future, never stop learning"
+    },
+    {
+      arabic: "المثابرة مفتاح النجاح، والتكرار يؤدي إلى الإتقان",
+      english: "Perseverance is the key to success, and repetition leads to mastery"
+    },
+    {
+      arabic: "كل خطأ هو فرصة للتعلم والتحسن، لا تخف من المحاولة",
+      english: "Every mistake is an opportunity to learn and improve, don't be afraid to try"
+    },
+    {
+      arabic: "الطموح يدفعك للأمام، والعمل الجاد يحقق الأحلام",
+      english: "Ambition drives you forward, and hard work makes dreams come true"
+    },
+    {
+      arabic: "التعلم رحلة مدى الحياة، استمتع بكل خطوة فيها",
+      english: "Learning is a lifelong journey, enjoy every step of it"
+    },
+    {
+      arabic: "الصبر والممارسة يحولان الصعب إلى سهل",
+      english: "Patience and practice turn the difficult into easy"
+    },
+    {
+      arabic: "اجعل من كل يوم فرصة لتعلم شيء جديد",
+      english: "Make every day an opportunity to learn something new"
+    },
+    {
+      arabic: "النجاح يأتي لمن يؤمن بقدراته ويعمل بجد",
+      english: "Success comes to those who believe in their abilities and work hard"
+    },
+    {
+      arabic: "التحدي يقوي العزيمة ويطور المهارات",
+      english: "Challenges strengthen determination and develop skills"
+    },
+    {
+      arabic: "العقل الذي ينفتح على فكرة جديدة لا يعود أبداً لحجمه الأصلي",
+      english: "A mind that opens to a new idea never returns to its original size"
+    }
+  ];
+  
+  return tips[Math.floor(Math.random() * tips.length)];
+};
+
+// أهداف يومية متنوعة
+const getRandomGoal = () => {
+  const goals = [
+    {
+      arabic: "هدف اليوم: تعلم 5 كلمات جديدة واستخدمها في جمل",
+      english: "Today's goal: Learn 5 new words and use them in sentences"
+    },
+    {
+      arabic: "تحدي اليوم: اقرأ نص قصير وحاول فهمه بدون ترجمة",
+      english: "Today's challenge: Read a short text and try to understand it without translation"
+    },
+    {
+      arabic: "مهمة اليوم: مارس النطق لمدة 10 دقائق",
+      english: "Today's task: Practice pronunciation for 10 minutes"
+    },
+    {
+      arabic: "هدف الأسبوع: أكمل وحدة كاملة بنجاح",
+      english: "This week's goal: Complete a full unit successfully"
+    },
+    {
+      arabic: "تحدي الشهر: احصل على 500 نقطة في التمارين",
+      english: "This month's challenge: Get 500 points in exercises"
+    },
+    {
+      arabic: "مهمة اليوم: اكتب فقرة قصيرة باللغة الإنجليزية",
+      english: "Today's task: Write a short paragraph in English"
+    },
+    {
+      arabic: "هدف اليوم: حل 10 أسئلة قواعد بدون أخطاء",
+      english: "Today's goal: Solve 10 grammar questions without errors"
+    },
+    {
+      arabic: "تحدي اليوم: استمع لحوار وحاول تكراره",
+      english: "Today's challenge: Listen to a dialogue and try to repeat it"
+    }
+  ];
+  
+  return goals[Math.floor(Math.random() * goals.length)];
 };
 
 export default VocabularyUnit;
