@@ -48,25 +48,16 @@ function App() {
   useEffect(() => {
     // Check Supabase connection on app start
     const checkConnection = async () => {
-      try {
-        const connected = await checkSupabaseConnection();
-        setIsSupabaseConnected(connected);
-      } catch (error) {
-        // في حالة فشل التحقق من الاتصال، اعمل في وضع عدم الاتصال
-        console.log('Connection check failed, working offline');
-        setIsSupabaseConnected(false);
-      }
+      // التحقق من الاتصال بصمت
+      const connected = await checkSupabaseConnection().catch(() => false);
+      setIsSupabaseConnected(connected);
     };
     
-    // تشغيل التحقق من الاتصال بدون انتظار
-    checkConnection().catch(() => {
-      setIsSupabaseConnected(false);
-    });
+    // تشغيل التحقق من الاتصال
+    checkConnection();
 
     // Initialize speech engine
-    speechEngine.initialize().catch(() => {
-      console.log('Speech engine initialization failed');
-    });
+    speechEngine.initialize().catch(() => {});
   }, []);
 
   useEffect(() => {

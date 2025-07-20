@@ -29,35 +29,29 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   // إذا لم تكن المتغيرات صحيحة، ارجع false مباشرة
   if (!hasValidCredentials) {
-    console.log('Supabase connection skipped: Invalid or missing credentials');
     return false;
   }
 
   try {
-    // استخدام timeout قصير جداً للتحقق من الاتصال
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      window.setTimeout(() => reject(new Error('Connection timeout')), 1000);
-    });
-
-    // استخدام استعلام بسيط للتحقق من الاتصال
-    const connectionPromise = supabase.from('health_check').select('*').limit(1);
+    // استخدام استعلام بسيط مع timeout مدمج
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 500);
     
-    // استخدام Promise.race مع timeout
-    const result = await Promise.race([
-      connectionPromise,
-      timeoutPromise
-    ]);
+    const result = await supabase
+      .from('health_check')
+      .select('*')
+      .limit(1)
+      .abortSignal(controller.signal);
+    
+    clearTimeout(timeoutId);
     
     if (result.error) {
-      console.log('Supabase connection failed, working in offline mode');
       return false;
     }
     
-    console.log('Supabase connection successful');
     return true;
   } catch (error: any) {
-    // تسجيل بسيط للخطأ والعمل في وضع عدم الاتصال
-    console.log('Working in offline mode - Supabase unavailable');
+    // العمل في وضع عدم الاتصال بصمت
     return false;
   }
 };
