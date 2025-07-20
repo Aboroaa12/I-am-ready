@@ -644,7 +644,12 @@ const StudentManagement: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <span className="font-medium">تاريخ الإنشاء:</span>
-                        <span>{formatDate(key.created_at)}</span>
+                        <div>
+                          <div>{formatDate(key.created_at)}</div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(key.created_at).toLocaleDateString('ar-SA-u-ca-islamic')}
+                          </div>
+                        </div>
                       </div>
                       
                       <div className="flex items-center gap-2">
@@ -670,9 +675,12 @@ const StudentManagement: React.FC = () => {
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span className={isExpired(key.expires_at) ? 'text-red-600 font-medium' : ''}>
-                              {formatDate(key.expires_at)}
-                            </span>
+                            <div className={isExpired(key.expires_at) ? 'text-red-600 font-medium' : ''}>
+                              <div>{formatDate(key.expires_at)}</div>
+                              <div className="text-xs text-gray-500">
+                                {new Date(key.expires_at).toLocaleDateString('ar-SA-u-ca-islamic')}
+                              </div>
+                            </div>
                             <button
                               onClick={() => setEditingKey(key.id)}
                               className="text-gray-500 hover:text-gray-700"

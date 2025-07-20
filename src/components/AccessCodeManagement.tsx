@@ -333,12 +333,22 @@ const AccessCodeManagement: React.FC<AccessCodeManagementProps> = ({ teacher, st
                     </td>
                     <td className="py-4 px-6">
                       <div className="text-sm text-gray-600">
-                        {new Date(code.createdAt).toLocaleDateString('ar-SA')}
+                        <div>{new Date(code.createdAt).toLocaleDateString('ar-SA')}</div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(code.createdAt).toLocaleDateString('ar-SA-u-ca-islamic')}
+                        </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="text-sm text-gray-600">
-                        {code.expiresAt ? new Date(code.expiresAt).toLocaleDateString('ar-SA') : 'غير محدد'}
+                        {code.expiresAt ? (
+                          <div>
+                            <div>{new Date(code.expiresAt).toLocaleDateString('ar-SA')}</div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(code.expiresAt).toLocaleDateString('ar-SA-u-ca-islamic')}
+                            </div>
+                          </div>
+                        ) : 'غير محدد'}
                       </div>
                     </td>
                     <td className="py-4 px-6">
