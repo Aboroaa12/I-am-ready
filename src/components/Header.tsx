@@ -10,6 +10,31 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
+const extractFirstName = (fullName: string): string => {
+  if (!fullName) return '';
+  const parts = fullName.trim().split(' ');
+  return parts[0] || '';
+};
+
+const getWelcomeMessage = (gradeAccess?: GradeAccess): string => {
+  if (!gradeAccess) return 'مرحباً بك';
+  
+  if (gradeAccess.isAdmin) {
+    return 'مرحباً أيها المدير 👑';
+  }
+  
+  if (gradeAccess.isTeacher && gradeAccess.teacherName) {
+    const firstName = extractFirstName(gradeAccess.teacherName);
+    return `مرحباً أستاذ ${firstName} 👨‍🏫`;
+  }
+  
+  if (gradeAccess.isStudent && gradeAccess.studentName) {
+    const firstName = extractFirstName(gradeAccess.studentName);
+    return `مرحباً ${firstName} 👨‍🎓`;
+  }
+  
+  return 'مرحباً بك 👋';
+};
 const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
   const getGradeColor = () => {
     if (!gradeAccess) return 'from-purple-600 via-blue-600 to-teal-600';
@@ -25,16 +50,12 @@ const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
               <BookOpen className="w-12 h-12" />
               أنا مستعد
             </h1>
-            {gradeAccess?.isStudent ? (
-              <div className="text-xl opacity-90">
-                <p className="mb-1">مرحباً {gradeAccess.studentName} 👋</p>
-                <p className="text-lg">دليل شامل لتعلم اللغة الإنجليزية - {gradeAccess.name}</p>
-              </div>
-            ) : (
-              <p className="text-xl opacity-90">
+            <div className="text-xl opacity-90">
+              <p className="mb-1 text-2xl font-semibold">{getWelcomeMessage(gradeAccess)}</p>
+              <p className="text-lg">
                 {gradeAccess ? `دليل شامل لتعلم اللغة الإنجليزية - ${gradeAccess.name}` : 'للصفوف من الخامس إلى الثاني عشر'}
               </p>
-            )}
+            </div>
           </div>
           
           <div className="flex items-center gap-6">

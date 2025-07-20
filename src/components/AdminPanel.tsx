@@ -116,7 +116,7 @@ const AdminPanel: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">لوحة تحكم المدير</h1>
-                <p className="text-gray-600">إدارة شاملة للمنصة التعليمية</p>
+                <p className="text-gray-600">مرحباً أيها المدير 👑 - إدارة شاملة للمنصة التعليمية</p>
               </div>
             </div>
             <div className="flex items-center gap-4">

@@ -88,7 +88,9 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ teacher, onLogout }
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">لوحة تحكم المعلم</h1>
-                <p className="text-gray-600">مرحباً {teacher.name} - {teacher.schoolName || 'مدرسة'}</p>
+                <p className="text-gray-600">
+                  مرحباً أستاذ {teacher.name.split(' ')[0]} 👨‍🏫 - {teacher.schoolName || 'مدرسة'}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4">

@@ -99,7 +99,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
             code: accessCode.code,
             isTeacher: accessCode.is_teacher,
             isAdmin: accessCode.is_admin,
-            teacherId: accessCode.teacher_id
+            teacherId: accessCode.teacher_id,
+            teacherName: accessCode.teacher_name
           };
           
           // إذا كان هناك صف محدد وكان المستخدم مديراً، قم بتعيين الصف المحدد

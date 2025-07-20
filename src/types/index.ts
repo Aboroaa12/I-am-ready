@@ -113,6 +113,7 @@ export interface GradeAccess {
   isTeacher?: boolean;
   isStudent?: boolean;
   teacherId?: string;
+  teacherName?: string;
   studentName?: string;
   studentKeyId?: string;
 }

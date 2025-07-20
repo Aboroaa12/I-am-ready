@@ -58,9 +58,20 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange, gradeAc
               <BookOpen className="w-6 h-6 text-blue-600" />
             )}
             <div>
-              <h2 className="font-bold text-gray-800 text-lg">{gradeAccess.name}</h2>
+              <h2 className="font-bold text-gray-800 text-lg">
+                {gradeAccess.isAdmin ? 'المدير العام 👑' : 
+                 gradeAccess.isTeacher ? `أستاذ ${gradeAccess.teacherName?.split(' ')[0] || 'المعلم'} 👨‍🏫` :
+                 gradeAccess.isStudent ? `${gradeAccess.studentName?.split(' ')[0] || 'الطالب'} 👨‍🎓` :
+                 gradeAccess.name}
+              </h2>
               {gradeAccess.isAdmin && (
                 <p className="text-sm text-purple-600">وصول شامل لجميع الصفوف</p>
+              )}
+              {gradeAccess.isTeacher && (
+                <p className="text-sm text-blue-600">معلم - {gradeAccess.name}</p>
+              )}
+              {gradeAccess.isStudent && (
+                <p className="text-sm text-green-600">{gradeAccess.name}</p>
               )}
             </div>
           </div>
