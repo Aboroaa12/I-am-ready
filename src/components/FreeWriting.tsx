@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, Trash2, Clock, Download, Upload, CheckCircle, XCircle, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Save, Trash2, Clock, Download, Upload, CheckCircle, XCircle, AlertTriangle, Lightbulb, Brain, Sparkles, Zap } from 'lucide-react';
 import spellChecker from '../utils/spellChecker';
 
 interface FreeWritingProps {
@@ -26,6 +26,19 @@ interface GrammarError {
   };
 }
 
+interface AIFeedback {
+  grammarErrors: Array<{
+    text: string;
+    suggestion: string;
+    explanation: string;
+    position: { start: number; end: number };
+    type: 'grammar' | 'spelling' | 'style';
+  }>;
+  overallFeedback: string;
+  suggestions: string[];
+  score: number; // 0-100
+}
+
 const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   const [text, setText] = useState<string>('');
   const [wordCount, setWordCount] = useState<number>(0);
@@ -42,6 +55,10 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
   const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [grammarCheckEnabled, setGrammarCheckEnabled] = useState<boolean>(true);
+  const [aiEnabled, setAiEnabled] = useState<boolean>(false);
+  const [aiFeedback, setAiFeedback] = useState<AIFeedback | null>(null);
+  const [isGettingAiFeedback, setIsGettingAiFeedback] = useState<boolean>(false);
+  const [aiError, setAiError] = useState<string | null>(null);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -123,6 +140,20 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     }
   }, [text, grammarCheckEnabled]);
 
+  // Check AI feedback when text changes or AI is toggled
+  useEffect(() => {
+    if (aiEnabled && text.trim() && text.length > 20) {
+      const debounceTimeout = setTimeout(() => {
+        getAiFeedback(text);
+      }, 3000); // Wait 3 seconds after user stops typing
+      
+      return () => clearTimeout(debounceTimeout);
+    } else if (!aiEnabled) {
+      setAiFeedback(null);
+      setAiError(null);
+    }
+  }, [text, aiEnabled]);
+
   // Start/stop timer
   const toggleTimer = () => {
     if (isTimerRunning) {
@@ -160,6 +191,48 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Get AI feedback
+  const getAiFeedback = async (textToAnalyze: string) => {
+    if (!textToAnalyze.trim() || textToAnalyze.length < 20) {
+      setAiFeedback(null);
+      return;
+    }
+    
+    setIsGettingAiFeedback(true);
+    setAiError(null);
+    
+    try {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-writing-feedback`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: textToAnalyze })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const feedback: AIFeedback = await response.json();
+      setAiFeedback(feedback);
+      
+      // Award points for using AI feedback
+      if (onScore && feedback.score > 70) {
+        onScore(5);
+      }
+      
+    } catch (error) {
+      console.error('Error getting AI feedback:', error);
+      setAiError('فشل في الحصول على التغذية الراجعة من الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsGettingAiFeedback(false);
+    }
   };
 
   // Handle text change
@@ -714,6 +787,16 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             <span className="text-gray-700">حفظ تلقائي</span>
           </label>
           
+          <label className="flex items-center gap-2 cursor-pointer ml-6">
+            <input
+              type="checkbox"
+              checked={aiEnabled}
+              onChange={() => setAiEnabled(!aiEnabled)}
+              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+            />
+            <span className="text-gray-700">تفعيل الذكاء الاصطناعي</span>
+          </label>
+          
           {lastSaved && (
             <span className="text-xs text-gray-500">
               آخر حفظ: {lastSaved.toLocaleTimeString()}
@@ -828,6 +911,130 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
           </div>
         )}
 
+        {/* AI Feedback */}
+        {aiEnabled && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-purple-600 flex items-center gap-2">
+                <Brain className="w-5 h-5" />
+                التغذية الراجعة من الذكاء الاصطناعي
+                {isGettingAiFeedback && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 ml-2"></div>
+                )}
+              </h4>
+              {aiFeedback && (
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-yellow-500" />
+                  <span className="text-sm font-semibold text-purple-700">
+                    النتيجة: {aiFeedback.score}/100
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {aiError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-red-700">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="text-sm">{aiError}</span>
+                </div>
+              </div>
+            )}
+            
+            {isGettingAiFeedback && (
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-purple-700">
+                  <div className="animate-pulse flex items-center gap-2">
+                    <Brain className="w-4 h-4" />
+                    <span className="text-sm">جاري تحليل النص بالذكاء الاصطناعي...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {aiFeedback && !isGettingAiFeedback && (
+              <div className="space-y-4">
+                {/* Overall Feedback */}
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+                  <h5 className="font-bold text-purple-800 mb-2 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    التقييم العام:
+                  </h5>
+                  <p className="text-purple-700">{aiFeedback.overallFeedback}</p>
+                </div>
+                
+                {/* AI Grammar Errors */}
+                {aiFeedback.grammarErrors.length > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <h5 className="font-bold text-orange-800 mb-3 flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      اقتراحات التحسين ({aiFeedback.grammarErrors.length}):
+                    </h5>
+                    <div className="space-y-3">
+                      {aiFeedback.grammarErrors.map((error, index) => (
+                        <div key={index} className="bg-white border border-orange-200 rounded-lg p-3">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                              error.type === 'grammar' ? 'bg-red-500' :
+                              error.type === 'spelling' ? 'bg-blue-500' : 'bg-green-500'
+                            }`}>
+                              {error.type === 'grammar' ? 'ن' : error.type === 'spelling' ? 'إ' : 'أ'}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono bg-red-100 text-red-800 px-2 py-1 rounded text-sm">
+                                  {error.text}
+                                </span>
+                                <span className="text-gray-500">←</span>
+                                <span className="font-mono bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                                  {error.suggestion}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-700">{error.explanation}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* AI Suggestions */}
+                {aiFeedback.suggestions.length > 0 && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h5 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4" />
+                      نصائح للتحسين:
+                    </h5>
+                    <ul className="space-y-2">
+                      {aiFeedback.suggestions.map((suggestion, index) => (
+                        <li key={index} className="flex items-start gap-2 text-green-700">
+                          <span className="text-green-500 font-bold mt-1">•</span>
+                          <span>{suggestion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {!aiFeedback && !isGettingAiFeedback && !aiError && text.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-blue-700">
+                  <Brain className="w-4 h-4" />
+                  <span className="text-sm">
+                    {text.length < 20 
+                      ? 'اكتب على الأقل 20 حرفاً للحصول على تغذية راجعة من الذكاء الاصطناعي'
+                      : 'توقف عن الكتابة لثلاث ثوانٍ للحصول على تغذية راجعة من الذكاء الاصطناعي'
+                    }
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Writing Tips */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
           <h4 className="font-bold text-blue-800 mb-4 flex items-center gap-2">
@@ -858,6 +1065,14 @@ const FreeWriting: React.FC<FreeWritingProps> = ({ onScore, onSave }) => {
             <div className="flex items-start gap-2">
               <div className="bg-blue-200 p-1 rounded-full text-blue-700 mt-1">6</div>
               <p>استخدم علامات الترقيم المناسبة في نهاية الجمل</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>🤖</span>
+              <span>استخدم الذكاء الاصطناعي للحصول على تغذية راجعة متقدمة</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>📈</span>
+              <span>راجع اقتراحات التحسين وطبقها</span>
             </div>
           </div>
         </div>
