@@ -252,6 +252,14 @@ function App() {
         )}
         
         {activeTab === 'flashcards' && selectedWords.length > 0 && (
+          <FlashCards 
+            words={selectedWords} 
+            onScore={handleActivityScore}
+            onStreak={handleActivityStreak}
+          />
+        )}
+        
+        {activeTab === 'quiz' && selectedWords.length > 0 && (
           <div className="space-y-6">
             {/* Back Button */}
             <div className="flex items-center gap-4">
@@ -264,20 +272,12 @@ function App() {
               </button>
             </div>
             
-          <FlashCards 
-            words={selectedWords} 
-            onScore={handleActivityScore}
-            onStreak={handleActivityStreak}
-          />
-          </div>
-        )}
-        
-        {activeTab === 'quiz' && selectedWords.length > 0 && (
           <Quiz 
             words={selectedWords} 
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
           />
+          </div>
         )}
         
         {activeTab === 'memory' && selectedWords.length > 0 && (
@@ -288,22 +288,9 @@ function App() {
         )}
         
         {activeTab === 'pronunciation' && (
-          <div className="space-y-6">
-            {/* Back Button */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setActiveTab('practice')}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
-              >
-                <ChevronRight className="w-5 h-5 rotate-180" />
-                العودة للتدريب التفاعلي
-              </button>
-            </div>
-            
           <PronunciationPractice 
             onScore={handleActivityScore}
           />
-          </div>
         )}
         
         {activeTab === 'grammar' && (
@@ -315,11 +302,24 @@ function App() {
         )}
         
         {activeTab === 'spelling' && selectedWords.length > 0 && (
+          <div className="space-y-6">
+            {/* Back Button */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <SpellingExercise 
             words={selectedWords}
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
           />
+          </div>
         )}
         
         {activeTab === 'free-writing' && (
