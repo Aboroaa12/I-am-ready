@@ -460,7 +460,7 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
     code: editingCode?.code || '',
     grade: editingCode?.grade || teacher.grades[0] || 5,
     description: editingCode?.description || '',
-    expiresAt: editingCode?.expiresAt ? new Date(editingCode.expiresAt).toISOString().split('T')[0] : '2026-03-01',
+    expiresAt: editingCode?.expiresAt ? new Date(editingCode.expiresAt).toISOString().split('T')[0] : '',
     isActive: editingCode?.isActive ?? true,
     maxUsage: editingCode?.maxUsage || 0
   });
@@ -496,7 +496,7 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
           // تعيين تاريخ انتهاء افتراضي إلى 1/3/2026 إذا لم تكن هناك إعدادات
           setFormData(prev => ({
             ...prev,
-            expiresAt: prev.expiresAt || '2026-03-01'
+            expiresAt: '2026-03-01'
           }));
         }
         
@@ -507,6 +507,21 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
             maxUsage: settings.maxUsagePerCode
           }));
         }
+      } else {
+        // للتعديل، إذا لم يكن هناك تاريخ انتهاء، استخدم التاريخ الافتراضي
+        if (!editingCode.expiresAt) {
+          setFormData(prev => ({
+            ...prev,
+            expiresAt: '2026-03-01'
+          }));
+        }
+      }
+    } else {
+      // إذا لم تكن هناك إعدادات محفوظة، استخدم التاريخ الافتراضي
+      setFormData(prev => ({
+        ...prev,
+        expiresAt: '2026-03-01'
+      }));
       }
     }
   }, [editingCode]);

@@ -333,7 +333,10 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ teacher, onLogout }
                             {formatTime(activity.timeSpent)}
                           </td>
                           <td className="py-3 px-4 text-gray-600">
-                            {new Date(activity.startTime).toLocaleDateString('ar-SA')}
+                            <div>{new Date(activity.startTime).toLocaleDateString('ar-SA')}</div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(activity.startTime).toLocaleDateString('ar-SA-u-ca-islamic')}
+                            </div>
                           </td>
                         </tr>
                       );
