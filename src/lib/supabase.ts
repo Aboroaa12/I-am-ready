@@ -29,56 +29,35 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   // إذا لم تكن المتغيرات صحيحة، ارجع false مباشرة
   if (!hasValidCredentials) {
-    console.warn('Supabase connection skipped: Invalid or missing credentials');
+    console.log('Supabase connection skipped: Invalid or missing credentials');
     return false;
   }
 
   try {
-    // استخدام timeout أقصر للتحقق من الاتصال
+    // استخدام timeout قصير جداً للتحقق من الاتصال
     const timeoutPromise = new Promise<never>((_, reject) => {
-      window.setTimeout(() => reject(new Error('Connection timeout')), 3000);
+      window.setTimeout(() => reject(new Error('Connection timeout')), 1000);
     });
 
     // استخدام استعلام بسيط للتحقق من الاتصال
     const connectionPromise = supabase.from('health_check').select('*').limit(1);
     
-    // Use Promise.race to implement timeout
-    const { data, error } = await Promise.race([
+    // استخدام Promise.race مع timeout
+    const result = await Promise.race([
       connectionPromise,
-      timeoutPromise.then(() => {
-        throw new Error('Connection timeout');
-      })
+      timeoutPromise
     ]);
     
-    if (error) {
-      // تسجيل تفاصيل الخطأ للمساعدة في التشخيص
-      console.warn('Supabase connection error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
+    if (result.error) {
+      console.log('Supabase connection failed, working in offline mode');
       return false;
     }
     
-    console.log('✅ Supabase connection successful');
+    console.log('Supabase connection successful');
     return true;
   } catch (error: any) {
-    // معالجة أنواع مختلفة من الأخطاء
-    if (error.message === 'Connection timeout') {
-      console.warn('⚠️ Supabase connection timeout - working in offline mode');
-    } else if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-      console.warn('⚠️ Network error connecting to Supabase - check your internet connection and Supabase project status');
-      console.warn('💡 Possible solutions:');
-      console.warn('1. Check if your Supabase project is active and not paused');
-      console.warn('2. Verify your internet connection');
-      console.warn('3. Check if the Supabase URL is correct');
-      console.warn('4. Try refreshing the page');
-    } else if (error.message?.includes('Invalid API key')) {
-      console.warn('⚠️ Invalid Supabase API key - please check your .env file');
-    } else {
-      console.warn('Supabase connection check failed:', error.message || error);
-    }
+    // تسجيل بسيط للخطأ والعمل في وضع عدم الاتصال
+    console.log('Working in offline mode - Supabase unavailable');
     return false;
   }
 };
