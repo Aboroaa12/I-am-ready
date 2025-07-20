@@ -35,7 +35,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     // استخدام استعلام بسيط مع timeout أطول
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     
     const result = await supabase
       .from('health_check')
