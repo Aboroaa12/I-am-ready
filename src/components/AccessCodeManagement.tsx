@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Key, Plus, Edit, Trash2, Copy, RefreshCw, CheckCircle, XCircle, AlertTriangle, Download, Calendar } from 'lucide-react';
+import { Key, Plus, Edit, Trash2, Copy, RefreshCw, CheckCircle, XCircle, AlertTriangle, Download, Calendar, Search } from 'lucide-react';
 import { Teacher, Student, AccessCode } from '../types';
 import { getGradeGradientColor, getGradeLightColor } from '../utils/gradeColors';
 import { useAccessCodes } from '../hooks/useAccessCodes';
@@ -522,7 +522,6 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
         ...prev,
         expiresAt: '2026-03-01'
       }));
-      }
     }
   }, [editingCode]);
 
