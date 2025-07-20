@@ -30,7 +30,7 @@ const getWelcomeMessage = (gradeAccess?: GradeAccess): string => {
   
   if (gradeAccess.isStudent && gradeAccess.studentName) {
     const firstName = extractFirstName(gradeAccess.studentName);
-    return `مرحباً ${firstName} 👨‍🎓`;
+    return `مرحباً بك يا "${firstName}" 👋`;
   }
   
   return 'مرحباً بك 👋';
