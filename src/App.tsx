@@ -160,21 +160,22 @@ function App() {
           <div className="space-y-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-slate-800 mb-4">
-                مرحباً بك في منصة تعلم اللغة الإنجليزية
+                تعلم اللغة الإنجليزية
               </h1>
               <p className="text-xl text-slate-600 mb-8">
-                تعلم اللغة الإنجليزية بطريقة تفاعلية وممتعة
+                بطريقة تفاعلية وممتعة للصف {gradeAccess.grade}
               </p>
             </div>
             
-            <div className="flex justify-center mb-8">
-              <SubjectSelector 
-                onSubjectChange={handleSubjectChange}
-                currentSubject={selectedSubject}
-              />
-            </div>
-            
-            {selectedSubject && (
+            {(() => {
+              // Auto-select English subject if not already selected
+              if (!selectedSubject) {
+                const englishSubject = defaultSubjects[0];
+                if (englishSubject) {
+                  handleSubjectChange(englishSubject);
+                }
+              }
+              return selectedSubject && (
               <SubjectUnits
                 subject={selectedSubject}
                 grade={gradeAccess.grade}
@@ -182,7 +183,8 @@ function App() {
                 getUnitProgress={getUnitProgress}
                 getSubjectProgress={getSubjectProgress}
               />
-            )}
+              );
+            })()}
           </div>
         )}
         

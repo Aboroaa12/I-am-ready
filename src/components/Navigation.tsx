@@ -18,7 +18,7 @@ const getTabsByGrade = (grade: number, isAdmin: boolean = false, currentSubject?
   ];
 
   const baseTabs = [
-    { id: 'subjects', label: 'المواد الدراسية', englishLabel: 'Subjects', icon: BookOpen },
+    { id: 'subjects', label: 'اللغة الإنجليزية', englishLabel: 'English Language', icon: BookOpen },
     { id: 'practice', label: 'التدريب التفاعلي', englishLabel: 'Interactive Practice', icon: GamepadIcon },
     { id: 'free-writing', label: 'الكتابة الحرة', englishLabel: 'Free Writing', icon: Edit }
   ];

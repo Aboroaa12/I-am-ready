@@ -297,7 +297,7 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
           </div>
           <div>
             <h1 className="text-4xl font-bold text-slate-800">
-              وحدات مادة {subject.name}
+              وحدات {subject.name}
             </h1>
             <p className="text-slate-600 mt-2">الصف {grade === 0 ? 'الإداري' : grade}</p>
           </div>
