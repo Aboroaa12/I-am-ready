@@ -3,6 +3,7 @@ import TeacherManagement from './TeacherManagement';
 import StudentManagement from './StudentManagement';
 import AccessCodeSettings from './AccessCodeSettings';
 import VocabularyExtractor from './VocabularyExtractor';
+import GrammarExtractor from './GrammarExtractor';
 import ProgressTestingPanel from './ProgressTestingPanel';
 import { Database, BookOpen, Shield, Users, Settings, Key, Trash2, AlertTriangle, RefreshCw, CheckCircle, Book, Calculator, FlaskRound as Flask, FileText, Bookmark, GraduationCap, Activity, TestTube } from 'lucide-react';
 import { supabase, checkSupabaseConnection, deleteAllRecords, getTableCount } from '../lib/supabase';
@@ -99,6 +100,7 @@ const AdminPanel: React.FC = () => {
     { id: 'teachers', label: 'إدارة المعلمين', icon: GraduationCap },
     { id: 'access-codes', label: 'إعدادات رموز الدخول', icon: Key },
     { id: 'vocabulary', label: 'إدارة المفردات', icon: BookOpen },
+    { id: 'grammar', label: 'إدارة القواعد', icon: Book },
     { id: 'testing', label: 'اختبار النظام', icon: TestTube }
   ];
 
@@ -263,6 +265,14 @@ const AdminPanel: React.FC = () => {
                 </button>
                 
                 <button
+                  onClick={() => setActiveTab('grammar')}
+                  className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 p-4 rounded-lg transition-colors flex flex-col items-center gap-2"
+                >
+                  <Book className="w-8 h-8" />
+                  <span className="font-semibold">إدارة القواعد</span>
+                </button>
+                
+                <button
                   onClick={() => setShowTestingPanel(true)}
                   className="bg-orange-100 hover:bg-orange-200 text-orange-700 p-4 rounded-lg transition-colors flex flex-col items-center gap-2"
                 >
@@ -303,6 +313,7 @@ const AdminPanel: React.FC = () => {
         {activeTab === 'teachers' && <TeacherManagement />}
         {activeTab === 'access-codes' && <AccessCodeSettings />}
         {activeTab === 'vocabulary' && <VocabularyExtractor />}
+        {activeTab === 'grammar' && <GrammarExtractor />}
         {activeTab === 'testing' && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="text-center">
