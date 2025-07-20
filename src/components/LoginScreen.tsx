@@ -133,10 +133,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
           .eq('is_active', true)
           .eq('is_teacher', false)
           .eq('is_admin', false)
-          .not('student_id', 'is', null)
-          .single();
-        if (!studentAccessError && studentAccessData) {
-          const studentAccess = studentAccessData;
+          .not('student_id', 'is', null);
+        
+        if (!studentAccessError && studentAccessData && studentAccessData.length > 0) {
+          const studentAccess = studentAccessData[0];
           
           // التحقق من صلاحية المفتاح
           if (studentAccess.expires_at && new Date(studentAccess.expires_at) < new Date()) {
