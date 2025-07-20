@@ -180,7 +180,7 @@ const TeacherProfile: React.FC<TeacherProfileProps> = ({ teacher, onUpdate }) =>
                   الصفوف التي يدرسها *
                 </label>
                 <div className="grid grid-cols-4 gap-2">
-                  {[5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
                     <label key={grade} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
                       <input
                         type="checkbox"
@@ -195,12 +195,18 @@ const TeacherProfile: React.FC<TeacherProfileProps> = ({ teacher, onUpdate }) =>
               </div>
             </div>
             
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                إلغاء
+              </button>
               <button
                 onClick={handleSubmit}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
                 حفظ التغييرات
               </button>
             </div>
@@ -251,6 +257,20 @@ const TeacherProfile: React.FC<TeacherProfileProps> = ({ teacher, onUpdate }) =>
                       الصف {grade}
                     </span>
                   ))}
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <BookOpen className="w-5 h-5 text-teal-600" />
+                  <h4 className="font-semibold text-gray-700">المواد التي يدرسها</h4>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {teacher.subjects?.map((subject, index) => (
+                    <span key={index} className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-sm">
+                      {subject}
+                    </span>
+                  )) || <span className="text-gray-500">غير محدد</span>}
                 </div>
               </div>
             </div>
