@@ -14,7 +14,7 @@ const TeacherCodeGenerator: React.FC<TeacherCodeGeneratorProps> = ({ teacher, on
     code: '',
     grade: teacher.grades[0] || 5,
     description: '',
-    expiresAt: '',
+    expiresAt: '2026-03-01',
     maxUsage: 30,
     isForClass: false,
     classId: '',

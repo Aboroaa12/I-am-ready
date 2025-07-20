@@ -10,7 +10,7 @@ const StudentCodeGenerator: React.FC<StudentCodeGeneratorProps> = ({ onSuccess }
   const [formData, setFormData] = useState({
     studentName: '',
     grade: 1,
-    expiresAt: '',
+    expiresAt: '2026-03-01',
     notes: ''
   });
   

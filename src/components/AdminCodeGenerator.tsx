@@ -47,6 +47,12 @@ const AdminCodeGenerator: React.FC<AdminCodeGeneratorProps> = ({ onSuccess }) =>
           expiresAt: defaultExpiry.toISOString().split('T')[0]
         }));
       }
+    } else {
+      // تعيين تاريخ انتهاء افتراضي إلى 1/3/2026
+      setFormData(prev => ({
+        ...prev,
+        expiresAt: '2026-03-01'
+      }));
     }
   }, []);
   

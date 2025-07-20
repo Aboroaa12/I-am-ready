@@ -450,7 +450,7 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
     code: editingCode?.code || '',
     grade: editingCode?.grade || teacher.grades[0] || 5,
     description: editingCode?.description || '',
-    expiresAt: editingCode?.expiresAt ? new Date(editingCode.expiresAt).toISOString().split('T')[0] : '',
+    expiresAt: editingCode?.expiresAt ? new Date(editingCode.expiresAt).toISOString().split('T')[0] : '2026-03-01',
     isActive: editingCode?.isActive ?? true,
     maxUsage: editingCode?.maxUsage || 0
   });
@@ -481,6 +481,12 @@ const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
           setFormData(prev => ({
             ...prev,
             expiresAt: defaultExpiry.toISOString().split('T')[0]
+          }));
+        } else {
+          // تعيين تاريخ انتهاء افتراضي إلى 1/3/2026 إذا لم تكن هناك إعدادات
+          setFormData(prev => ({
+            ...prev,
+            expiresAt: prev.expiresAt || '2026-03-01'
           }));
         }
         

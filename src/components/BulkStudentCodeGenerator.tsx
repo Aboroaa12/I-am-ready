@@ -17,7 +17,7 @@ const BulkStudentCodeGenerator: React.FC<BulkStudentCodeGeneratorProps> = ({ onS
   const [students, setStudents] = useState<StudentData[]>([]);
   const [bulkSettings, setBulkSettings] = useState({
     grade: 1,
-    expiresAt: '',
+    expiresAt: '2026-03-01',
     prefix: 'STU',
     addNotes: true
   });
