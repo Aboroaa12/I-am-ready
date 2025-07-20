@@ -116,11 +116,13 @@ export interface GradeAccess {
   teacherName?: string;
   studentName?: string;
   studentKeyId?: string;
+  gender?: 'male' | 'female';
 }
 
 export interface Student {
   id: string;
   name: string;
+  gender?: 'male' | 'female';
   grade: number;
   teacherId: string;
   joinDate: string;

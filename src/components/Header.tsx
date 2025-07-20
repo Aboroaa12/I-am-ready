@@ -46,7 +46,8 @@ const getWelcomeMessageWithName = (gradeAccess?: GradeAccess, studentName?: stri
   
   if (gradeAccess.isStudent && (gradeAccess.studentName || studentName)) {
     const firstName = extractFirstName(gradeAccess.studentName || studentName || '');
-    return `مرحباً بك يا "${firstName}" 👋`;
+    const genderEmoji = gradeAccess.gender === 'female' ? '👩‍🎓' : '👨‍🎓';
+    return `مرحباً بك يا "${firstName}" ${genderEmoji}`;
   }
   
   return 'مرحباً بك 👋';
