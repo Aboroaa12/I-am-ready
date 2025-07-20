@@ -166,28 +166,6 @@ const VocabularyExtractor: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Admin Code Generator Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="bg-white/20 p-3 rounded-xl">
-              <Shield className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">إدارة رموز الدخول للمعلمين</h3>
-              <p className="opacity-90">إنشاء رموز دخول خاصة للمعلمين - مخصص للمدير فقط</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowAdminCodeGenerator(true)}
-            className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold"
-          >
-            <Key className="w-5 h-5" />
-            إنشاء رمز معلم
-          </button>
-        </div>
-      </div>
-
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-xl p-6">
         <h3 className="text-2xl font-bold text-center mb-2 flex items-center justify-center gap-2">
@@ -195,6 +173,66 @@ const VocabularyExtractor: React.FC = () => {
           مستخرج المفردات
         </h3>
         <p className="text-center opacity-90">عرض وتصفية وتصدير جميع كلمات المنهج</p>
+      </div>
+
+      {/* Admin Key Generation Section - مخصص للمدير فقط */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 border-b border-purple-500">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-white/20 p-3 rounded-xl shadow-lg">
+              <Shield className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                🔐 مولد مفاتيح المدير
+                <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">مدير فقط</span>
+              </h3>
+              <p className="opacity-90">إنشاء رموز دخول خاصة للمعلمين والطلاب - صلاحيات المدير العليا</p>
+              <div className="flex items-center gap-4 mt-2 text-sm opacity-80">
+                <span>👨‍🏫 رموز المعلمين</span>
+                <span>👨‍🎓 رموز الطلاب</span>
+                <span>🏫 رموز الفصول</span>
+                <span>⚙️ إعدادات متقدمة</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => setShowAdminCodeGenerator(true)}
+              className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Key className="w-5 h-5" />
+              إنشاء رمز معلم
+            </button>
+            <div className="text-xs opacity-75 text-center">
+              صلاحيات المدير العليا
+            </div>
+          </div>
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold">👨‍🏫</div>
+            <div className="text-sm opacity-90">رموز المعلمين</div>
+            <div className="text-lg font-bold">∞</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold">👨‍🎓</div>
+            <div className="text-sm opacity-90">رموز الطلاب</div>
+            <div className="text-lg font-bold">∞</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold">🏫</div>
+            <div className="text-sm opacity-90">رموز الفصول</div>
+            <div className="text-lg font-bold">∞</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold">⚙️</div>
+            <div className="text-sm opacity-90">إعدادات متقدمة</div>
+            <div className="text-lg font-bold">✓</div>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filters */}
