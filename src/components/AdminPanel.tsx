@@ -141,12 +141,33 @@ const AdminPanel: React.FC = () => {
                   </>
                 )}
               </div>
+              
               <button
                 onClick={checkConnection}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
                 تحديث الحالة
+              </button>
+              
+              <button
+                onClick={() => window.location.href = '/'}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                العودة للرئيسية
+              </button>
+              
+              <button
+                onClick={() => {
+                  if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                    window.location.href = '/';
+                  }
+                }}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Shield className="w-4 h-4" />
+                خروج المدير
               </button>
             </div>
           </div>

@@ -100,6 +100,18 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange, gradeAc
               </button>
             );
           })}
+          
+          {/* Quick Logout Button for Mobile */}
+          <button
+            onClick={onLogout}
+            className="flex flex-col items-center gap-2 px-4 py-4 whitespace-nowrap font-semibold transition-all duration-200 min-w-max text-sm text-red-600 hover:bg-red-50 hover:rounded-t-lg md:hidden"
+          >
+            <LogOut className="w-4 h-4" />
+            <div className="text-center">
+              <div className="font-bold">خروج</div>
+              <div className="text-xs opacity-80">Logout</div>
+            </div>
+          </button>
         </div>
       </div>
     </nav>

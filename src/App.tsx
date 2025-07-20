@@ -145,6 +145,7 @@ function App() {
   return (
     <div className={`min-h-screen ${getGradeBackgroundColor(gradeAccess.grade)}`}>
       <Header progress={progress} gradeAccess={gradeAccess} />
+      <Header progress={progress} gradeAccess={gradeAccess} onLogout={handleLogout} />
       <Navigation 
         activeTab={activeTab} 
         onTabChange={handleTabChange} 

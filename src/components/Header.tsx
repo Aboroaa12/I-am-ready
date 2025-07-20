@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Star, Zap } from 'lucide-react';
+import { BookOpen, Star, Zap, LogOut } from 'lucide-react';
 import { UserProgress, GradeAccess } from '../types';
 import { getGradeGradientColor } from '../utils/gradeColors';
 import SupabaseConnectionStatus from './SupabaseConnectionStatus';
@@ -7,9 +7,10 @@ import SupabaseConnectionStatus from './SupabaseConnectionStatus';
 interface HeaderProps {
   progress: UserProgress;
   gradeAccess?: GradeAccess;
+  onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ progress, gradeAccess }) => {
+const Header: React.FC<HeaderProps> = ({ progress, gradeAccess, onLogout }) => {
   const getGradeColor = () => {
     if (!gradeAccess) return 'from-purple-600 via-blue-600 to-teal-600';
     return `${getGradeGradientColor(gradeAccess.grade)}`;
@@ -36,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ progress, gradeAccess }) => {
             )}
           </div>
           
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-6 bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
               <div className="text-center">
                 <div className="flex items-center gap-2 mb-1">
@@ -57,7 +58,20 @@ const Header: React.FC<HeaderProps> = ({ progress, gradeAccess }) => {
               </div>
             </div>
             
-            <SupabaseConnectionStatus className="text-white/80" />
+            <div className="flex flex-col items-center gap-2">
+              <SupabaseConnectionStatus className="text-white/80" />
+              
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-semibold backdrop-blur-sm"
+                  title="تسجيل الخروج"
+                >
+                  <LogOut className="w-4 h-4" />
+                  خروج
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

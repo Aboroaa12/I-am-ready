@@ -99,6 +99,15 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ teacher, onLogout }
                 <BarChart3 className="w-4 h-4" />
                 تحديث البيانات
               </button>
+              
+              <button
+                onClick={() => window.location.href = '/'}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                العودة للرئيسية
+              </button>
+              
               <button
                 onClick={onLogout}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
