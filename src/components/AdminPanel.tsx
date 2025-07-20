@@ -5,11 +5,12 @@ import AccessCodeSettings from './AccessCodeSettings';
 import VocabularyExtractor from './VocabularyExtractor';
 import GrammarExtractor from './GrammarExtractor';
 import ProgressTestingPanel from './ProgressTestingPanel';
+import UserManagement from './UserManagement';
 import { Database, BookOpen, Shield, Users, Settings, Key, Trash2, AlertTriangle, RefreshCw, CheckCircle, Book, Calculator, FlaskRound as Flask, FileText, Bookmark, GraduationCap, Activity, TestTube } from 'lucide-react';
 import { supabase, checkSupabaseConnection, deleteAllRecords, getTableCount } from '../lib/supabase';
 
 const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'access-codes' | 'vocabulary' | 'grammar' | 'testing'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'students' | 'teachers' | 'access-codes' | 'vocabulary' | 'grammar' | 'testing'>('overview');
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [showTestingPanel, setShowTestingPanel] = useState(false);
   const [databaseStats, setDatabaseStats] = useState<{[key: string]: number}>({});
@@ -96,6 +97,7 @@ const AdminPanel: React.FC = () => {
 
   const tabs = [
     { id: 'overview', label: 'نظرة عامة', icon: Database },
+    { id: 'users', label: 'إدارة المستخدمين', icon: Users },
     { id: 'students', label: 'إدارة الطلاب', icon: Users },
     { id: 'teachers', label: 'إدارة المعلمين', icon: GraduationCap },
     { id: 'access-codes', label: 'إعدادات رموز الدخول', icon: Key },
@@ -330,6 +332,7 @@ const AdminPanel: React.FC = () => {
           </div>
         )}
 
+        {activeTab === 'users' && <UserManagement />}
         {activeTab === 'students' && <StudentManagement />}
         {activeTab === 'teachers' && <TeacherManagement />}
         {activeTab === 'access-codes' && <AccessCodeSettings />}
