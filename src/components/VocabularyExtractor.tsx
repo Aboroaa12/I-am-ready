@@ -5,6 +5,8 @@ import { Download, Search, Filter, BookOpen, X, Check, RefreshCw, Plus, Edit, Tr
 import { useVocabulary } from '../hooks/useVocabulary';
 import { getGradeGradientColor } from '../utils/gradeColors';
 import AdminCodeGenerator from './AdminCodeGenerator';
+import StudentCodeGenerator from './StudentCodeGenerator';
+import BulkStudentCodeGenerator from './BulkStudentCodeGenerator';
 
 const VocabularyExtractor: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +19,8 @@ const VocabularyExtractor: React.FC = () => {
   const [editingWord, setEditingWord] = useState<VocabularyWord | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [showAdminCodeGenerator, setShowAdminCodeGenerator] = useState(false);
+  const [showStudentCodeGenerator, setShowStudentCodeGenerator] = useState(false);
+  const [showBulkStudentGenerator, setShowBulkStudentGenerator] = useState(false);
 
   const { words, loading, error, addWord, updateWord, deleteWord, refreshWords } = useVocabulary();
 
@@ -184,28 +188,43 @@ const VocabularyExtractor: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-bold flex items-center gap-2">
-                🔐 مولد مفاتيح المدير
+                🔐 مولد رموز الدخول - المدير العام
                 <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">مدير فقط</span>
               </h3>
-              <p className="opacity-90">إنشاء رموز دخول خاصة للمعلمين والطلاب - صلاحيات المدير العليا</p>
+              <p className="opacity-90">إنشاء وإدارة رموز الدخول للمعلمين والطلاب - تحكم كامل في النظام</p>
               <div className="flex items-center gap-4 mt-2 text-sm opacity-80">
                 <span>👨‍🏫 رموز المعلمين</span>
-                <span>👨‍🎓 رموز الطلاب</span>
+                <span>👨‍🎓 رموز الطلاب الفردية</span>
+                <span>👥 رموز المجموعات</span>
                 <span>🏫 رموز الفصول</span>
-                <span>⚙️ إعدادات متقدمة</span>
+                <span>⚙️ تحكم شامل</span>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <button
               onClick={() => setShowAdminCodeGenerator(true)}
-              className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Key className="w-5 h-5" />
               إنشاء رمز معلم
             </button>
-            <div className="text-xs opacity-75 text-center">
-              صلاحيات المدير العليا
+            <button
+              onClick={() => setShowStudentCodeGenerator(true)}
+              className="bg-green-500/80 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Users className="w-5 h-5" />
+              رمز طالب فردي
+            </button>
+            <button
+              onClick={() => setShowBulkStudentGenerator(true)}
+              className="bg-blue-500/80 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Users className="w-5 h-5" />
+              رموز مجموعة
+            </button>
+            <div className="text-xs opacity-75 text-center mt-1">
+              🔒 صلاحيات المدير العليا
             </div>
           </div>
         </div>
@@ -214,23 +233,53 @@ const VocabularyExtractor: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold">👨‍🏫</div>
-            <div className="text-sm opacity-90">رموز المعلمين</div>
+            <div className="text-sm opacity-90">المعلمين</div>
             <div className="text-lg font-bold">∞</div>
+            <div className="text-xs opacity-75">غير محدود</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold">👨‍🎓</div>
-            <div className="text-sm opacity-90">رموز الطلاب</div>
+            <div className="text-sm opacity-90">الطلاب الأفراد</div>
             <div className="text-lg font-bold">∞</div>
+            <div className="text-xs opacity-75">رمز لكل طالب</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold">👥</div>
+            <div className="text-sm opacity-90">المجموعات</div>
+            <div className="text-lg font-bold">∞</div>
+            <div className="text-xs opacity-75">رمز للمجموعة</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold">🏫</div>
-            <div className="text-sm opacity-90">رموز الفصول</div>
+            <div className="text-sm opacity-90">الفصول</div>
             <div className="text-lg font-bold">∞</div>
+            <div className="text-xs opacity-75">رمز للفصل</div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold">⚙️</div>
-            <div className="text-sm opacity-90">إعدادات متقدمة</div>
-            <div className="text-lg font-bold">✓</div>
+        </div>
+        
+        {/* Admin Features */}
+        <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-4">
+          <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            مميزات المدير الحصرية:
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+              <span>🔓</span>
+              <span>رموز بدون حدود زمنية</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+              <span>👥</span>
+              <span>إنشاء رموز مجموعات</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+              <span>⚙️</span>
+              <span>تحكم في جميع الإعدادات</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+              <span>📊</span>
+              <span>تقارير شاملة</span>
+            </div>
           </div>
         </div>
       </div>
@@ -608,6 +657,82 @@ const VocabularyExtractor: React.FC = () => {
                 const notification = document.createElement('div');
                 notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
                 notification.textContent = 'تم إنشاء رمز المعلم بنجاح';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                  notification.style.opacity = '0';
+                  notification.style.transform = 'translate(-50%, -100%)';
+                  setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                      document.body.removeChild(notification);
+                    }
+                  }, 300);
+                }, 3000);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Student Code Generator Modal */}
+      {showStudentCodeGenerator && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Users className="w-6 h-6 text-green-600" />
+                إنشاء رمز دخول لطالب فردي - المدير
+              </h3>
+              <button
+                onClick={() => setShowStudentCodeGenerator(false)}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <StudentCodeGenerator 
+              onSuccess={() => {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
+                notification.textContent = 'تم إنشاء رمز الطالب بنجاح';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                  notification.style.opacity = '0';
+                  notification.style.transform = 'translate(-50%, -100%)';
+                  setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                      document.body.removeChild(notification);
+                    }
+                  }, 300);
+                }, 3000);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Student Code Generator Modal */}
+      {showBulkStudentGenerator && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Users className="w-6 h-6 text-blue-600" />
+                إنشاء رموز دخول لمجموعة طلاب - المدير
+              </h3>
+              <button
+                onClick={() => setShowBulkStudentGenerator(false)}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <BulkStudentCodeGenerator 
+              onSuccess={(count) => {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 font-semibold';
+                notification.textContent = `تم إنشاء ${count} رمز دخول للطلاب بنجاح`;
                 document.body.appendChild(notification);
                 
                 setTimeout(() => {
