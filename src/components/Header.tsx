@@ -1,4 +1,3 @@
-import React from 'react';
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Star, Zap, LogOut } from 'lucide-react';
 import { UserProgress, GradeAccess } from '../types';
