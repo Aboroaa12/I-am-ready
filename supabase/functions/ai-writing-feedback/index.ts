@@ -12,8 +12,6 @@
     - Input validation and error handling
 */
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -33,7 +31,7 @@ interface AIFeedback {
   score: number; // 0-100
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -105,13 +103,18 @@ Return only valid JSON, no additional text.`
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Gemini API error:', response.status, errorText)
       throw new Error(`Gemini API error: ${response.status}`)
     }
 
     const data = await response.json()
+    console.log('Gemini API response:', data)
+    
     const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!aiResponse) {
+      console.error('No AI response found in:', data)
       throw new Error('No response from AI')
     }
 
@@ -122,6 +125,7 @@ Return only valid JSON, no additional text.`
       const cleanResponse = aiResponse.replace(/```json\n?|\n?```/g, '').trim()
       feedback = JSON.parse(cleanResponse)
     } catch (parseError) {
+      console.error('Failed to parse AI response:', aiResponse)
       // If parsing fails, create a basic feedback structure
       feedback = {
         grammarErrors: [],
