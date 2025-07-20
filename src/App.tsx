@@ -429,20 +429,13 @@ function App() {
                 </div>
               </div>
             </div>
-              <button
-                onClick={() => setActiveTab('practice')}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
-              >
-                <ChevronRight className="w-5 h-5 rotate-180" />
-                العودة للتدريب التفاعلي
-              </button>
-            </div>
             
-          <SpellingExercise 
-            words={selectedWords}
-            onScore={handleActivityScore}
-            onStreak={handleActivityStreak}
-          />
+            <SpellingExercise 
+              words={selectedWords}
+              onScore={handleActivityScore}
+              onStreak={handleActivityStreak}
+            />
+          </div>
           </div>
         )}
         
