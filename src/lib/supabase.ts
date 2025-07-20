@@ -33,9 +33,9 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   }
 
   try {
-    // استخدام استعلام بسيط مع timeout مدمج
+    // استخدام استعلام بسيط مع timeout أطول
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 500);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     
     const result = await supabase
       .from('health_check')
@@ -51,6 +51,10 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     
     return true;
   } catch (error: any) {
+    // تجاهل أخطاء الإلغاء والشبكة بصمت
+    if (error.name === 'AbortError' || error.code === 20) {
+      return false;
+    }
     // العمل في وضع عدم الاتصال بصمت
     return false;
   }
