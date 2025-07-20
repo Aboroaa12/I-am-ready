@@ -132,9 +132,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
           .eq('code', code.trim())
           .eq('is_active', true)
           .eq('is_teacher', false)
-          .eq('is_admin', false)
-          .not('student_id', 'is', null);
-        
+          .eq('is_admin', false);
+          
         if (!studentAccessError && studentAccessData && studentAccessData.length > 0) {
           const studentAccess = studentAccessData[0];
           
