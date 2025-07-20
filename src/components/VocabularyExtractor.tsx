@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllVocabulary } from '../data/vocabulary';
 import { VocabularyWord } from '../types';
-import { Download, Search, Filter, BookOpen, X, Check, RefreshCw, Plus, Edit, Trash2, AlertTriangle, Key, Shield } from 'lucide-react';
+import { Download, Search, Filter, BookOpen, X, Check, RefreshCw, Plus, Edit, Trash2, AlertTriangle, Key, Shield, Users } from 'lucide-react';
 import { useVocabulary } from '../hooks/useVocabulary';
 import { getGradeGradientColor } from '../utils/gradeColors';
 import AdminCodeGenerator from './AdminCodeGenerator';
