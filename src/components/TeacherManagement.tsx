@@ -193,8 +193,14 @@ const TeacherManagement: React.FC = () => {
         } else {
           // Add new teacher
           const newTeacher = {
-            ...teacherData,
-            joinDate: new Date().toISOString()
+            name: teacherData.name,
+            email: teacherData.email,
+            phone: teacherData.phone,
+            grades: teacherData.grades,
+            school_name: teacherData.schoolName,
+            subjects: teacherData.subjects,
+            is_active: teacherData.isActive,
+            join_date: new Date().toISOString()
           };
 
           const { data, error } = await supabase
@@ -494,9 +500,8 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose, onSave }) =
   };
 
   const handleSubjectsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const subjectsText = e.target.value;
-    const subjectsArray = subjectsText.split(',').map(s => s.trim()).filter(s => s);
-    setFormData(prev => ({ ...prev, subjects: subjectsArray }));
+    const subjects = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+    setFormData(prev => ({ ...prev, subjects }));
   };
 
   return (
