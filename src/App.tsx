@@ -436,7 +436,6 @@ function App() {
               onStreak={handleActivityStreak}
             />
           </div>
-          </div>
         )}
         
         {activeTab === 'free-writing' && (
