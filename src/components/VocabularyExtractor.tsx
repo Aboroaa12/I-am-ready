@@ -555,6 +555,7 @@ const VocabularyExtractor: React.FC = () => {
       {showAddModal && (
         <WordModal
           word={editingWord}
+          units={units}
           onClose={() => setShowAddModal(false)}
           onSave={async (wordData) => {
             try {
@@ -757,9 +758,10 @@ interface WordModalProps {
   word: VocabularyWord | null;
   onClose: () => void;
   onSave: (wordData: Omit<VocabularyWord, 'id'>) => void;
+  units: string[];
 }
 
-const WordModal: React.FC<WordModalProps> = ({ word, onClose, onSave }) => {
+const WordModal: React.FC<WordModalProps> = ({ word, onClose, onSave, units }) => {
   const [formData, setFormData] = useState<Omit<VocabularyWord, 'id'>>({
     english: word?.english || '',
     arabic: word?.arabic || '',
