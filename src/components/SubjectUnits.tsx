@@ -93,6 +93,13 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Health and Fitness': 'الصحة واللياقة',
       'Community and Culture': 'المجتمع والثقافة',
       
+      // Grade 10 units
+      'Future Aspirations': 'الطموحات المستقبلية',
+      'Science and Discovery': 'العلوم والاكتشاف',
+      'Media and Communication': 'الإعلام والتواصل',
+      'Global Challenges': 'التحديات العالمية',
+      'Arts and Culture': 'الفنون والثقافة',
+      
       // Add more grades as needed
       'Family': 'العائلة',
       'Animals': 'الحيوانات',
@@ -121,6 +128,13 @@ const SubjectUnits: React.FC<SubjectUnitsProps> = ({ subject, grade, onUnitSelec
       'Technology and Communication': 'تعرف على التكنولوجيا الحديثة',
       'Health and Fitness': 'تعلم أهمية الصحة والرياضة',
       'Community and Culture': 'اكتشف ثقافات المجتمع',
+      
+      // Grade 10 descriptions
+      'Future Aspirations': 'استكشف طموحاتك وأهدافك المستقبلية',
+      'Science and Discovery': 'اكتشف عالم العلوم والاختراعات',
+      'Media and Communication': 'تعلم عن وسائل الإعلام والتواصل الحديثة',
+      'Global Challenges': 'فهم التحديات العالمية المعاصرة',
+      'Arts and Culture': 'استكشف عالم الفنون والثقافات المختلفة',
       
       'Family': 'تعرف على أفراد العائلة',
       'Animals': 'اكتشف عالم الحيوانات',
