@@ -53,8 +53,7 @@ Deno.serve(async (req) => {
     // Call Google Gemini API
     const apiKey = 'AIzaSyAZrgXBV27w9TV-OYd8i5TyS8yXPgUUIp8'
     
-    const prompt = `
-Please analyze the following English text written by an Arabic-speaking student learning English. Provide detailed feedback in the following JSON format:
+    const prompt = `Please analyze the following English text written by an Arabic-speaking student learning English. Provide detailed feedback in the following JSON format:
 
 {
   "grammarErrors": [
@@ -84,21 +83,23 @@ Text to analyze: "${text}"
 
 Return only valid JSON, no additional text.`
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt
-              }
-            ]
-          }
-        ]
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        }
       })
     })
 
