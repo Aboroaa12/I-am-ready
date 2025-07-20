@@ -191,45 +191,98 @@ function App() {
         
         {activeTab === 'practice' && selectedWords.length > 0 && (
           <div className="space-y-8">
+            {/* Back Button */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('units')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للوحدات الدراسية
+              </button>
+            </div>
+
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-slate-800 mb-2">التدريب التفاعلي</h2>
-              <p className="text-slate-600">اختر نوع التمرين الذي تريد ممارسته</p>
+              <h2 className="text-3xl font-bold text-slate-800 mb-2">
+                التدريب التفاعلي
+                <span className="block text-lg text-gray-600 mt-2">Interactive Practice</span>
+              </h2>
+              <p className="text-slate-600">
+                اختر نوع التمرين الذي تريد ممارسته
+                <span className="block text-sm text-gray-500 mt-1">Choose the type of exercise you want to practice</span>
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('flashcards')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">🎴 البطاقات التعليمية</h3>
-                <p className="text-gray-600">تعلم الكلمات بطريقة تفاعلية</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  🎴 البطاقات التعليمية
+                  <span className="block text-sm text-gray-500 mt-1">Flashcards</span>
+                </h3>
+                <p className="text-gray-600">
+                  تعلم الكلمات بطريقة تفاعلية
+                  <span className="block text-sm text-gray-500 mt-1">Learn words interactively</span>
+                </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('quiz')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">📝 اختبار سريع</h3>
-                <p className="text-gray-600">اختبر معرفتك بالكلمات</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  📝 اختبار سريع
+                  <span className="block text-sm text-gray-500 mt-1">Quick Quiz</span>
+                </h3>
+                <p className="text-gray-600">
+                  اختبر معرفتك بالكلمات
+                  <span className="block text-sm text-gray-500 mt-1">Test your vocabulary knowledge</span>
+                </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('memory')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">🧠 لعبة الذاكرة</h3>
-                <p className="text-gray-600">طابق الكلمات مع معانيها</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  🧠 لعبة الذاكرة
+                  <span className="block text-sm text-gray-500 mt-1">Memory Game</span>
+                </h3>
+                <p className="text-gray-600">
+                  طابق الكلمات مع معانيها
+                  <span className="block text-sm text-gray-500 mt-1">Match words with meanings</span>
+                </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('pronunciation')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">🔊 تدريب النطق</h3>
-                <p className="text-gray-600">تحسين النطق الصحيح</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  🔊 تدريب النطق
+                  <span className="block text-sm text-gray-500 mt-1">Pronunciation Practice</span>
+                </h3>
+                <p className="text-gray-600">
+                  تحسين النطق الصحيح
+                  <span className="block text-sm text-gray-500 mt-1">Improve correct pronunciation</span>
+                </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('grammar')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">📚 تحدي القواعد</h3>
-                <p className="text-gray-600">تعلم قواعد اللغة</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  📚 تحدي القواعد
+                  <span className="block text-sm text-gray-500 mt-1">Grammar Challenge</span>
+                </h3>
+                <p className="text-gray-600">
+                  تعلم قواعد اللغة
+                  <span className="block text-sm text-gray-500 mt-1">Learn language grammar</span>
+                </p>
               </div>
               
               <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
                    onClick={() => setActiveTab('spelling')}>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">✍️ تمرين التهجئة</h3>
-                <p className="text-gray-600">تحسين مهارات التهجئة</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  ✍️ تمرين التهجئة
+                  <span className="block text-sm text-gray-500 mt-1">Spelling Exercise</span>
+                </h3>
+                <p className="text-gray-600">
+                  تحسين مهارات التهجئة
+                  <span className="block text-sm text-gray-500 mt-1">Improve spelling skills</span>
+                </p>
               </div>
             </div>
           </div>
@@ -253,11 +306,23 @@ function App() {
         )}
         
         {activeTab === 'flashcards' && selectedWords.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <FlashCards 
             words={selectedWords} 
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
           />
+          </div>
         )}
         
         {activeTab === 'quiz' && selectedWords.length > 0 && (
@@ -282,32 +347,80 @@ function App() {
         )}
         
         {activeTab === 'memory' && selectedWords.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <MemoryGame 
             words={selectedWords} 
             onScore={handleActivityScore}
           />
+          </div>
         )}
         
         {activeTab === 'pronunciation' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <PronunciationPractice 
             onScore={handleActivityScore}
           />
+          </div>
         )}
         
         {activeTab === 'grammar' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <GrammarChallenge 
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
             grade={gradeAccess.grade}
           />
+          </div>
         )}
         
         {activeTab === 'spelling' && selectedWords.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('practice')}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+                العودة للتدريب التفاعلي
+              </button>
+            </div>
+            
           <SpellingExercise 
             words={selectedWords}
             onScore={handleActivityScore}
             onStreak={handleActivityStreak}
           />
+          </div>
         )}
         
         {activeTab === 'free-writing' && (

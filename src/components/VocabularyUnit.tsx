@@ -19,6 +19,13 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
   onWordPronounce,
   onBack,
 }) => {
+  // Back button handler
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    }
+  };
+
   const [expandedRules, setExpandedRules] = useState<Set<number>>(new Set());
   const [showAllWords, setShowAllWords] = useState(false);
   const [playingExample, setPlayingExample] = useState<string | null>(null);
@@ -163,6 +170,19 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
   }
   return (
     <div className="space-y-12">
+      {/* Back Button */}
+      {onBack && (
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+          >
+            <ChevronRight className="w-5 h-5 rotate-180" />
+            العودة للوحدات الدراسية
+          </button>
+        </div>
+      )}
+
       {/* Enhanced Header */}
       <div className="text-center relative">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-purple-50 to-teal-100 rounded-3xl opacity-50"></div>
@@ -171,9 +191,14 @@ const VocabularyUnit: React.FC<VocabularyUnitProps> = ({
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl shadow-lg">
               <BookOpen className="w-10 h-10 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {title}
-            </span>
+            <div className="text-center">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {title}
+              </span>
+              <div className="text-lg text-gray-600 mt-2" dir="ltr">
+                {words.length > 0 ? words[0].unit : title}
+              </div>
+            </div>
           </h2>
           <div className="flex items-center justify-center gap-4 text-slate-600">
             <div className="flex items-center gap-2">
