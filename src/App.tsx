@@ -405,7 +405,30 @@ function App() {
         
         {activeTab === 'spelling' && selectedWords.length > 0 && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4">
+            {/* Enhanced Back Button */}
+            <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-rose-500">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setActiveTab('practice')}
+                    className="flex items-center gap-2 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg"
+                  >
+                    <ChevronRight className="w-5 h-5 rotate-180" />
+                    ← العودة للتدريب التفاعلي
+                    <span className="text-sm opacity-90 block">Back to Practice</span>
+                  </button>
+                </div>
+                
+                {/* Breadcrumb */}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="hover:text-blue-600 cursor-pointer" onClick={() => setActiveTab('units')}>الوحدات</span>
+                  <ChevronRight className="w-4 h-4" />
+                  <span className="hover:text-green-600 cursor-pointer" onClick={() => setActiveTab('practice')}>التدريب</span>
+                  <ChevronRight className="w-4 h-4" />
+                  <span className="text-rose-600 font-semibold">تمرين التهجئة</span>
+                </div>
+              </div>
+            </div>
               <button
                 onClick={() => setActiveTab('practice')}
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
