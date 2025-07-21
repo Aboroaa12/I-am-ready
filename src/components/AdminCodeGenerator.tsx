@@ -160,7 +160,8 @@ const AdminCodeGenerator: React.FC<AdminCodeGeneratorProps> = ({ onSuccess }) =>
         is_active: formData.isActive,
         usage_count: 0,
         max_usage: formData.maxUsage > 0 ? formData.maxUsage : null,
-        is_teacher: formData.isForTeacher
+        is_teacher: formData.isForTeacher,
+        is_admin: false
       };
       
       const { error } = await supabase.from('access_codes').insert(newCode);

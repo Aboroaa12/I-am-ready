@@ -200,7 +200,8 @@ const TeacherManagement: React.FC = () => {
             school_name: teacherData.schoolName,
             subjects: teacherData.subjects,
             is_active: teacherData.isActive,
-            join_date: new Date().toISOString()
+            join_date: new Date().toISOString(),
+            code_limit: 20
           };
 
           const { data, error } = await supabase
@@ -210,10 +211,11 @@ const TeacherManagement: React.FC = () => {
               email: newTeacher.email,
               phone: newTeacher.phone,
               grades: newTeacher.grades,
-              school_name: newTeacher.schoolName,
-              subjects: newTeacher.subjects,
-              is_active: newTeacher.isActive,
-              join_date: newTeacher.joinDate
+              school_name: teacherData.schoolName,
+              subjects: teacherData.subjects,
+              is_active: teacherData.isActive,
+              join_date: new Date().toISOString(),
+              code_limit: 20
             }])
             .select()
             .single();

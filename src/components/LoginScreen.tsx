@@ -79,8 +79,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
             return;
           }
           
-          // التحقق من عدد مرات الاستخدام (للمعلمين والمديرين فقط)
-          if (accessCode.is_teacher && accessCode.max_usage && accessCode.usage_count >= accessCode.max_usage) {
+          // التحقق من عدد مرات الاستخدام (للمعلمين فقط)
+          if (accessCode.is_teacher && accessCode.max_usage && (accessCode.usage_count || 0) >= accessCode.max_usage) {
             setError('تم الوصول إلى الحد الأقصى لاستخدام هذا الرمز');
             setIsLoading(false);
             return;
@@ -92,24 +92,44 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, selectedGrade }) => 
             .update({ usage_count: (accessCode.usage_count || 0) + 1 })
             .eq('id', accessCode.id);
           
-          // تسجيل الدخول
-          const access: GradeAccess = {
-            grade: accessCode.grade,
-            name: `الصف ${accessCode.grade}`,
-            code: accessCode.code,
-            isTeacher: accessCode.is_teacher,
-            isAdmin: accessCode.is_admin,
-            teacherId: accessCode.teacher_id,
-            teacherName: accessCode.teacher_name,
-            isStudent: !accessCode.is_teacher && !accessCode.is_admin,
-            studentName: accessCode.students?.name,
-            studentKeyId: accessCode.student_id
-          };
-          
-          // إذا كان هناك صف محدد وكان المستخدم مديراً، قم بتعيين الصف المحدد
-          if (selectedGrade !== undefined && access.isAdmin) {
-            onLogin({ ...access, grade: selectedGrade });
+          // تحديد نوع المستخدم وتسجيل الدخول
+          if (accessCode.is_admin) {
+            // مدير
+            const access: GradeAccess = {
+              grade: 0,
+              name: 'المدير العام',
+              code: accessCode.code,
+              isAdmin: true,
+              isTeacher: false,
+              isStudent: false
+            };
+            onLogin(access);
+          } else if (accessCode.is_teacher) {
+            // معلم
+            const access: GradeAccess = {
+              grade: accessCode.grade,
+              name: `معلم - ${accessCode.teacher_name || 'المعلم'}`,
+              code: accessCode.code,
+              isTeacher: true,
+              isAdmin: false,
+              isStudent: false,
+              teacherId: accessCode.teacher_id,
+              teacherName: accessCode.teacher_name
+            };
+            onLogin(access);
           } else {
+            // طالب
+            const access: GradeAccess = {
+              grade: accessCode.grade,
+              name: `${accessCode.students?.name || 'طالب'} - الصف ${accessCode.grade}`,
+              code: accessCode.code,
+              isTeacher: false,
+              isAdmin: false,
+              isStudent: true,
+              studentName: accessCode.students?.name || null,
+              studentKeyId: accessCode.student_id,
+              gender: accessCode.students?.gender || 'male'
+            };
             onLogin(access);
           }
           
