@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { gradeAccess } from '../data/gradeAccess';
+import { getGradeByCode } from '../data/gradeAccess';
 import AdminPanel from './AdminPanel';
 import TeacherDashboard from './TeacherDashboard';
 import { Teacher } from '../types';
@@ -13,6 +13,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [accessCode, setAccessCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [gradeAccess, setGradeAccess] = useState<any>(null);
+
+  useEffect(() => {
+    if (accessCode) {
+      const accessData = getGradeByCode(accessCode);
+      setGradeAccess(accessData);
+    }
+  }, [accessCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,8 +28,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      // Check if it's an admin code
-      if (gradeAccess.checkAdminAccess(accessCode)) {
+      const accessData = getGradeByCode(accessCode);
+      
+      if (accessData?.isAdmin) {
         return;
       }
 
