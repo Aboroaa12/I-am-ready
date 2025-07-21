@@ -570,7 +570,7 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose, onSave }) =
             الصفوف التي يدرسها *
           </label>
           <div className="grid grid-cols-4 gap-2">
-            {[5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
               <label key={grade} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
                 <input
                   type="checkbox"
