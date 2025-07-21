@@ -186,8 +186,10 @@ const AdminCodeGenerator: React.FC<AdminCodeGeneratorProps> = ({ onSuccess }) =>
           expiresAt: formData.expiresAt ? new Date(formData.expiresAt).toISOString() : null,
           isActive: formData.isActive,
           usageCount: 0,
-          maxUsage: formData.maxUsage > 0 ? formData.maxUsage : null,
-          isTeacher: formData.isForTeacher
+          is_teacher: true,
+          is_admin: false,
+          student_id: null,
+          class_room_id: null
         };
         
         teacherCodes.push(localCode);

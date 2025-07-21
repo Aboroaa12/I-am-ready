@@ -137,10 +137,17 @@ function App() {
 
   // Show teacher dashboard for teachers
   if (gradeAccess.isTeacher && gradeAccess.teacherId) {
-    const teacher = getTeacherByCode(gradeAccess.code);
-    if (teacher) {
-      return <TeacherDashboard teacher={teacher} onLogout={handleLogout} />;
-    }
+    // محاولة الحصول على بيانات المعلم من قاعدة البيانات أو البيانات الثابتة
+    const teacher = getTeacherByCode(gradeAccess.code) || {
+      id: gradeAccess.teacherId,
+      name: gradeAccess.teacherName || 'المعلم',
+      email: 'teacher@school.edu',
+      grades: [gradeAccess.grade],
+      students: [],
+      joinDate: new Date().toISOString(),
+      isActive: true
+    };
+    return <TeacherDashboard teacher={teacher} onLogout={handleLogout} />;
   }
 
   // Main application for students
