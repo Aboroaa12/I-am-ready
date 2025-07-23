@@ -29,13 +29,14 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   // إذا لم تكن المتغيرات صحيحة، ارجع false مباشرة
   if (!hasValidCredentials) {
+    console.warn('⚠️ Supabase credentials are not configured properly');
     return false;
   }
 
   try {
-    // استخدام استعلام بسيط مع timeout أطول
+    // استخدام استعلام بسيط مع timeout ومعالجة أفضل للأخطاء
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     
     const result = await supabase
       .from('health_check')
@@ -46,16 +47,29 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     clearTimeout(timeoutId);
     
     if (result.error) {
+      console.warn('Supabase query error:', result.error.message);
       return false;
     }
     
     return true;
   } catch (error: any) {
-    // تجاهل أخطاء الإلغاء والشبكة بصمت
-    if (error.name === 'AbortError' || error.code === 20) {
+    // معالجة أنواع مختلفة من الأخطاء
+    if (error.name === 'AbortError') {
+      console.warn('Supabase connection timeout');
       return false;
     }
-    // العمل في وضع عدم الاتصال بصمت
+    
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      console.warn('Network error connecting to Supabase');
+      return false;
+    }
+    
+    if (error.code === 20 || error.name === 'TypeError') {
+      console.warn('Supabase connection failed:', error.message);
+      return false;
+    }
+    
+    console.warn('Unexpected Supabase error:', error);
     return false;
   }
 };

@@ -48,9 +48,17 @@ function App() {
   useEffect(() => {
     // Check Supabase connection on app start
     const checkConnection = async () => {
-      // التحقق من الاتصال بصمت
-      const connected = await checkSupabaseConnection().catch(() => false);
-      setIsSupabaseConnected(connected);
+      try {
+        const connected = await checkSupabaseConnection();
+        setIsSupabaseConnected(connected);
+        
+        if (!connected) {
+          console.info('📱 Running in offline mode - using local data storage');
+        }
+      } catch (error) {
+        console.warn('Failed to check Supabase connection:', error);
+        setIsSupabaseConnected(false);
+      }
     };
     
     // تشغيل التحقق من الاتصال
