@@ -79,15 +79,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   };
 
   // Check if admin
-  if (gradeAccess.isAdmin) {
+  if (gradeAccess?.isAdmin) {
     return <AdminPanel />;
   }
 
   // Check if teacher
-  if (gradeAccess.isTeacher && gradeAccess.teacherId) {
+  if (gradeAccess?.isTeacher && gradeAccess?.teacherId) {
     const teacher: Teacher = {
-      id: gradeAccess.teacherId,
-      name: gradeAccess.teacherName || 'معلم',
+      id: gradeAccess?.teacherId,
+      name: gradeAccess?.teacherName || 'معلم',
       email: '',
       grades: [],
       students: [],
